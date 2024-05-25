@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Listing {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  type          ListingType
+  property      PropertyType 
+  status        PropertyStatus  
+  description   String
+  address       String
+  regularPrice  Float
+  discountPrice Float
+  bathrooms     Int
+  bedrooms      Int
+  furnished     Boolean
+  parking       Boolean
+  offer         Boolean
+  latitude      String?
+  longitude     String?  
+  imageUrls     String[]
+  userRef       String        @db.ObjectId
+  user          User          @relation(fields: [userRef], references: [id])
+  createdAt     DateTime      @default(now())
+  postDetail    PostDetail?
+  savedPosts    SavedPost[]
+
+  @@map("listings")
+}
+
+// Enums for ListingType and PropertyType
+enum ListingType {
+  sell
+  buy
+  rent
+}
+
+enum PropertyType {
+  land
+  apartment
+  condo
+  house
+}
+
+// Enums for UserRole
+enum UserRole {
+  admin
+  landlord
+  user
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  OCCUPIED
+  UNDER_CONTRACT
+  FOR_SALE
+  UNDER_RENOVATION
+  PENDING_APPROVAL
+  SOLD
+  TERMINATED
+  PENDING_AVAILABILITY
+  INACTIVE
+}
+
+
+// User model
+model User {
+ id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  username   String      @unique
+  email      String      @unique
+  role       UserRole    @default(user)
+  password   String
+  avatar     String      @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+  createdAt  DateTime    @default(now())
+  posts      Listing[]
+  savedPosts SavedPost[]
+  chats      Chat[]      @relation(fields: [chatIDs], references: [id])   
+   chatIDs    String[]    @db.ObjectId
+
+  @@map("users")
+}
+
+
+
+model PostDetail {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  desc       String
+  utilities  String?
+  pet        String?
+  income     String?
+  size       Int?
+  school     Int?
+  bus        Int?
+  restaurant Int?
+  post       Listing    @relation(fields: [postId], references: [id])
+  postId     String  @unique @db.ObjectId
+}
+
+model SavedPost {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  post      Listing     @relation(fields: [postId], references: [id])
+  userId    String   @unique @db.ObjectId
+  postId    String   @unique @db.ObjectId
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+}
+
+model Chat {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  users     User[]    @relation(fields: [userIDs], references: [id])
+  userIDs   String[]  @db.ObjectId
+  createdAt DateTime  @default(now())
+  seenBy    String[]  @db.ObjectId
+  messages  Message[]
+  lastMessage String?
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  text      String
+  userId    String
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+}
