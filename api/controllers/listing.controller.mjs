@@ -1,21 +1,24 @@
-import prisma from "../lib/prisma.js";
+import prisma from '../lib/prisma.js';
 
 export const createListing = async (req, res) => {
   try {
     const listing = await prisma.listing.create({
-      data: req.body
+      data: {
+        ...req.body,
+        userRef: req.user.id, // Associate the listing with the current user
+      },
     });
     res.status(201).json(listing);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Failed to create listing" });
+    console.error(error);
+    res.status(500).json({ message: 'Failed to create listing' });
   }
 };
 
 export const deleteListing = async (req, res) => {
   try {
     const listing = await prisma.listing.findUnique({
-      where: { id: parseInt(req.params.id) }
+      where: { id: req.params.id },
     });
 
     if (!listing) {
@@ -27,19 +30,20 @@ export const deleteListing = async (req, res) => {
     }
 
     await prisma.listing.delete({
-      where: { id: parseInt(req.params.id) }
+      where: { id: req.params.id },
     });
     res.status(200).json({ message: 'Listing has been deleted!' });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Failed to delete listing" });
+    console.error(error);
+    res.status(500).json({ message: 'Failed to delete listing' });
   }
 };
+
 
 export const updateListing = async (req, res) => {
   try {
     const listing = await prisma.listing.findUnique({
-      where: { id: parseInt(req.params.id) }
+      where: { id: req.params.id },
     });
 
     if (!listing) {
@@ -51,20 +55,21 @@ export const updateListing = async (req, res) => {
     }
 
     const updatedListing = await prisma.listing.update({
-      where: { id: parseInt(req.params.id) },
-      data: req.body
+      where: { id: req.params.id },
+      data: req.body,
     });
     res.status(200).json(updatedListing);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Failed to update listing" });
+    console.error(error);
+    res.status(500).json({ message: 'Failed to update listing' });
   }
 };
+
 
 export const getListing = async (req, res) => {
   try {
     const listing = await prisma.listing.findUnique({
-      where: { id: parseInt(req.params.id) }
+      where: { id: req.params.id },
     });
 
     if (!listing) {
@@ -72,36 +77,37 @@ export const getListing = async (req, res) => {
     }
     res.status(200).json(listing);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Failed to get listing" });
+    console.error(error);
+    res.status(500).json({ message: 'Failed to get listing' });
   }
 };
 
 export const getListings = async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 9;
-    const startIndex = parseInt(req.query.startIndex) || 0;
+    const { searchTerm, offer, furnished, parking, type, sort, order, limit, startIndex } = req.query;
+    const parsedLimit = parseInt(limit) || 9;
+    const parsedStartIndex = parseInt(startIndex) || 0;
 
     const listings = await prisma.listing.findMany({
       where: {
         name: {
-          contains: req.query.searchTerm || '',
-          mode: 'insensitive'
+          contains: searchTerm || '',
+          mode: 'insensitive',
         },
-        offer: req.query.offer !== 'false',
-        furnished: req.query.furnished !== 'false',
-        parking: req.query.parking !== 'false',
-        type: req.query.type !== 'all' ? req.query.type : undefined
+        ...(offer !== undefined && { offer: offer === 'true' }),
+        ...(furnished !== undefined && { furnished: furnished === 'true' }),
+        ...(parking !== undefined && { parking: parking === 'true' }),
+        ...(type !== 'all' && { type }),
       },
       orderBy: {
-        [req.query.sort || 'createdAt']: req.query.order || 'desc'
+        [sort || 'createdAt']: order || 'desc',
       },
-      skip: startIndex,
-      take: limit
+      skip: parsedStartIndex,
+      take: parsedLimit,
     });
     res.status(200).json(listings);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Failed to get listings" });
+    console.error(error);
+    res.status(500).json({ message: 'Failed to get listings' });
   }
 };

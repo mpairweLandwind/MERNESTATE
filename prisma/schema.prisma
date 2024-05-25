@@ -42,7 +42,7 @@ model Listing {
 
 // Enums for ListingType and PropertyType
 enum ListingType {
-  sell
+  sale
   buy
   rent
 }
@@ -62,32 +62,38 @@ enum UserRole {
 }
 
 enum PropertyStatus {
-  AVAILABLE
-  OCCUPIED
-  UNDER_CONTRACT
-  FOR_SALE
-  UNDER_RENOVATION
-  PENDING_APPROVAL
-  SOLD
-  TERMINATED
-  PENDING_AVAILABILITY
-  INACTIVE
+  available
+  occupied
+  under_contract
+  for_sale
+  under_renovation
+  pending_approval
+  sold
+  terminated
+  pending_availability
+  inactive
 }
 
 
 // User model
+enum UserStatus {
+  active
+  inactive
+}
+
 model User {
- id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
   username   String      @unique
   email      String      @unique
-  role       UserRole    @default(user)
+  role       UserRole    @default(user)  
   password   String
   avatar     String      @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
   createdAt  DateTime    @default(now())
   posts      Listing[]
   savedPosts SavedPost[]
   chats      Chat[]      @relation(fields: [chatIDs], references: [id])   
-   chatIDs    String[]    @db.ObjectId
+  chatIDs    String[]    @db.ObjectId
+  status     UserStatus  @default(active)
 
   @@map("users")
 }

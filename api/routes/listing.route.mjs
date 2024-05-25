@@ -1,7 +1,11 @@
-// Modify this file: listing.controller.mjs
-
 import express from 'express';
-import { createListing, deleteListing, updateListing, getListing, getListings } from '../controllers/listing.controller.mjs';
+import {
+  createListing,
+  deleteListing,
+  updateListing,
+  getListing,
+  getListings,
+} from '../controllers/listing.controller.mjs';
 import { verifyToken } from '../utils/verifyUser.js';
 
 // Middleware to check if the user has the required role
