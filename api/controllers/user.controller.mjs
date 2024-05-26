@@ -2,7 +2,6 @@ import bcrypt from 'bcrypt';
 import { errorHandler } from '../utils/error.js';
 import prisma from "../lib/prisma.js";
 
-
 export const updateUser = async (req, res, next) => {
   if (req.user.id !== req.params.id)
     return next(errorHandler(401, 'You can only update your own account!'));
@@ -51,7 +50,6 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
-
 export const getUserListings = async (req, res, next) => {
   if (req.user.id === req.params.id) {
     try {
@@ -66,7 +64,6 @@ export const getUserListings = async (req, res, next) => {
     return next(errorHandler(401, 'You can only view your own listings!'));
   }
 };
-
 
 export const getUser = async (req, res, next) => {
   try {
@@ -96,10 +93,6 @@ export const checkEmail = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
-
 
 export const savePost = async (req, res) => {
   const postId = req.body.postId;
@@ -179,4 +172,3 @@ export const getNotificationNumber = async (req, res) => {
     res.status(500).json({ message: "Failed to get profile posts!" });
   }
 };
-

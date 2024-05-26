@@ -82,11 +82,11 @@ export const getListing = async (req, res) => {
   }
 };
 
-export const getListings = async (req, res) => {
+export const getListings = async (req, res, next) => {
   try {
     const { searchTerm, offer, furnished, parking, type, sort, order, limit, startIndex } = req.query;
-    const parsedLimit = parseInt(limit) || 9;
-    const parsedStartIndex = parseInt(startIndex) || 0;
+    const parsedLimit = parseInt(limit, 10) || 9;
+    const parsedStartIndex = parseInt(startIndex, 10) || 0;
 
     const listings = await prisma.listing.findMany({
       where: {
@@ -97,7 +97,7 @@ export const getListings = async (req, res) => {
         ...(offer !== undefined && { offer: offer === 'true' }),
         ...(furnished !== undefined && { furnished: furnished === 'true' }),
         ...(parking !== undefined && { parking: parking === 'true' }),
-        ...(type !== 'all' && { type }),
+        ...(type !== 'all' && type !== undefined && { type }),
       },
       orderBy: {
         [sort || 'createdAt']: order || 'desc',
@@ -105,9 +105,10 @@ export const getListings = async (req, res) => {
       skip: parsedStartIndex,
       take: parsedLimit,
     });
+
     res.status(200).json(listings);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to get listings' });
+    next(errorHandler(500, 'Failed to get listings'));
   }
 };

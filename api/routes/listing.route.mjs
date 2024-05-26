@@ -5,6 +5,7 @@ import {
   updateListing,
   getListing,
   getListings,
+  getUserListings
 } from '../controllers/listing.controller.mjs';
 import { verifyToken } from '../utils/verifyUser.js';
 
@@ -18,11 +19,12 @@ const requireRole = (role) => (req, res, next) => {
 
 const router = express.Router();
 
-// Assume that verifyToken middleware adds the user's role to req.user
-router.post('/create', [verifyToken], createListing);
-router.delete('/delete/:id', [verifyToken], deleteListing);
-router.put('/update/:id', [verifyToken], updateListing);
+// Routes with verifyToken middleware
+router.post('/create', verifyToken, createListing);
+router.delete('/delete/:id', verifyToken, deleteListing);
+router.put('/update/:id', verifyToken, updateListing);
 router.get('/get/:id', getListing);
 router.get('/get', getListings);
+router.get('/user/listings/:userId', verifyToken, getUserListings);
 
 export default router;
