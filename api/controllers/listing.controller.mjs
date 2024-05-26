@@ -88,17 +88,23 @@ export const getListings = async (req, res, next) => {
     const parsedLimit = parseInt(limit, 10) || 9;
     const parsedStartIndex = parseInt(startIndex, 10) || 0;
 
-    const listings = await prisma.listing.findMany({
-      where: {
-        name: {
-          contains: searchTerm || '',
-          mode: 'insensitive',
-        },
-        ...(offer !== undefined && { offer: offer === 'true' }),
-        ...(furnished !== undefined && { furnished: furnished === 'true' }),
-        ...(parking !== undefined && { parking: parking === 'true' }),
-        ...(type !== 'all' && type !== undefined && { type }),
+    const whereClause = {
+      name: {
+        contains: searchTerm || '',
+        mode: 'insensitive',
       },
+      ...(offer !== undefined && { offer: offer === 'true' }),
+      ...(furnished !== undefined && { furnished: furnished === 'true' }),
+      ...(parking !== undefined && { parking: parking === 'true' }),
+    };
+
+    // Check if type is defined and not 'all'
+    if (type !== undefined && type !== 'all') {
+      whereClause.type = type;
+    }
+
+    const listings = await prisma.listing.findMany({
+      where: whereClause,
       orderBy: {
         [sort || 'createdAt']: order || 'desc',
       },
