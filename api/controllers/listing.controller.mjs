@@ -66,6 +66,7 @@ export const updateListing = async (req, res) => {
 };
 
 
+// Get a specific listing by ID
 export const getListing = async (req, res) => {
   try {
     const listing = await prisma.listing.findUnique({
@@ -82,6 +83,7 @@ export const getListing = async (req, res) => {
   }
 };
 
+// Get multiple listings with filters
 export const getListings = async (req, res, next) => {
   try {
     const { searchTerm, offer, furnished, parking, type, sort, order, limit, startIndex } = req.query;

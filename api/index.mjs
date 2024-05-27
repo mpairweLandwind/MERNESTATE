@@ -40,11 +40,11 @@ app.use('/api/chats', chatRoute);
 app.use('/api/messages', messageRoute);
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client', 'dist')));
+app.use(express.static(path.join(__dirname, 'Client', 'dist')));
 
 // The "catchall" handler: for any request that doesn't match one above, send back the React index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'Client', 'dist', 'index.html'));
 });
 
 // Error handling middleware

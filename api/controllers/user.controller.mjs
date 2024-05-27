@@ -50,20 +50,35 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
-export const getUserListings = async (req, res, next) => {
-  if (req.user.id === req.params.id) {
-    try {
-      const listings = await prisma.listing.findMany({
-        where: { userRef: parseInt(req.params.id) }
-      });
-      res.status(200).json(listings);
-    } catch (error) {
-      next(error);
+export const getUserListings = async (req, res) => {
+  const requestedUserId = req.query.id; // Accessing the user ID from query parameters
+
+  try {
+    // Find the user by ID to ensure the user exists
+    const user = await prisma.user.findUnique({
+      where: {
+        id: requestedUserId, // Ensure this is a string that matches your user ID type
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-  } else {
-    return next(errorHandler(401, 'You can only view your own listings!'));
+
+    // Retrieve all listings where userRef matches the requestedUserId
+    const userListings = await prisma.listing.findMany({
+      where: {
+        userRef: requestedUserId, // Assuming userRef is the field that references the user in the listings table
+      },
+    });
+
+    res.status(200).json({ listings: userListings }); // Structured response
+  } catch (error) {
+    console.error('Error retrieving user listings:', error);
+    res.status(500).json({ message: 'Failed to get user listings' }); // Structured error response
   }
 };
+
 
 export const getUser = async (req, res, next) => {
   try {
