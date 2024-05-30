@@ -92,39 +92,48 @@ export default function Home() {
 </section>       
     
 
-      {/* swiper */}
-  {/* Swiper */}
-  <Swiper navigation>
-        {swiperListings.length > 0 ? (
-          swiperListings.map((listing) => (
-            <SwiperSlide key={listing._id}>
-              <div
-                style={{
-                  background: `url(${listing.imageUrls[0]}) center no-repeat`,
-                  backgroundSize: 'cover',
-                }}
-                className='h-[500px]'
-              ></div>
-            </SwiperSlide>
-          ))
-        ) : (
-          <SwiperSlide>
-            <div className='h-[500px] flex justify-center items-center'>
-              <p>No listings available</p>
-            </div>
-          </SwiperSlide>
-        )}
-      </Swiper>
+   {/* Swiper */}
+<Swiper navigation>
+  {swiperListings.length > 0 ? (
+    swiperListings.map((listing) => (
+      <SwiperSlide key={listing._id}>
+        <div
+          style={{
+            backgroundImage: `url(${listing.imageUrls[0]})`,
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+          }}
+          className='h-[500px] flex justify-center items-center relative'
+        >
+          {/* Overlay with description and link */}
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+          <div className="z-10 p-4 text-white text-center">
+            <h3 className="text-2xl font-bold mb-2">{listing.title}</h3>
+            <p className="mb-4">{listing.description}</p>
+            <Link to={`/listings/${listing._id}`} className="inline-block bg-white text-black py-2 px-4 rounded hover:bg-gray-200">View Details</Link>
+          </div>
+        </div>
+      </SwiperSlide>
+    ))
+  ) : (
+    <SwiperSlide>
+      <div className='h-[500px] flex justify-center items-center'>
+        <p>No listings available</p>
+      </div>
+    </SwiperSlide>
+  )}
+</Swiper>
 
 {/* Listing results for offer, sale, and rent */}
-<div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
+<div className='w-full mx-auto p-3 flex flex-col gap-8 my-auto'>
   {offerListings && offerListings.length > 0 ? (
     <div className=''>
       <div className='my-3'>
         <h2 className='text-2xl font-semibold text-white'>Recent offers</h2>
         <Link className='text-sm text-white hover:underline' to={'/search?offer=true'}>Show more offers</Link>
       </div>
-      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
         {offerListings.map((listing) => (
           <ListingItem listing={listing} key={listing._id} />
         ))}
@@ -138,7 +147,7 @@ export default function Home() {
         <h2 className='text-2xl font-semibold text-white'>Recent places for rent</h2>
         <Link className='text-sm text-white hover:underline' to={'/search?type=raw'}>Show more places for rent</Link>
       </div>
-      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
         {rentListings.map((listing) => (
           <ListingItem listing={listing} key={listing._id} />
         ))}
@@ -152,7 +161,7 @@ export default function Home() {
         <h2 className='text-2xl font-semibold text-white'>Recent places for sale</h2>
         <Link className='text-sm text-white hover:underline' to={'/search?type=sale'}>Show more places for sale</Link>
       </div>
-      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
         {saleListings.map((listing) => (
           <ListingItem listing={listing} key={listing._id} />
         ))}
