@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
-import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import { app } from '../firebase';
+import PropTypes from 'prop-types';
 
 export default function CreateListing() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, token } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
@@ -17,7 +17,7 @@ export default function CreateListing() {
     description: '',
     address: '',
     regularPrice: '',           
-    discountPrice: '',           
+    discountEncryptPrice: '',           
     bathrooms: 1,
     bedrooms: 1,
     furnished: false,
@@ -113,46 +113,50 @@ export default function CreateListing() {
     }
   };
   
-
-  // Inside CreateListing component
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    if (formData.imageUrls.length < 1)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    if (formData.imageUrls.length < 1) {
       return setError('You must upload at least one image');
+    }
     
-    if (+formData.regularPrice < +formData.discountPrice)
+    if (+formData.regularPrice < +formData.discountPrice) {
       return setError('Discount price must be lower than regular price or zero');
+    }
     
     setLoading(true);
     setError(false);
-    const res = await fetch('/api/listing/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...formData,
-        userRef: currentUser._id,
-      }),
-    });
-    if (!res.ok) { // Check if response is successful
-      throw new Error('Failed to create listing');
+  
+    try {
+      const res = await fetch('/api/listing/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Using token for authorization
+        },
+        body: JSON.stringify({
+          ...formData,
+          userRef: currentUser.id,
+        }),
+      });
+  
+      if (!res.ok) {
+        throw new Error('Failed to create listing');
+      }
+  
+      const data = await res.json();
+      setLoading(false);
+  
+      if (data.success === false) {
+        setError(data.message);
+      } else {
+        navigate(`/listing/${data._id}`);
+      }
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
     }
-    const data = await res.json();
-    setLoading(false);
-    if (data.success === false) {
-      setError(data.message);
-    } else {
-      navigate(`/listing/${data._id}`);
-    }
-  } catch (error) {
-    setError(error.message); // Provide more descriptive error message
-    setLoading(false);
-  }
-};
-
+  };
 // Inside PropertyOptions component
 
 PropertyOptions.propTypes = {

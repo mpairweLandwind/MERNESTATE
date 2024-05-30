@@ -32,6 +32,9 @@ export default function Home() {
     fetchListings('/api/listing/get?type=rent&limit=4', setRentListings);
     fetchListings('/api/listing/get?type=sale&limit=4', setSaleListings);
   }, []);
+  // Determine which listings to show in the Swiper
+  const swiperListings = offerListings.length > 0 ? offerListings : (saleListings.length > 0 ? saleListings : rentListings);
+
   return (
     <div>
      <section className="relative bg-gray-500 text-white overflow-hidden">
@@ -90,66 +93,82 @@ export default function Home() {
     
 
       {/* swiper */}
-<Swiper navigation>
-  {offerListings &&
-    offerListings.length > 0 &&
-    offerListings.map((listing) => (
-      <SwiperSlide key={listing._id}> {/* Added key prop here */}
-        <div
-          style={{
-            background: `url(${listing.imageUrls[0]}) center no-repeat`,
-            backgroundSize: 'cover',
-          }}
-          className='h-[500px]'
-        ></div>
-      </SwiperSlide>
-    ))}
-</Swiper>
-
-
-      {/* listing results for offer, sale and rent */}
-
-      <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
-        {offerListings && offerListings.length > 0 && (
-          <div className=''>
-            <div className='my-3'>
-              <h2 className='text-2xl font-semibold text-white'>Recent offers</h2>
-              <Link className='text-sm text-white hover:underline' to={'/search?offer=true'}>Show more offers</Link>
+  {/* Swiper */}
+  <Swiper navigation>
+        {swiperListings.length > 0 ? (
+          swiperListings.map((listing) => (
+            <SwiperSlide key={listing._id}>
+              <div
+                style={{
+                  background: `url(${listing.imageUrls[0]}) center no-repeat`,
+                  backgroundSize: 'cover',
+                }}
+                className='h-[500px]'
+              ></div>
+            </SwiperSlide>
+          ))
+        ) : (
+          <SwiperSlide>
+            <div className='h-[500px] flex justify-center items-center'>
+              <p>No listings available</p>
             </div>
-            <div className='flex flex-wrap gap-4'>
-              {offerListings.map((listing) => (
-                <ListingItem listing={listing} key={listing._id} />
-              ))}
-            </div>
-          </div>
+          </SwiperSlide>
         )}
-        {rentListings && rentListings.length > 0 && (
-          <div className=''>
-            <div className='my-3'>
-              <h2 className='text-2xl font-semibold text-white'>Recent places for rent</h2>
-              <Link className='text-sm text-white hover:underline' to={'/search?type=rent'}>Show more places for rent</Link>
-            </div>
-            <div className='flex flex-wrap gap-4'>
-              {rentListings.map((listing) => (
-                <ListingItem listing={listing} key={listing._id} />
-              ))}
-            </div>
-          </div>
-        )}
-        {saleListings && saleListings.length > 0 && (
-          <div className=''>
-            <div className='my-3'>
-              <h2 className='text-2xl font-semibold text-white'>Recent places for sale</h2>
-              <Link className='text-sm text-white hover:underline' to={'/search?type=sale'}>Show more places for sale</Link>
-            </div>
-            <div className='flex flex-wrap gap-4'>
-              {saleListings.map((listing) => (
-                <ListingItem listing={listing} key={listing._id} />
-              ))}
-            </div>
-          </div>
-        )}
+      </Swiper>
+
+{/* Listing results for offer, sale, and rent */}
+<div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
+  {offerListings && offerListings.length > 0 ? (
+    <div className=''>
+      <div className='my-3'>
+        <h2 className='text-2xl font-semibold text-white'>Recent offers</h2>
+        <Link className='text-sm text-white hover:underline' to={'/search?offer=true'}>Show more offers</Link>
+      </div>
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+        {offerListings.map((listing) => (
+          <ListingItem listing={listing} key={listing._id} />
+        ))}
       </div>
     </div>
+  ) : null}
+
+  {rentListings && rentListings.length > 0 ? (
+    <div className=''>
+      <div className='my-3'>
+        <h2 className='text-2xl font-semibold text-white'>Recent places for rent</h2>
+        <Link className='text-sm text-white hover:underline' to={'/search?type=raw'}>Show more places for rent</Link>
+      </div>
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+        {rentListings.map((listing) => (
+          <ListingItem listing={listing} key={listing._id} />
+        ))}
+      </div>
+    </div>
+  ) : null}
+
+  {saleListings && saleListings.length > 0 ? (
+    <div className=''>
+      <div className='my-3'>
+        <h2 className='text-2xl font-semibold text-white'>Recent places for sale</h2>
+        <Link className='text-sm text-white hover:underline' to={'/search?type=sale'}>Show more places for sale</Link>
+      </div>
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+        {saleListings.map((listing) => (
+          <ListingItem listing={listing} key={listing._id} />
+        ))}
+      </div>
+    </div>
+  ) : null}
+
+  {/* Display a message if no listings are available */}
+  {!offerListings.length && !rentListings.length && !saleListings.length && (
+    <div className='text-center text-white'>
+      <h2 className='text-2xl font-semibold'>No Listings Available</h2>
+      <p>Check back later for more listings or try a different search.</p>
+    </div>
+  )}
+</div>
+</div>
+
   );
 }
