@@ -47,17 +47,16 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'Client', 'dist', 'index.html'));
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
-  console.error(`Error: ${message}`);
-  res.status(statusCode).json({
+  return res.status(statusCode).json({
     success: false,
     statusCode,
     message,
   });
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
