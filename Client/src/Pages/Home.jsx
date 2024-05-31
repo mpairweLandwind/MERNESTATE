@@ -94,7 +94,7 @@ export default function Home() {
               <div className="z-10 p-4 text-white text-center">
                 <h3 className="text-2xl font-bold mb-2">{listing.title}</h3>
                 <p className="mb-4">{listing.description}</p>
-                <Link to={`/listings/${listing.id}`} className="inline-block bg-white text-black py-2 px-4 rounded hover:bg-gray-200">View Details</Link>
+                <Link to={`/listing/${listing.id}`} className="inline-block bg-white text-black py-2 px-4 rounded hover:bg-gray-200">View Details</Link>
               </div>
             </div>
           </SwiperSlide>

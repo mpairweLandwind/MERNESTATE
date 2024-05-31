@@ -6,7 +6,7 @@ import SignUp from "./Pages/SignUp";
 import About from "./Pages/About";
 import Profile from "./Pages/Profile";
 import Header from "./components/Header";
-// import Listing from "./Pages/Listing";
+ import Listing from "./Pages/Listing";
 import Search from "./Pages/Search";
 import CreateListing from "./Pages/CreateListing";
 import UpdateListing from "./Pages/UpdateListing";
@@ -15,7 +15,7 @@ import '../i18n';
 import ProfileManagement from "./components/ProfileManagement";
 import PrivateRoute from './components/PrivateRoute';
 import User from './Pages/User';
-import ListingItem from './components/ListingItem';
+
 
 const App = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -30,7 +30,11 @@ const App = () => {
         <Route path='/sign-up' element={<SignUp />} />
         <Route path='/about' element={<About />} />
         <Route path='/search' element={<Search />} />
-        <Route path='/listing/:listingId' element={<ListingItem />} />
+
+
+        <Route element={<PrivateRoute  />}>
+          <Route path='/listing/:listingId' element={<Listing />} />
+        </Route>
 
         {currentUserRole === 'user' && (
           <Route path='/user-dashboard' element={<User />} />

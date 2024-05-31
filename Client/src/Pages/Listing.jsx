@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSelector } from 'react-redux';
 import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from 'react-icons/fa';
+import axios from 'axios';  // Import Axios
 import Contact from '../components/Contact';
 
 export default function Listing() {
   const params = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser } = useSelector(state => state.user);
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,24 +18,33 @@ export default function Listing() {
   const [contact, setContact] = useState(false);
 
   useEffect(() => {
-    const fetchListing = async () => {
-      try {
-        const res = await fetch(`/api/listing/get/${params.listingId}`);
-        const data = await res.json();
-        setListing(data);
-        setError(!data.success);
-      } catch (error) {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchListing();
-  }, [params.listingId]);
+    // Redirect if currentUser or token is not valid
+    if (!currentUser || !currentUser.token) {
+      navigate('/sign-in', { state: { from: location }, replace: true });
+    } else {
+      const fetchListing = async () => {
+        try {
+          const response = await axios.get(`/api/listing/get/${params.listingId}`);
+          setListing(response.data);
+          setError(!response.data.success);
+        } catch (error) {
+          setError(true);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchListing();
+    }
+  }, [params.listingId, currentUser, navigate, location]);
 
   const handleContactClick = () => {
     setContact(true);
   };
+
+  if (!currentUser || !currentUser.token) {
+    // This is just in case to prevent rendering if the check in useEffect somehow fails
+    return null;
+  }
 
   return (
     <main>

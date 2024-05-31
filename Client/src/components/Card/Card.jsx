@@ -4,8 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBed, faBath, faHeart, faCommentDots, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import './Card.scss';
 
-
-//Card Component
 function Card({ listing }) {
     // Check if listing is undefined or null
     if (!listing) {
@@ -14,12 +12,12 @@ function Card({ listing }) {
 
     return (
         <div className='card'>
-            <Link to={`/listing/${listing._id}`} className="imageContainer">
+            <Link to={`/listing/${listing.id}`} className="imageContainer">
                 <img src={listing.imageUrls[0]} alt="" />
             </Link>
             <div className="textContainer">
                 <h2 className="title">
-                    <Link to={`/listing/${listing._id}`} >
+                    <Link to={`/listing/${listing.id}`}>
                         {listing.name}
                     </Link>
                 </h2>
@@ -55,7 +53,7 @@ function Card({ listing }) {
 
 Card.propTypes = {
     listing: PropTypes.shape({
-        _id: PropTypes.string.isRequired,
+        id: PropTypes.string.isRequired, // Ensure this matches your actual data structure
         imageUrls: PropTypes.arrayOf(PropTypes.string),
         name: PropTypes.string.isRequired,
         address: PropTypes.string.isRequired,
@@ -68,4 +66,3 @@ Card.propTypes = {
 };
 
 export default Card;
-

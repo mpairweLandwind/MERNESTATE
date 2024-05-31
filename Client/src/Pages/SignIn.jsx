@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 import OAuth from '../components/OAuth';
@@ -8,7 +8,11 @@ export default function SignIn() {
   const [formData, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
+
+  const from = location.state?.from?.pathname || '/';
+
 
   const handleChange = (e) => {
     setFormData({
@@ -36,7 +40,9 @@ export default function SignIn() {
           dispatch(signInFailure(data.message || 'Authentication failed'));
           return;
         }
-
+         
+        dispatch(signInSuccess({ user: data.user, token: data.token }));
+        navigate(from, { replace: true });
         // Dispatch success action with the user and token
         dispatch(signInSuccess({ user: data.user, token: data.token }));
 
