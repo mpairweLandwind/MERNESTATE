@@ -1,51 +1,39 @@
 import { useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
-import SwiperCore, { Navigation } from 'swiper';
-import 'swiper/css/bundle';
+import { useParams, useNavigate, Prompt } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSelector } from 'react-redux';
-import {
-  FaBath,
-  FaBed,
-  FaChair,
-  FaMapMarkerAlt,
-  FaParking,
-  FaShare,
-} from 'react-icons/fa';
+import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from 'react-icons/fa';
 import Contact from '../components/Contact';
 
 export default function Listing() {
-  const history = useHistory();
-  SwiperCore.use([Navigation]);
+  const navigate = useNavigate();
+  const params = useParams();
+  const { currentUser } = useSelector(state => state.user);
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
   const [contact, setContact] = useState(false);
-  const params = useParams();
-  const { currentUser } = useSelector(state => state.user);
 
   useEffect(() => {
     if (!currentUser) {
-      history.push('/signin');
+      sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+      navigate('/sign-in');
     }
-  }, [currentUser, history]);
+  }, [currentUser, navigate]);
 
   useEffect(() => {
     const fetchListing = async () => {
       try {
         const res = await fetch(`/api/listing/get/${params.listingId}`);
         const data = await res.json();
-        if (!data.success) {
-          setError(true);
-        } else {
-          setListing(data);
-          setError(false);
-        }
+        setListing(data);
+        setError(!data.success);
       } catch (error) {
         setError(true);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchListing();
   }, [params.listingId]);
@@ -53,7 +41,7 @@ export default function Listing() {
   const handleContactClick = () => {
     if (!currentUser) {
       sessionStorage.setItem('redirectAfterLogin', `/listing/${params.listingId}`);
-      history.push('/signin');
+      navigate('/sign-in');
     } else {
       setContact(true);
     }
@@ -61,6 +49,7 @@ export default function Listing() {
 
   return (
     <main>
+       <Prompt when={!currentUser} message="You need to sign in to continue." />
       {loading && <p className='text-center my-7 text-2xl'>Loading...</p>}
       {error && <p className='text-center my-7 text-2xl'>Something went wrong!</p>}
       {listing && !loading && !error && (
