@@ -18,5 +18,4 @@ router.get("/profilePosts", verifyToken, profilePosts);
 router.get("/notification", verifyToken, getNotificationNumber);
 
 
-
 export default router;

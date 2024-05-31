@@ -7,11 +7,20 @@ export const createListing = async (req, res) => {
         ...req.body,
         userRef: req.user.id, // Associate the listing with the current user
       },
+      select: {
+        id: true, // Selectively retrieve only the ID of the newly created listing
+        name: true, // Optionally retrieve other fields as needed
+        // Add other fields as necessary
+      }
     });
-    res.status(201).json(listing);
+    res.status(201).json({
+      success: true,
+      message: 'Listing created successfully',
+      _id: listing.id, // Ensuring the ID is returned under the key '_id'
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to create listing' });
+    res.status(500).json({ message: 'Failed to create listing', error: error.message });
   }
 };
 
@@ -68,18 +77,37 @@ export const updateListing = async (req, res) => {
 
 // Get a specific listing by ID
 export const getListing = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: 'ID parameter is required' });
+  }
+
   try {
     const listing = await prisma.listing.findUnique({
-      where: { id: req.params.id },
+      where: { id: id },
+      select: {
+        _id: true, // Selectively retrieve the ID of the listing
+        name: true,
+        description: true,
+        price: true,
+        // additional fields as necessary
+      }
     });
 
     if (!listing) {
-      return res.status(404).json({ message: 'Listing not found!' });
+      return res.status(404).json({ error: 'Listing not found' });
     }
-    res.status(200).json(listing);
+
+    res.json({
+      success: true,
+      listing: {
+        ...listing,
+        _id: listing.id // Ensuring the ID is returned under the key '_id'
+      }
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to get listing' });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -100,7 +128,6 @@ export const getListings = async (req, res, next) => {
       ...(parking !== undefined && { parking: parking === 'true' }),
     };
 
-    // Check if type is defined and not 'all'
     if (type !== undefined && type !== 'all') {
       whereClause.type = type;
     }
@@ -112,9 +139,22 @@ export const getListings = async (req, res, next) => {
       },
       skip: parsedStartIndex,
       take: parsedLimit,
+      select: {
+        _id: true, // Ensure ID is included
+        name: true,
+        description: true,
+        price: true,
+        // additional fields as needed
+      }
     });
 
-    res.status(200).json(listings);
+    res.status(200).json({
+      success: true,
+      listings: listings.map(listing => ({
+        ...listing,
+        _id: listing.id // Mapping database 'id' to '_id'
+      }))
+    });
   } catch (error) {
     console.error(error);
     next(errorHandler(500, 'Failed to get listings'));

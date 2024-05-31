@@ -17,7 +17,7 @@ export default function CreateListing() {
     description: '',
     address: '',
     regularPrice: '',           
-    discountEncryptPrice: '',           
+    discountPrice: '',           
     bathrooms: 1,
     bedrooms: 1,
     furnished: false,
@@ -105,6 +105,12 @@ export default function CreateListing() {
         ...formData,
         [id]: parseFloat(value),
       });
+    } else if (id === 'bathrooms' || id === 'bedrooms') {
+      // Convert bathrooms and bedrooms to integers
+      setFormData({
+        ...formData,
+        [id]: parseInt(value, 10),
+      });
     } else {
       setFormData({
         ...formData,
@@ -112,6 +118,7 @@ export default function CreateListing() {
       });
     }
   };
+  
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -127,6 +134,13 @@ export default function CreateListing() {
     setLoading(true);
     setError(false);
   
+    // Ensure bathrooms and bedrooms are integers
+    const sanitizedData = {
+      ...formData,
+      bathrooms: parseInt(formData.bathrooms, 10),
+      bedrooms: parseInt(formData.bedrooms, 10),
+    };
+  
     try {
       const res = await fetch('/api/listing/create', {
         method: 'POST',
@@ -135,7 +149,7 @@ export default function CreateListing() {
           'Authorization': `Bearer ${token}` // Using token for authorization
         },
         body: JSON.stringify({
-          ...formData,
+          ...sanitizedData,
           userRef: currentUser.id,
         }),
       });
@@ -157,6 +171,7 @@ export default function CreateListing() {
       setLoading(false);
     }
   };
+  
 // Inside PropertyOptions component
 
 PropertyOptions.propTypes = {

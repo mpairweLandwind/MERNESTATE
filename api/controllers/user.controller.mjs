@@ -80,10 +80,13 @@ export const getUserListings = async (req, res) => {
 };
 
 
+
+
 export const getUser = async (req, res, next) => {
+  const id = req.params.id;
   try {
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(req.params.id) }
+      where: { id },
     });
     if (!user) return next(errorHandler(404, 'User not found!'));
 
@@ -94,6 +97,8 @@ export const getUser = async (req, res, next) => {
     next(error);
   }
 };
+
+
 
 export const checkEmail = async (req, res) => {
   const { email } = req.params;
