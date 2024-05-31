@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Prompt } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSelector } from 'react-redux';
 import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from 'react-icons/fa';
 import Contact from '../components/Contact';
 
 export default function Listing() {
-  const navigate = useNavigate();
   const params = useParams();
   const { currentUser } = useSelector(state => state.user);
   const [listing, setListing] = useState(null);
@@ -14,13 +13,6 @@ export default function Listing() {
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
   const [contact, setContact] = useState(false);
-
-  useEffect(() => {
-    if (!currentUser) {
-      sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
-      navigate('/sign-in');
-    }
-  }, [currentUser, navigate]);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -39,17 +31,11 @@ export default function Listing() {
   }, [params.listingId]);
 
   const handleContactClick = () => {
-    if (!currentUser) {
-      sessionStorage.setItem('redirectAfterLogin', `/listing/${params.listingId}`);
-      navigate('/sign-in');
-    } else {
-      setContact(true);
-    }
+    setContact(true);
   };
 
   return (
     <main>
-       <Prompt when={!currentUser} message="You need to sign in to continue." />
       {loading && <p className='text-center my-7 text-2xl'>Loading...</p>}
       {error && <p className='text-center my-7 text-2xl'>Something went wrong!</p>}
       {listing && !loading && !error && (
@@ -98,36 +84,36 @@ export default function Listing() {
               {listing.description}
             </p>
             <ul className='text-white font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6'>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
+              <li className='flex items-center gap-1 whitespace-nowrap'>
                 <FaBed className='text-lg' />
                 {listing.bedrooms > 1
-                  ? `${listing.bedrooms} beds `
-                  : `${listing.bedrooms} bed `}
+                  ? `${listing.bedrooms} beds`
+                  : `${listing.bedrooms} bed`}
               </li>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
+              <li className='flex items-center gap-1 whitespace-nowrap'>
                 <FaBath className='text-lg' />
                 {listing.bathrooms > 1
-                  ? `${listing.bathrooms} baths `
-                  : `${listing.bathrooms} bath `}
+                  ? `${listing.bathrooms} baths`
+                  : `${listing.bathrooms} bath`}
               </li>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
+              <li className='flex items-center gap-1 whitespace-nowrap'>
                 <FaParking className='text-lg' />
                 {listing.parking ? 'Parking spot' : 'No Parking'}
               </li>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
+              <li className='flex items-center gap-1 whitespace-nowrap'>
                 <FaChair className='text-lg' />
                 {listing.furnished ? 'Furnished' : 'Unfurnished'}
               </li>
             </ul>
             {currentUser && listing && (
-        <button
-          onClick={handleContactClick}
-          className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'
-        >
-          Contact landlord
-        </button>
-      )}
-      {contact && <Contact listing={listing} authToken={currentUser.token} />}
+              <button
+                onClick={handleContactClick}
+                className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'
+              >
+                Contact landlord
+              </button>
+            )}
+            {contact && <Contact listing={listing} authToken={currentUser.token} />}
           </div>
         </div>
       )}

@@ -1,4 +1,5 @@
 import prisma from '../lib/prisma.js';
+import { errorHandler } from '../utils/error.js';
 
 export const createListing = async (req, res) => {
   try {
@@ -85,27 +86,14 @@ export const getListing = async (req, res) => {
 
   try {
     const listing = await prisma.listing.findUnique({
-      where: { id: id },
-      select: {
-        _id: true, // Selectively retrieve the ID of the listing
-        name: true,
-        description: true,
-        price: true,
-        // additional fields as necessary
-      }
+      where: { id: id }
     });
 
     if (!listing) {
       return res.status(404).json({ error: 'Listing not found' });
     }
 
-    res.json({
-      success: true,
-      listing: {
-        ...listing,
-        _id: listing.id // Ensuring the ID is returned under the key '_id'
-      }
-    });
+    res.json(listing);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -128,6 +116,7 @@ export const getListings = async (req, res, next) => {
       ...(parking !== undefined && { parking: parking === 'true' }),
     };
 
+    // Check if type is defined and not 'all'
     if (type !== undefined && type !== 'all') {
       whereClause.type = type;
     }
@@ -139,22 +128,9 @@ export const getListings = async (req, res, next) => {
       },
       skip: parsedStartIndex,
       take: parsedLimit,
-      select: {
-        _id: true, // Ensure ID is included
-        name: true,
-        description: true,
-        price: true,
-        // additional fields as needed
-      }
     });
 
-    res.status(200).json({
-      success: true,
-      listings: listings.map(listing => ({
-        ...listing,
-        _id: listing.id // Mapping database 'id' to '_id'
-      }))
-    });
+    res.status(200).json(listings);
   } catch (error) {
     console.error(error);
     next(errorHandler(500, 'Failed to get listings'));

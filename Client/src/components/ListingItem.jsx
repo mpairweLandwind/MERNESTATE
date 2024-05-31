@@ -1,14 +1,19 @@
 import { Link } from 'react-router-dom';
 import { MdLocationOn } from 'react-icons/md';
-import PropTypes from 'prop-types'; // Make sure to import PropTypes
+import PropTypes from 'prop-types';
 
 export default function ListingItem({ listing }) {
+  // Add a check to ensure listing is defined
+  if (!listing) {
+    return <div className='bg-white shadow-md rounded-lg w-full sm:w-[330px] p-4'>Invalid listing data</div>;
+  }
+
   return (
     <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]'>
-      <Link to={`/listing/${listing._id}`}>
+      <Link to={`/listing/${listing.id}`}>
         <img
           src={
-            listing.imageUrls[0] ||
+            listing.imageUrls?.[0] ||
             'https://53.fs1.hubspotusercontent-na1.net/hub/53/hubfs/Sales_Blog/real-estate-business-compressor.jpg?width=595&height=400&name=real-estate-business-compressor.jpg'
           }
           alt='listing cover'
@@ -30,8 +35,8 @@ export default function ListingItem({ listing }) {
           <p className='text-slate-500 mt-2 font-semibold '>
             $
             {listing.offer
-              ? listing.discountPrice.toLocaleString('en-US')
-              : listing.regularPrice.toLocaleString('en-US')}
+              ? listing.discountPrice?.toLocaleString('en-US')
+              : listing.regularPrice?.toLocaleString('en-US')}
             {listing.type === 'rent' && ' / month'}
           </p>
           <div className='text-slate-700 flex gap-4'>
@@ -55,7 +60,7 @@ export default function ListingItem({ listing }) {
 // Define PropTypes for ListingItem
 ListingItem.propTypes = {
   listing: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
     imageUrls: PropTypes.arrayOf(PropTypes.string),
     name: PropTypes.string.isRequired,
     address: PropTypes.string.isRequired,
@@ -66,5 +71,5 @@ ListingItem.propTypes = {
     type: PropTypes.string.isRequired,
     bedrooms: PropTypes.number.isRequired,
     bathrooms: PropTypes.number.isRequired,
-  }).isRequired
+  }).isRequired,
 };
