@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { useMemo } from 'react';
-import themeSettings from "theme"
+import { themeSettings } from './theme';
 import createTheme from '@mui/material';
 import { BrowserRouter, Routes, Route , Navigate} from "react-router-dom";
 import Home from "./Pages/Home";

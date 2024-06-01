@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import '../i18n';
 import { SocketContextProvider } from './context/SocketContext.jsx';
+import 'dotenv/config';
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
