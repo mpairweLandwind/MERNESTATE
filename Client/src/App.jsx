@@ -8,7 +8,7 @@ import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import About from "./Pages/About";
 import Profile from "./Pages/Profile";
-import Header from "./components/Header";
+import Header from "./components/Header/Header";
  import Listing from "./Pages/Listing";
 import Search from "./Pages/Search";
 import CreateListing from "./Pages/CreateListing";

@@ -1,0 +1,165 @@
+.header {
+    height: auto;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    position: relative;
+    z-index: 10;
+
+    a {
+        transition: all 0.4s ease;
+
+        @media sm {
+            display: none;
+        }
+
+        &:hover {
+            scale: 1.05;
+        }
+    }
+
+    .content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 85rem;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 1rem;
+
+        .left {
+            flex: 3;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+
+            .logo-container {
+                .logo {
+                    font-weight: bold;
+                    font-size: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                img {
+                    cursor: pointer;
+                    border-radius: 50%;
+                }
+
+                span {
+                    @media md {
+                        display: none;
+                    }
+
+                    @media sm {
+                        display: initial;
+                    }
+                }
+            }
+
+            .search-form {
+                border: 1px solid orange;
+                border-radius: 10px;
+                padding: 10px;
+                background-color: white;
+                align-items: center;
+                display: flex;
+
+                .search-input {
+                    background-color: transparent;
+                    outline: none;
+                    width: 100px;
+
+                    @media (min-width: 640px) {
+                        width: 256px;
+                    }
+                }
+
+                .search-button .search-icon {
+                    color: orange;
+                }
+            }
+        }
+
+        .right {
+            flex: 2;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            gap: 1.5rem;
+
+            .user {
+                display: flex;
+                align-items: center;
+                font-weight: bold;
+                gap: 20px;
+
+                span {
+                    @media sm {
+                        display: none;
+                    }
+                }
+
+                .profile {
+                    padding: 12px 24px;
+                    background-color: #fece51;
+                    cursor: pointer;
+                    border: none;
+                    position: relative;
+
+                    .notification {
+                        position: absolute;
+                        top: -8px;
+                        right: -8px;
+                        background-color: red;
+                        color: white;
+                        border-radius: 50%;
+                        width: 26px;
+                        height: 26px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                }
+            }
+
+            .register {
+                background-color: orange;
+                border-radius: 10px;
+            }
+
+            .language-selector {
+                position: relative;
+                right: 0;
+
+                .language-button .globe-icon {
+                    color: gray;
+
+                    &:hover {
+                        color: orange;
+                    }
+                }
+
+                .language-dropdown {
+                    position: absolute;
+                    right: 0;
+                    background-color: white;
+                    border: 1px solid gray;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                    border-radius: 5px;
+
+
+                    li {
+                        padding: 8px;
+                        text-align: center;
+                        cursor: pointer;
+
+                        &:hover {
+                            background-color: #f0f0f0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
