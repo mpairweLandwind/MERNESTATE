@@ -1,4 +1,5 @@
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+//useLocation ,
 import { useDispatch, useSelector } from 'react-redux';
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 import OAuth from '../components/OAuth';
@@ -8,10 +9,10 @@ export default function SignIn() {
   const [formData, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
   const dispatch = useDispatch();
 
-  const from = location.state?.from?.pathname || '/';
+  // const from = location.state?.from?.pathname || '/';
 
 
   const handleChange = (e) => {
@@ -41,8 +42,8 @@ export default function SignIn() {
           return;
         }
          
-        dispatch(signInSuccess({ user: data.user, token: data.token }));
-        navigate(from, { replace: true });
+        // dispatch(signInSuccess({ user: data.user, token: data.token }));
+        // navigate(from, { replace: true });
         // Dispatch success action with the user and token
         dispatch(signInSuccess({ user: data.user, token: data.token }));
 

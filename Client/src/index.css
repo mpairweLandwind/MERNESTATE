@@ -2,18 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    background-color: rgb(241, 245, 241);
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,600;0,700;1,400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
+html,
+body,
+#root,
+.app {
+    height: 100%;
+    width: 100%;
+    font-family: "Inter", sans-serif;
 }
-:root {
-    --primary: #1f3e72;
-    --secondary: rgba(255, 255, 255, 0.78);
-    --black: #131110;
-    --blue-gradient: linear-gradient(97.05deg, #4066ff 3.76%, #2949c6 100%);
-    --orange-gradient: linear-gradient(270deg, #ffb978 0%, #ff922d 100%);
-    --blue: #4066ff;
-    --lightBlue: #eeeeff;
-    --shadow: 0px 23px 21px -8px rgba(136, 160, 255, 0.25);
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #7a7f9d;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #21295c;
+}
+/* Handle on Hover */
+::-webkit-scrollbar-track:hover {
+    background: #21295c;
 }
 
 .button {
