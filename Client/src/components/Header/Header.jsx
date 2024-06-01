@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FaSearch, FaGlobe, FaHome } from 'react-icons/fa';
+import { FaSearch, FaGlobe } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -61,7 +61,7 @@ export default function Header() {
               placeholder={t('search')}
               className='search-input'
               value={searchTerm}
-              onChange={(e) => setSearchWizard(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button className='search-button'>
               <FaSearch className='search-icon' />
