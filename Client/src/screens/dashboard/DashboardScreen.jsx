@@ -1,5 +1,5 @@
 
-import AreaCards from "../../components/dashboard/areaCards/AreaCard";
+import AreaCards from "../../components/dashboard/areaCards/AreaCards";
 import AreaTop from "../../components/dashboard/areaTop/AreaTop";
 import AreaTable from "../../components/dashboard/areaTable/AreaTable";
 import AreaCharts from "../../components/dashboard/areaCharts/AreaCharts";

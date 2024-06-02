@@ -31,7 +31,7 @@ const App = () => {
         <Route path='/search' element={<Search />} />
 
         {currentUserRole === 'admin' && (
-          <Route path='/admin-dashboard' element={<Admin />} />
+          <Route path='/admin-dashboard/*' element={<Admin />} />
         )}
 
         <Route element={<PrivateRoute />}>
