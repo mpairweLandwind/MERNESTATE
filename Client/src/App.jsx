@@ -1,7 +1,4 @@
 import { useSelector } from 'react-redux';
-import { useMemo } from 'react';
-import { themeSettings } from './theme';
-import createTheme from '@mui/material';
 import { BrowserRouter, Routes, Route , Navigate} from "react-router-dom";
 import Home from "./Pages/Home";
 import SignIn from "./Pages/SignIn";
@@ -18,32 +15,17 @@ import '../i18n';
 import ProfileManagement from "./components/ProfileManagement";
 import PrivateRoute from './components/PrivateRoute';
 import User from './Pages/User';
-import { CssBaseline, ThemeProvider } from '@mui/material';
-import Layout from './scenes/layout';
-import Dashboard from './scenes/dashboard';
-import Products from './scenes/products';
-import Customers from './scenes/customers';
-import Transactions from './scenes/transactions';
-import Geography from './scenes/geography';
-import Overview from './scenes/overview';
-import Monthly from './scenes/monthly';
-import Breakdown from './scenes/breakdown';
-import Daily from './scenes/daily';
-import Admin from './scenes/admin';
-import Performance from './scenes/performance';
+
+
 
 
 
 const App = () => {
-  const mode = useSelector((state) => state.global.mode);
-  const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const { currentUser } = useSelector((state) => state.user);
   const currentUserRole = currentUser?.role; // Dynamically get the user role from the Redux store
 
   return (
-    <BrowserRouter>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <BrowserRouter>    
       <Header />
       <Routes>
         <Route path='/' element={<Home />} />
@@ -53,19 +35,9 @@ const App = () => {
         <Route path='/search' element={<Search />} />
 
         {currentUserRole === 'admin' && (
-        <Route element={<Layout />}>
+        <Route element={""}>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/customers" element={<Customers />} />
-              <Route path="/transactions" element={<Transactions />} />
-              <Route path="/geography" element={<Geography />} />
-              <Route path="/overview" element={<Overview />} />
-              <Route path="/daily" element={<Daily />} />
-              <Route path="/monthly" element={<Monthly />} />
-              <Route path="/breakdown" element={<Breakdown />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/performance" element={<Performance />} />
+        
 
 
         </Route>
@@ -90,7 +62,7 @@ const App = () => {
           <Route path="/profile-management" element={<ProfileManagement />} />
         </Route>
       </Routes>
-      </ThemeProvider>
+     
     </BrowserRouter>
   );
 };
