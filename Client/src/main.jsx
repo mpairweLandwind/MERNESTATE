@@ -7,6 +7,8 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import '../i18n';
 import { SocketContextProvider } from './context/SocketContext.jsx';
+import { ThemeProvider } from "./context/ThemeContext.jsx";
+import { SidebarProvider } from "./context/SidebarContext.jsx";
 // import 'dotenv/config';
 
 
@@ -15,8 +17,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>     
        <SocketContextProvider>
+       <ThemeProvider>
+        <SidebarProvider>
         <App />
-         </SocketContextProvider>           
+        </SidebarProvider>
+        </ThemeProvider>
+       </SocketContextProvider>           
       </PersistGate>
     </Provider>
  </React.StrictMode>

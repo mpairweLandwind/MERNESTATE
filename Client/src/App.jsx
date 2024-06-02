@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { BrowserRouter, Routes, Route , Navigate} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
@@ -15,6 +15,7 @@ import '../i18n';
 import ProfileManagement from "./components/ProfileManagement";
 import PrivateRoute from './components/PrivateRoute';
 import User from './Pages/User';
+import Admin from './Pages/Admin';
 
 
 
@@ -35,11 +36,7 @@ const App = () => {
         <Route path='/search' element={<Search />} />
 
         {currentUserRole === 'admin' && (
-        <Route element={""}>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        
-
-
+        <Route element={<Admin/>}>      
         </Route>
         )}
 
