@@ -81,8 +81,12 @@ export default function Header() {
               </>
             ) : (
               <>
-                <a href='/'>Sign in</a>
-                <a href="/" className='register'>Sign up</a>
+              <Link to='/sign-in' className='text-semibold'>
+                <span>Sign in </span>
+            
+               </Link>
+                             
+                <Link to='/sign-up' className='register'>Sign up</Link>
               </>
             )}
           </div>
