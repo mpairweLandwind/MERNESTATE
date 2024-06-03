@@ -15,6 +15,7 @@ import User from './Pages/User';
 import Admin from './Pages/Admin';
 import './index.css';
 import '../i18n';
+import Logout from "./components/Logout";
 
 const App = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -29,6 +30,7 @@ const App = () => {
         <Route path='/sign-up' element={<SignUp />} />
         <Route path='/about' element={<About />} />
         <Route path='/search' element={<Search />} />
+        <Route path="/logout" element={<Logout/>} />
 
         {currentUserRole === 'admin' && (
           <Route path='/admin-dashboard/*' element={<Admin />} />

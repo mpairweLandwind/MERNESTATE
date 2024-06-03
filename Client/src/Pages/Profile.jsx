@@ -1,55 +1,57 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import List from '../components/List';
-import "./Profile.scss";
+import './Profile.scss';
 import Chat from '../components/chat/Chat';
 import Sidebar from '../components/Sidebar';
 import Card from '../components/Card/Card';
+import { clearCurrentUser } from '../redux/user/userSlice';
 
 export default function Profile() {
-  const { currentUser, token } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { currentUser, token } = useSelector(state => state.user);
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
+
+  const fetchData = async (url, options) => {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+    }
+    return response.json();
+  };
 
   const handleShowListings = useCallback(async () => {
     try {
       setShowListingsError(false);
-      const res = await fetch(`/api/user/listings/?id=${currentUser.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const data = await fetchData(`/api/user/listings/?id=${currentUser.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
-
-      if (!res.ok) {
-        throw new Error(`Failed to fetch listings: ${res.status} ${res.statusText}`);
-      }
-
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Received non-JSON response');
-      }
-
-      const data = await res.json();
-      if (data.success === false) {
-        setShowListingsError(true);
-        console.error('Error fetching listings:', data.message);
-        return;
-      }
 
       if (!data.listings || !Array.isArray(data.listings)) {
         throw new Error('Data is not an array');
       }
 
       setUserListings(data.listings);
-      console.log('Fetched listings:', data.listings);
     } catch (error) {
       setShowListingsError(true);
-      console.error('Error in handleShowListings:', error.message);
+      console.error('Error fetching listings:', error);
     }
   }, [currentUser.id, token]);
+
+  const handleLogout = async () => {
+    try {
+      await fetchData(`api/auth/signout`, { method: 'POST' });
+      dispatch(clearCurrentUser());
+      navigate("/");
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
 
   useEffect(() => {
     handleShowListings();
@@ -57,38 +59,20 @@ export default function Profile() {
 
   const handleListingDelete = async (listingId) => {
     try {
-      const res = await fetch(`/api/listing/delete/${listingId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      await fetchData(`/api/listing/delete/${listingId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
 
-      if (!res.ok) {
-        throw new Error(`Failed to delete listing: ${res.status} ${res.statusText}`);
-      }
-
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Received non-JSON response');
-      }
-
-      const data = await res.json();
-      if (data.success === false) {
-        console.error('Error deleting listing:', data.message);
-        return;
-      }
-
-      setUserListings((prev) => prev.filter((listing) => listing._id !== listingId));
-      console.log('Deleted listing:', listingId);
+      setUserListings(prev => prev.filter(listing => listing._id !== listingId));
     } catch (error) {
-      console.error('Error in handleListingDelete:', error.message);
+      console.error('Error deleting listing:', error);
     }
   };
 
   return (
     <div className='flex'>
-      <Sidebar />
+    <Sidebar onLogout={handleLogout} />
+
       <div className="profilePage p-6">
         <div className="details">
           <div className="wrapper">
