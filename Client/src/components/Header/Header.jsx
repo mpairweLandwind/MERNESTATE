@@ -75,7 +75,7 @@ export default function Header() {
               placeholder={t('search')}
               className='search-input'
               value={searchTerm}
-              onChange={(e) => setSearchWizard(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button className='search-button'>
               <FaSearch className='search-icon' />

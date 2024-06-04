@@ -108,30 +108,33 @@ export const getListing = async (req, res) => {
       return res.status(404).json({ error: 'Listing not found' });
     }
 
-    const token = req.cookies?.token;
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (token) {
-      jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
-        if (!err) {
-          const saved = await prisma.savedPost.findUnique({
-            where: {
-              userId_postId: {
-                postId: id,
-                userId: payload.id,
-              },
-            },
-          });
-          return res.status(200).json({ ...listing, isSaved: saved ? true : false });
+      jwt.verify(token, process.env.JWT_SECRET, async (err, payload) => {
+        if (err) {
+          return res.status(403).json({ error: 'Invalid token' });
         }
-      });
-    }
 
-    res.status(200).json({ ...listing, isSaved: false });
+        const saved = await prisma.savedPost.findUnique({
+          where: {
+            userId_postId: {
+              postId: id,
+              userId: payload.id,
+            },
+          },
+        });
+
+        return res.status(200).json({ ...listing, isSaved: saved ? true : false });
+      });
+    } else {
+      res.status(200).json({ ...listing, isSaved: false });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 
 // Get multiple listings with filters
