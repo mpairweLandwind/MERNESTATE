@@ -62,18 +62,20 @@ export default function Header() {
       <div className="content">
         <div className="left">
           <Link to='/' className="logo-container">
-            <img src="./logo.jpeg" className='logo' alt="" width={100} />
-            <span>GestImpact</span>
+            <a href='/' className='logo'>
+              <img src="./logo.jpeg" alt="" width={100} />
+              <span>GestImpact</span>
+            </a>
           </Link>
-          <Link to='/' className='nav-item'>Home</Link>
-          <Link to='/about' className='nav-item'>About</Link>
+          <Link to='/'><a className='nav-item'>Home</a></Link>
+          <Link to='/about'><a className='nav-item'>About</a></Link>
           <form onSubmit={handleSubmit} className='search-form'>
             <input
               type='text'
               placeholder={t('search')}
               className='search-input'
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchWizard(e.target.value)}
             />
             <button className='search-button'>
               <FaSearch className='search-icon' />
@@ -90,19 +92,17 @@ export default function Header() {
                 <span>{currentUser?.username}</span>
                 <Link to={getProfileLink()} className='profile'>
                   <div className="notification">3</div>
-                 
+                  <span>Profile</span>
                 </Link>
               </>
             ) : (
-              <>
-                <Link to='/sign-in' className='text-semibold'>
-                  <span>Sign in </span>
-                </Link>
-                <Link to='/sign-up' className='register'>Sign up</Link>
-              </>
+                <>
+                  <a href='/'>Sign in</a>
+                  <a href="/" className='register'>Sign up</a>
+                </>
             )}
           </div>
-          <div className='language-selector'>
+          <a className='language-selector'>
             <button onClick={() => setDropdownOpen(!dropdownOpen)} className='language-button'>
               <FaGlobe size={20} className='globe-icon' />
             </button>
@@ -112,7 +112,7 @@ export default function Header() {
                 <li onClick={() => handleLanguageChange('fr')}>Français</li>
               </ul>
             )}
-          </div>
+          </a>
         </div>
       </div>
     </header>

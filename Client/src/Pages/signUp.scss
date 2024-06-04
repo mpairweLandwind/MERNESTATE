@@ -1,0 +1,112 @@
+.signup-container {
+    padding: 1rem;
+    max-width: 30rem;
+    margin: auto;
+    margin-top: 80px;
+
+    .title {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+
+        .signup-title {
+            color: orange;
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .underline {
+            width: 61px;
+            height: 6px;
+            background-color: orange;
+            border-radius: 9px;
+        }
+    }
+
+    .signup-form {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        margin-top: 50px;
+
+        .signup-input,
+        .signup-select {
+            display: flex;
+            align-items: center;
+            margin: auto;
+            width: 471px;
+            height: 60px;
+            border: 1px solid #ccc;
+            background: #eaeaea;
+            border-radius: 0.5rem;
+
+            img {
+                margin: 0px 30px;
+            }
+
+            input {
+                height: 50px;
+                width: 360px;
+                background: transparent;
+                border: none;
+                outline: none;
+            }
+        }
+
+        .signup-select {
+            color: rgb(78, 78, 78);
+            font-size: 1rem;
+            font-weight: 500;
+
+            option {
+                font-size: 15px;
+                font-weight: 500;
+            }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 30px;
+            margin: 10px auto;
+
+            .signup-button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 29rem;
+                height: 59px;
+                color: #fff;
+                background: orange;
+                border-radius: 50px;
+                font-size: 19px;
+                font-weight: 700;
+                cursor: pointer;
+
+                &:hover {
+                    scale: 1.05;
+                    transition: all ease 0.4s;
+                }
+            }
+        }
+    }
+
+    .account-info {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1.25rem;
+
+        .signin-link {
+            color: #1d4ed8; // Tailwind blue-700
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .signup-error {
+        color: #ef4444; // Tailwind red-500
+        margin-top: 1.25rem;
+    }
+}

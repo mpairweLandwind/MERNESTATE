@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import OAuth from '../components/OAuth';
+import user_icon from "../assets/person.png";
+import user_password from "../assets/password.png";
+import user_email from "../assets/email.png";
+import '../Pages/signUp.scss';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -50,25 +54,32 @@ export default function SignUp() {
   };
 
   return (
-    <div className='p-3 max-w-lg mx-auto'>
-      <h1 className='text-3xl text-center font-semibold my-7'>Sign Up</h1>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-        <input
-          type='text'
-          placeholder='username'
-          className='border p-3 rounded-lg'
-          id='username'
-          onChange={handleChange}
-        />
-        <input
-          type='email'
-          placeholder='email'
-          className='border p-3 rounded-lg'
-          id='email'
-          onChange={handleChange}
-        />
+    <div className='signup-container'>
+      <div className="title">
+        <h1 className='signup-title'>Sign Up</h1>
+        <div className="underline"></div>
+      </div>
+      <form onSubmit={handleSubmit} className='signup-form'>
+        <div className="signup-input">
+          <img src={user_icon} alt="" />
+          <input
+            type='text'
+            placeholder='username'
+            id='username'
+            onChange={handleChange}
+          />
+        </div>
+        <div className="signup-input">
+          <img src={user_email} alt="" />
+          <input
+            type='email'
+            placeholder='email'
+            id='email'
+            onChange={handleChange}
+          />
+        </div>
         <select
-          className='border p-3 rounded-lg'
+          className='signup-select'
           id='role'
           onChange={handleChange}
           required
@@ -76,31 +87,34 @@ export default function SignUp() {
           <option value=''>Select Role</option>
           <option value='admin'>Admin</option>
           <option value='landlord'>Landlord</option>
-          <option value='user'>User</option>          
+          <option value='user'>User</option>
         </select>
-        <input
-          type='password'
-          placeholder='password'
-          className='border p-3 rounded-lg'
-          id='password'
-          onChange={handleChange}
-        />
-
-        <button
-          disabled={loading}
-          className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
-        >
-          {loading ? 'Loading...' : 'Sign Up'}
-        </button>
+        <div className="signup-input">
+          <img src={user_password} alt="" />
+          <input
+            type='password'
+            placeholder='password'
+            id='password'
+            onChange={handleChange}
+          />
+        </div>
+        <div className="buttons">
+          <button
+            disabled={loading}
+            className='signup-button'
+          >
+            {loading ? 'Loading...' : 'Register'}
+          </button>
+        </div>
         <OAuth />
       </form>
-      <div className='flex gap-2 mt-5'>
+      <div className='account-info'>
         <p>Have an account?</p>
         <Link to={'/sign-in'}>
-          <span className='text-blue-700'>Sign in</span>
+          <span className='signin-link'>Sign in</span>
         </Link>
       </div>
-      {error && <p className='text-red-500 mt-5'>{error}</p>}
+      {error && <p className='signup-error'>{error}</p>}
     </div>
   );
 }
