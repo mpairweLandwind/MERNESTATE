@@ -5,28 +5,41 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { app } from '../firebase';
 import PropTypes from 'prop-types';
 
+
 export default function CreateListing() {
   const { currentUser, token } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
-    name: '',
-    type: 'rent',              
-    property: '',      
-    status: 'available',        
-    description: '',
-    city: '',
-    address: '',
-    regularPrice: '',           
-    discountPrice: '',           
-    bathrooms: 1,
-    bedrooms: 1,
-    furnished: false,
-    parking: false,
-    offer: false,
-    latitude: '',               
-    longitude: '',              
-    imageUrls: [],
+    listingData: { 
+      name: '',
+      type: 'rent',
+      property: '',
+      status: '',
+      description: '',
+      city: '',
+      address: '',
+      regularPrice: '',
+      discountPrice: '',
+      bathrooms: 1,
+      bedrooms: 1,
+      furnished: false,
+      parking: false,
+      offer: false,
+      latitude: '',
+      longitude: '',
+      imageUrls: [],
+    },
+    postDetail: {
+      desc: '',
+      utilities: '',
+      pet: '',
+      income: '',
+      size: '',
+      school: '',
+      bus: '',
+      restaurant: '',
+    },
   });
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -34,19 +47,19 @@ export default function CreateListing() {
   const [loading, setLoading] = useState(false);
 
   const handleImageSubmit = () => {
-    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+    if (files.length > 0 && files.length + formData.listingData.imageUrls.length < 7) {
       setUploading(true);
       setImageUploadError(false);
-      const promises = [];
+      const promises = files.map(file => storeImage(file));
 
-      for (let i = 0; i < files.length; i++) {
-        promises.push(storeImage(files[i]));
-      }
       Promise.all(promises)
         .then((urls) => {
           setFormData({
             ...formData,
-            imageUrls: formData.imageUrls.concat(urls),
+            listingData: {
+              ...formData.listingData,
+              imageUrls: formData.listingData.imageUrls.concat(urls),
+            },
           });
           setImageUploadError(false);
           setUploading(false);
@@ -70,17 +83,12 @@ export default function CreateListing() {
       uploadTask.on(
         'state_changed',
         (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`Upload is ${progress}% done`);
         },
-        (error) => {
-          reject(error);
-        },
+        (error) => reject(error),
         () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            resolve(downloadURL);
-          });
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => resolve(downloadURL));
         }
       );
     });
@@ -89,59 +97,73 @@ export default function CreateListing() {
   const handleRemoveImage = (index) => {
     setFormData({
       ...formData,
-      imageUrls: formData.imageUrls.filter((_, i) => i !== index),
+      listingData: {
+        ...formData.listingData,
+        imageUrls: formData.listingData.imageUrls.filter((_, i) => i !== index),
+      },
     });
   };
 
   const handleChange = (e) => {
     const { id, value, checked, type } = e.target;
+    const [mainKey, subKey] = id.split('.');
+
     if (type === 'checkbox') {
       setFormData({
         ...formData,
-        [id]: checked,
+        [mainKey]: {
+          ...formData[mainKey],
+          [subKey]: checked,
+        },
       });
-    } else if (id === 'regularPrice' || id === 'discountPrice') {
-      // Convert regularPrice and discountPrice to float
+    } else if (mainKey === 'listingData' && (subKey === 'regularPrice' || subKey === 'discountPrice')) {
       setFormData({
         ...formData,
-        [id]: parseFloat(value),
+        listingData: {
+          ...formData.listingData,
+          [subKey]: parseFloat(value),
+        },
       });
-    } else if (id === 'bathrooms' || id === 'bedrooms') {
-      // Convert bathrooms and bedrooms to integers
+    } else if (mainKey === 'listingData' && (subKey === 'bathrooms' || subKey === 'bedrooms')) {
       setFormData({
         ...formData,
-        [id]: parseInt(value, 10),
+        listingData: {
+          ...formData.listingData,
+          [subKey]: parseInt(value, 10),
+        },
       });
     } else {
       setFormData({
         ...formData,
-        [id]: value,
+        [mainKey]: {
+          ...formData[mainKey],
+          [subKey]: value,
+        },
       });
     }
   };
-  
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    if (formData.imageUrls.length < 1) {
+
+    if (formData.listingData.imageUrls.length < 1) {
       return setError('You must upload at least one image');
     }
-    
-    if (+formData.regularPrice < +formData.discountPrice) {
+
+    if (+formData.listingData.regularPrice < +formData.listingData.discountPrice) {
       return setError('Discount price must be lower than regular price or zero');
     }
-    
+
     setLoading(true);
     setError(false);
-  
+
     // Ensure bathrooms and bedrooms are integers
     const sanitizedData = {
-      ...formData,
-      bathrooms: parseInt(formData.bathrooms, 10),
-      bedrooms: parseInt(formData.bedrooms, 10),
+      ...formData.listingData,
+      bathrooms: parseInt(formData.listingData.bathrooms, 10),
+      bedrooms: parseInt(formData.listingData.bedrooms, 10),
     };
-  
+
     try {
       const res = await fetch('/api/listing/create', {
         method: 'POST',
@@ -154,14 +176,14 @@ export default function CreateListing() {
           userRef: currentUser.id,
         }),
       });
-  
+
       if (!res.ok) {
         throw new Error('Failed to create listing');
       }
-  
+
       const data = await res.json();
       setLoading(false);
-  
+
       if (data.success === false) {
         setError(data.message);
       } else {
@@ -172,139 +194,201 @@ export default function CreateListing() {
       setLoading(false);
     }
   };
-  
-// Inside PropertyOptions component
-
-PropertyOptions.propTypes = {
-  formData: PropTypes.shape({
-    // Change discountPrice prop type to number
-    discountPrice: PropTypes.number.isRequired,
-    // Other PropTypes remain unchanged
-  }).isRequired,
-  handleChange: PropTypes.func.isRequired
-};
-
-// Ensure discountPrice is converted to a number
-formData.discountPrice = parseFloat(formData.discountPrice);
 
   return (
-    <main className='p-3 max-w-6xl mx-auto bg-slate-700 text-white'>
-    <h1 className='text-3xl font-semibold text-center my-7'>Add Property</h1>
-    <form onSubmit={handleSubmit} className='space-y-12'>
-      <div className="border-b border-gray-900/10 ">
-        <h2 className="text-base font-semibold text-center text-white">Property Details</h2>
-        <p className="mt-1 text-md text-white text-center">
-          Provide details about the property you are creating.
-        </p>
-        <div className="grid grid-cols-2 gap-8 w-full mt-6  pr-4 pt-4 pl-10 ml-8">
-          <div className="grid grid-cols-1 gap-6">
-            <InputField label="Property Name" id="name" type="text" value={formData.name} onChange={handleChange} />
-            <SelectField label="Status" id="status" options={['available', 'occupied', 'under_contract', 'for_sale', 'under_renovation', 'pending_approval', 'sold', 'terminated', 'pending_availability', 'inactive']} value={formData.status} onChange={handleChange} />
-            <TextareaField label="Description" id="description" value={formData.description} onChange={handleChange} />
-            <InputField label="Address" id="address" type="text" autoComplete="street-address" value={formData.address} onChange={handleChange} />
-            <InputField label="Longitude" id="longitude" type="text" value={formData.longitude} onChange={handleChange} placeholder="Enter longitude" />
+    <main className="bg-gray-900 flex flex-col items-center justify-center p-10">
+      <form className="space-y-8 divide-y divide-gray-200 w-full max-w-4xl bg-gray-800 p-10 rounded-lg" onSubmit={handleSubmit}>
+        <PropertyDetails formData={formData} handleChange={handleChange} />
+        <ImageUploadSection 
+          setFiles={setFiles} 
+          handleImageSubmit={handleImageSubmit} 
+          handleRemoveImage={handleRemoveImage} 
+          uploading={uploading} 
+          formData={formData} 
+          loading={loading} 
+          error={error} 
+          imageUploadError={imageUploadError} 
+        />
+        <AdditionalInformation formData={formData} handleChange={handleChange} />
+        <div className="mt-6 ml-52">
+          <button type="submit" className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Save Changes</button>
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        </div>
+      </form>
+    </main>
+  );
+}
+
+
+function PropertyDetails({ formData, handleChange }) {
+  return (
+    <div className="border-b border-gray-900/10 pb-12">
+      <h2 className="text-base font-semibold text-center text-white">Add  Property Information</h2>
+      <div className="grid grid-cols-2 gap-8 w-full mt-6 pr-4 pt-4 pl-10 ml-8">
+        <div className="grid grid-cols-1 gap-6">
+          <InputField label="Property Name" id="listingData.name" type="text" value={formData.listingData.name} onChange={handleChange} placeholder="Enter property name" />
+          <InputField label="Property Address" id="listingData.address" type="text" value={formData.listingData.address} onChange={handleChange} placeholder="Enter property address" />
+          <InputField label="City/Districtict/Location" id="listingData.city" type="text" value={formData.listingData.city} onChange={handleChange} placeholder="Enter location" />        
+          <InputField label="Latitude" id="listingData.latitude" type="text" value={formData.listingData.latitude} onChange={handleChange} placeholder="Enter latitude" />
+          <InputField label="Longitude" id="listingData.longitude" type="text" value={formData.listingData.longitude} onChange={handleChange} placeholder="Enter longitude" />         
+          <CheckboxField label="Furnished" id="listingData.furnished" checked={formData.listingData.furnished} onChange={handleChange} />
+          <CheckboxField label="Parking Spot" id="listingData.parking" checked={formData.listingData.parking} onChange={handleChange} />
+          <CheckboxField label="Offer" id="listingData.offer" checked={formData.listingData.offer} onChange={handleChange} />
           </div>
-          <div className="grid grid-cols-1 gap-6 pr-6 pt-6 pl-6 ml-6 selection:">
-            <SelectField label="Type" id="type" options={['rent', 'sale']} value={formData.type} onChange={handleChange} /> <br />
-            <SelectField label="Property Type" id="property" options={['apartment', 'house', 'condo', 'land']} value={formData.property} onChange={handleChange} />
-            <InputField label="City/District/Location" id="city" type="text" autoComplete="location" value={formData.city} onChange={handleChange} />
-            <InputField label="Latitude" id="latitude" type="text" value={formData.latitude} onChange={handleChange} placeholder="Enter latitude" />
-          </div>
+        <div className="grid grid-cols-1 gap-6">
+          <InputField label="Regular Price($)" id="listingData.regularPrice" type="text" value={formData.listingData.regularPrice} onChange={handleChange} placeholder="Enter regular price" />
+          <InputField label="Discount Price($)" id="listingData.discountPrice" type="text" value={formData.listingData.discountPrice} onChange={handleChange} placeholder="Enter discount price" />
+          <InputField label="Bedrooms" id="listingData.bedrooms" type="text" value={formData.listingData.bedrooms} onChange={handleChange} placeholder="Enter number of bedrooms" />
+          <InputField label="Bathrooms" id="listingData.bathrooms" type="text" value={formData.listingData.bathrooms} onChange={handleChange} placeholder="Enter number of bathrooms" />
+          <InputField label="Property Type" id="listingData.property" type="text" value={formData.listingData.property} onChange={handleChange} placeholder="Enter property type" />
+          <SelectField label="Status" id="listingData.status" type="text" value={formData.listingData.status} onChange={handleChange} placeholder="Enter property status" options={['available', 'occupied', 'under_contract', 'for_sale', 'under_renovation', 'pending_approval', 'sold', 'terminated', 'pending_availability', 'inactive']}  />
+          <SelectField label="Transaction Type" id="listingData.type" value={formData.listingData.type} onChange={handleChange} options={[{value: 'rent', label: 'Rent'}, {value: 'sale', label: 'Sale'}]} />
+          <TextAreaField label="Description" id="listingData.description" value={formData.listingData.description} onChange={handleChange} placeholder="Enter property description" />
         </div>
       </div>
-      <PropertyOptions formData={formData} handleChange={handleChange} />
-      <ImageUploadSection 
-        setFiles={setFiles} 
-        handleImageSubmit={handleImageSubmit} 
-        handleRemoveImage={handleRemoveImage} 
-        uploading={uploading} 
-        formData={formData} 
-        loading={loading} 
-        error={error} 
-        imageUploadError={imageUploadError}
+    </div>
+  );
+}
+
+function CheckboxField({ label, id, checked, onChange }) {
+  return (
+    <div className="relative flex gap-x-3">
+      <div className="flex h-6 items-center">
+        <input
+          id={id}
+          type="checkbox"
+          checked={checked}
+          onChange={onChange}
+          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+        />
+      </div>
+      <div className="text-sm leading-6">
+        <label htmlFor={id} className="font-medium text-white">
+          {label}
+        </label>
+      </div>
+    </div>
+  );
+}
+
+
+function ImageUploadSection({ setFiles, handleImageSubmit, handleRemoveImage, uploading, formData, imageUploadError }) {
+  return (
+    <div className="border-b border-gray-900/10 pb-12">
+      <h2 className="text-base font-semibold text-white">Photos</h2>
+      <div className="mt-3 flex flex-col">
+        <input 
+          type="file"
+          multiple
+          accept=".jpg,.png,.jpeg"
+          onChange={(e) => setFiles(Array.from(e.target.files))}
+          className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+        />
+        {imageUploadError && <p className="text-red-500 mt-2">{imageUploadError}</p>}
+        {uploading && <p className="text-white mt-2">Uploading images...</p>}
+        {formData.listingData.imageUrls.length > 0 && (
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            {formData.listingData.imageUrls.map((url, index) => (
+              <div key={index} className="relative">
+                <img src={url} alt={`Image ${index + 1}`} className="w-full h-32 object-cover" />
+                <button 
+                  type="button"
+                  className="absolute top-2 right-2 text-red-600 bg-white rounded-full p-1 shadow-md"
+                  onClick={() => handleRemoveImage(index)}
+                >
+                  X
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <button 
+          type="button"
+          onClick={handleImageSubmit}
+          className="mt-2 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
+        >
+          Upload Images
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AdditionalInformation({ formData, handleChange }) {
+  return (
+    <div className="pt-8">
+      <h2 className="text-base font-semibold text-white">Additional Information</h2>
+      <div className="grid grid-cols-2 gap-8 mt-6 pr-4 pt-4 pl-10 ml-8">
+        <div className="grid grid-cols-1 gap-6">
+          <TextAreaField label="Post Description" id="postDetail.desc" value={formData.postDetail.desc} onChange={handleChange} placeholder="Enter post description" />
+          <InputField label="Utilities" id="postDetail.utilities" value={formData.postDetail.utilities} onChange={handleChange} placeholder="Enter utilities details" />
+          <InputField label="Pet Policy" id="postDetail.pet" value={formData.postDetail.pet} onChange={handleChange} placeholder="Enter pet policy" />
+          <InputField label="Income Requirements" id="postDetail.income" value={formData.postDetail.income} onChange={handleChange} placeholder="Enter income requirements" />
+        </div>
+        <div className="grid grid-cols-1 gap-6">         
+          <InputField label="Size Details" id="postDetail.size" value={formData.postDetail.size} onChange={handleChange} placeholder="Enter size details" />
+          <InputField label="Nearby Schools" id="postDetail.school" value={formData.postDetail.school} onChange={handleChange} placeholder="Enter nearby schools" />
+          <InputField label="Nearby Bus Stops" id="postDetail.bus" value={formData.postDetail.bus} onChange={handleChange} placeholder="Enter nearby bus stops" />
+          <InputField label="Nearby Restaurants" id="postDetail.restaurant" value={formData.postDetail.restaurant} onChange={handleChange} placeholder="Enter nearby restaurants" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InputField({ label, id, type, value, onChange, placeholder }) {
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium leading-6 text-white">{label}</label>
+      <input 
+        type={type}
+        id={id}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="mt-1 px-2 py-1 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:border-green-600 focus:ring-green-600 sm:text-sm w-full"
       />
-    </form>
-  </main>  
-  );
-}
-function PropertyOptions({ formData, handleChange }) {
-  const propertyOptions = ['parking', 'furnished', 'offer'];
-  const propertyFields = [
-    { id: 'bedrooms', label: 'Bedrooms' },
-    { id: 'bathrooms', label: 'Bathrooms' },
-    { id: 'regularPrice', label: 'Regular Price ($)' },
-    { id: 'discountPrice', label: 'Discount Price ($)' }
-  ];
-
-  return (
-    <div className="sm:col-span-6 flex flex-wrap gap-10 ml-16">
-      {propertyOptions.map((type) => (
-        <CheckboxField key={type} id={type} label={`${type} ${type === 'offer' ? '50% off' : ''}`} checked={formData[type]} onChange={handleChange} />
-      ))}
-      {propertyFields.map((field) => (
-        <InputField key={field.id} type="number" id={field.id} min="0" max="20000" label={field.label} value={formData[field.id]} onChange={handleChange} />
-      ))}
     </div>
   );
 }
 
-function ImageUploadSection({ setFiles, handleImageSubmit, handleRemoveImage, uploading, formData, loading, error, imageUploadError }) {
+function TextAreaField({ label, id, value, onChange, placeholder }) {
   return (
-    <div className="space-y-6 bg-slate-900 p-2 rounded-lg shadow-md">
-      <div className='flex gap-4'>
-        <input onChange={(e) => setFiles(e.target.files)} className='p-3 border border-gray-300 rounded w-full' type='file' id='images' accept='image/*' multiple />
-        <button type='button' disabled={uploading} onClick={handleImageSubmit} className='p-3 border border-white rounded uppercase hover:shadow-lg disabled:opacity-80'>{uploading ? 'Uploading...' : 'Upload'}</button>
-      </div>
-      {imageUploadError && <p className='text-red-700 text-sm'>{imageUploadError}</p>}
-      {formData.imageUrls.length > 0 && formData.imageUrls.map((url, index) => (
-        <div key={url} className='flex justify-between p-3 border items-center'>
-          <img src={url} alt='listing' className='w-20 h-20 object-contain rounded-lg' />
-          <button type='button' onClick={() => handleRemoveImage(index)} className='p-3 rounded-lg uppercase hover:opacity-75'>Delete</button>
-        </div>
-      ))}
-      <button type="submit" disabled={loading || uploading} className="mt-4 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{loading ? 'Creating...' : 'Create Property'}</button>
-      {error && <p className='text-white text-md'>{error}</p>}
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium leading-6 text-white">{label}</label>
+      <textarea 
+        id={id}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="mt-1 px-2 py-1 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:border-green-600 focus:ring-green-600 sm:text-sm w-full"
+      />
     </div>
   );
 }
 
-function InputField({ label, id, type = 'text', autoComplete = 'off', placeholder = '', min, max, required = false, value, onChange }) {
+function SelectField({ label, id, value, onChange, options }) {
   return (
-    <div className={`sm:col-span-${type === 'number' ? '2' : '4'}`}>
-      <label htmlFor={id} className="block text-sm font-medium leading-6 text-gray-900">{label}</label>
-      <input type={type} name={id} id={id} autoComplete={autoComplete} placeholder={placeholder} min={min} max={max} required={required} className="mt-2 block w-full*0.75 p-4 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" onChange={onChange} value={value} />
-    </div>
-  );
-}
-
-function SelectField({ label, id, options, value, onChange }) {
-  return (
-    <div className="sm:col-span-2">
-      <label htmlFor={id} className="block text-sm font-medium leading-6 text-gray-900">{label}</label>
-      <select id={id} name={id} className=" block w-full rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm" onChange={onChange} value={value}>
-        {options.map(option => <option key={option} value={option}>{option}</option>)}
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium leading-6 text-white">{label}</label>
+      <select 
+        id={id}
+        value={value}
+        onChange={onChange}
+        className="mt-1 px-2 py-1 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:border-green-600 focus:ring-green-600 sm:text-sm w-full"
+      >
+        {options.map(option => (
+          <option key={option.value} value={option.value}>{option.label}</option>
+        ))}
       </select>
     </div>
   );
 }
 
-function TextareaField({ label, id, value, onChange }) {
-  return (
-    <div className="sm:col-span-4">
-      <label htmlFor={id} className="block text-sm font-medium leading-6 text-gray-900">{label}</label>
-      <textarea id={id} name={id} autoComplete="off" placeholder="Describe the property" className="mt-2 block w-full rounded-md border-0 p-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" onChange={onChange} value={value} />
-    </div>
-  );
-}
-
-function CheckboxField({ id, label, checked, onChange }) {
-  return (
-    <div className='flex items-center gap-4'>
-      <input type='checkbox' id={id} className='w-6 h-6' onChange={onChange} checked={checked} />
-      <label htmlFor={id} className='text-sm text-white capitalize'>{label}</label>
-    </div>
-  );
-}
+PropertyDetails.propTypes = {
+  formData: PropTypes.object.isRequired,
+  handleChange: PropTypes.func.isRequired,
+};
 
 ImageUploadSection.propTypes = {
   setFiles: PropTypes.func.isRequired,
@@ -314,72 +398,46 @@ ImageUploadSection.propTypes = {
   formData: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   error: PropTypes.string,
-  imageUploadError: PropTypes.string
+  imageUploadError: PropTypes.string,
+};
+
+AdditionalInformation.propTypes = {
+  formData: PropTypes.object.isRequired,
+  handleChange: PropTypes.func.isRequired,
 };
 
 InputField.propTypes = {
   label: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  type: PropTypes.string,
-  autoComplete: PropTypes.string,
-  placeholder: PropTypes.string,
-  min: PropTypes.number,
-  max: PropTypes.number,
-  required: PropTypes.bool,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number
-  ]).isRequired,
-  onChange: PropTypes.func.isRequired
+  type: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]).isRequired,
+  onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string.isRequired,
 };
 
-InputField.defaultProps = {
-  type: 'text',
-  autoComplete: 'off',
-  placeholder: '',
-  required: false
+TextAreaField.propTypes = {
+  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string.isRequired,
 };
 
-PropertyOptions.propTypes = {
-  formData: PropTypes.shape({
-    name: PropTypes.string,
-    type: PropTypes.string,
-    property: PropTypes.string,
-    status: PropTypes.string,
-    description: PropTypes.string,
-    address: PropTypes.string,
-    regularPrice: PropTypes.number,
-    discountPrice: PropTypes.number,
-    bathrooms: PropTypes.number,
-    bedrooms: PropTypes.number,
-    furnished: PropTypes.bool,
-    parking: PropTypes.bool,
-    offer: PropTypes.bool,
-    latitude: PropTypes.string,
-    longitude: PropTypes.string,
-    imageUrls: PropTypes.arrayOf(PropTypes.string)
-  }).isRequired,
-  handleChange: PropTypes.func.isRequired
+CheckboxField.propTypes = {
+  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  checked: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+CheckboxField.defaultProps = {
+  checked: false,
 };
 
 SelectField.propTypes = {
   label: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  options: PropTypes.arrayOf(PropTypes.string).isRequired,
   value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
-};
-
-CheckboxField.propTypes = {
-  id: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  checked: PropTypes.bool.isRequired,
-  onChange: PropTypes.func.isRequired
-};
-
-TextareaField.propTypes = {
-  label: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

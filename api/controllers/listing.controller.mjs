@@ -2,12 +2,18 @@ import prisma from '../lib/prisma.js';
 import { errorHandler } from '../utils/error.js';
 
 export const createListing = async (req, res) => {
+
+  const body = req.body;
   try {
     const listing = await prisma.listing.create({
       data: {
-        ...req.body,
-        userRef: req.user.id, // Associate the listing with the current user
+        ...body.postData,
+        userId: body.user.id,
+        postDetail: {
+          create: body.postDetail,
+        },
       },
+      
       select: {
         id: true, // Selectively retrieve only the ID of the newly created listing
         name: true, // Optionally retrieve other fields as needed
