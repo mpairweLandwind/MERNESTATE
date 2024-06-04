@@ -67,8 +67,8 @@ export default function Header() {
               <span>GestImpact</span>
             </a>
           </Link>
-          <Link to='/'><a className='nav-item'>Home</a></Link>
-          <Link to='/about'><a className='nav-item'>About</a></Link>
+          <Link to='/'className='nav-item'>Home</Link>
+          <Link to='/about'className='nav-item'>About</Link>
           <form onSubmit={handleSubmit} className='search-form'>
             <input
               type='text'

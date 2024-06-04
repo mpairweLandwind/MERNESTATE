@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation ,useLoaderData  } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSelector } from 'react-redux';
-import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from 'react-icons/fa';
+import { FaMapMarkerAlt} from 'react-icons/fa';
+import DOMPurify from "dompurify";
+import Map from '../components/Map';
+//, FaParking, FaShare 
 import axios from 'axios';  // Import Axios
 import Contact from '../components/Contact';
+import { fetchData } from '../lib/utils';
+import './listing.scss'
 
 export default function Listing() {
   const params = useParams();
@@ -14,8 +19,10 @@ export default function Listing() {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [copied, setCopied] = useState(false);
+  // const [copied, setCopied] = useState(false);
   const [contact, setContact] = useState(false);
+  const post = useLoaderData();
+  const [saved, setSaved] = useState(post.isSaved);
 
   useEffect(() => {
     // Redirect if currentUser or token is not valid
@@ -46,13 +53,30 @@ export default function Listing() {
     return null;
   }
 
+
+  const handleSave = async () => {
+    if (!currentUser) {
+      navigate("/sign-in");
+    }
+    // AFTER REACT 19 UPDATE TO USEOPTIMISTIK HOOK
+    setSaved((prev) => !prev);
+    try {
+      await fetchData(`/users/save { postId: post.id }`, { method: 'POST' }); 
+    } catch (err) {
+      console.log(err);
+      setSaved((prev) => !prev);
+    }
+  };
+
   return (
-    <main>
-      {loading && <p className='text-center my-7 text-2xl'>Loading...</p>}
-      {error && <p className='text-center my-7 text-2xl'>Something went wrong!</p>}
-      {listing && !loading && !error && (
-        <div>
-          <Swiper navigation>
+    <main className="features">
+    {loading && <p className='text-center my-7 text-2xl'>Loading...</p>}
+    {error && <p className='text-center my-7 text-2xl'>Something went wrong!</p>}
+    {listing && !loading && !error && (
+        <div className="singlePage">
+            <div className="details">
+                <div className="wrapper">
+                <Swiper navigation>
             {listing.imageUrls.map(url => (
               <SwiperSlide key={url}>
                 <div
@@ -62,73 +86,124 @@ export default function Listing() {
               </SwiperSlide>
             ))}
           </Swiper>
-          <div className='fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer'
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2000);
-            }}
-          >
-            <FaShare className='text-slate-500' />
-          </div>
-          {copied && <p className='fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2'>Link copied!</p>}
-          <div className='flex flex-col max-w-4xl mx-auto p-3 my-7 gap-4'>
-            <p className='text-2xl font-semibold text-white'>
-              {listing.name} - ${listing.offer ? listing.discountPrice.toLocaleString('en-US') : listing.regularPrice.toLocaleString('en-US')}
-              {listing.type === 'rent' && ' / month'}
-            </p>
-            <p className='flex items-center mt-6 gap-2 text-white text-sm'>
-              <FaMapMarkerAlt className='text-green-700' />              
-              {listing.address}
-            </p>
-            <div className='flex gap-4'>
-              <p className='bg-red-900 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
-                {listing.type === 'rent' ? 'For Rent' : 'For Sale'}
-              </p>
-              {listing.offer && (
-                <p className='bg-green-900 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
-                  ${+listing.regularPrice - +listing.discountPrice} OFF
-                </p>
-              )}
+                    <div className="info">
+                        <div className="top">
+                            <div className="post">
+                                <h1>{listing.name}</h1>
+                                <div className="address">
+                                    <FaMapMarkerAlt className='text-green-700' />
+                                    <span>{listing.address}</span>
+                                </div>
+                                <div className="price">
+                                    ${listing.offer ? listing.discountPrice.toLocaleString('en-US') : listing.regularPrice.toLocaleString('en-US')}
+                                    {listing.type === 'rent' && ' / month'}
+                                </div>
+                            </div>
+                            <div className="user">
+                              <img src={listing.user.avatar} alt="" />
+                               <span>{listing.user.username}</span>
+                            </div>
+                        </div>
+                        <div
+              className="bottom"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(listing.postDetail.desc),
+              }}
+            ></div>
+                    </div>
+                </div>
             </div>
-            <p className='text-white'>
-              <span className='font-semibold text-white'>Description - </span>
-              {listing.description}
-            </p>
-            <ul className='text-white font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6'>
-              <li className='flex items-center gap-1 whitespace-nowrap'>
-                <FaBed className='text-lg' />
-                {listing.bedrooms > 1
-                  ? `${listing.bedrooms} beds`
-                  : `${listing.bedrooms} bed`}
-              </li>
-              <li className='flex items-center gap-1 whitespace-nowrap'>
-                <FaBath className='text-lg' />
-                {listing.bathrooms > 1
-                  ? `${listing.bathrooms} baths`
-                  : `${listing.bathrooms} bath`}
-              </li>
-              <li className='flex items-center gap-1 whitespace-nowrap'>
-                <FaParking className='text-lg' />
-                {listing.parking ? 'Parking spot' : 'No Parking'}
-              </li>
-              <li className='flex items-center gap-1 whitespace-nowrap'>
-                <FaChair className='text-lg' />
-                {listing.furnished ? 'Furnished' : 'Unfurnished'}
-              </li>
-            </ul>
-            {currentUser && listing && (
-              <button
-                onClick={handleContactClick}
-                className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'
-              >
-                Contact landlord
-              </button>
-            )}
-            {contact && <Contact listing={listing} authToken={currentUser.token} />}
+            <div className="features">
+                <div className="wrapper">
+                    <div className="listVertical">
+                        <div className="feature">
+                        <img src="/utility.png" alt="" />
+                            <div className="featureText">
+                                <span>Water Supply</span>
+                                <p>{listing.utilities.water ? "Included" : "Not included"}</p>
+                            </div>
+                        </div>
+                        <div className="feature">
+                        <img src="/pet.png" alt="" />
+                            <div className="featureText">
+                                <span>Pet Policy</span>
+                                <p>{listing.petFriendly ? "Pets Allowed" : "No Pets Allowed"}</p>
+                            </div>
+                        </div>
+                        <div className="feature">
+                        <img src="/fee.png" alt="" />
+                            <div className="featureText">
+                                <span>Income Requirement</span>
+                                <p>{listing.incomeRequirement}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="sizes">
+                        <div className="size">
+                        <img src="/size.png" alt="" />
+                            <span>{listing.size} sqft</span>
+                        </div>
+                        <div className="size">
+                        <img src="/bed.png" alt="" />
+                            <span>{listing.bedrooms} beds</span>
+                        </div>
+                        <div className="size">
+                        <img src="/bath.png" alt="" />
+                            <span>{listing.bathrooms} bath</span>
+                        </div>
+                    </div>
+                    <div className="listHorizontal">
+                        <div className="feature">
+                        <img src="/school.png" alt="" />
+                            <div className="featureText">
+                                <span>School</span>
+                                <p>{listing.nearby.school}m away</p>
+                            </div>
+                        </div>
+                        <div className="feature">
+                        <img src="/bus.png" alt="" />
+                            <div className="featureText">
+                                <span>Bus Stop</span>
+                                <p>{listing.nearby.busStop}m away</p>
+                            </div>
+                        </div>
+                        <div className="feature">
+                        <img src="/fee.png" alt="" />
+                            <div className="featureText">
+                                <span>Restaurant</span>
+                                <p>{listing.nearby.restaurant}m away</p>
+                            </div>
+
+                        </div>
+                    </div>
+                    <p className="title">Location</p>
+          <div className="mapContainer">
+            <Map items={[listing]} />
           </div>
+
+                </div>
+            </div>
+            <div className="actions">
+                {currentUser && (
+                    <button onClick={handleContactClick} className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'>
+                        <img src="/chat.png" alt="" />
+                        Contact landlord
+                    </button>
+                )}
+                {contact && <Contact listing={listing} authToken={currentUser.token} />}
+                <button
+              onClick={handleSave}
+              style={{
+                backgroundColor: saved ? "#fece51" : "white",
+              }}
+            >
+              <img src="/save.png" alt="" />
+              {saved ? "Place Saved" : "Save the Place"}
+            </button>
+            </div>
         </div>
-      )}
-    </main>
+    )}
+</main>
+
   );
 }
