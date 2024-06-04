@@ -1,5 +1,6 @@
 import prisma from '../lib/prisma.js';
 import { errorHandler } from '../utils/error.js';
+import jwt from "jsonwebtoken";
 
 export const createListing = async (req, res) => {
 
@@ -81,8 +82,7 @@ export const updateListing = async (req, res) => {
   }
 };
 
-
-// Get a specific listing by ID
+// Get a specific listing by ID, including post details and user info if a token is provided
 export const getListing = async (req, res) => {
   const { id } = req.params;
 
@@ -92,18 +92,47 @@ export const getListing = async (req, res) => {
 
   try {
     const listing = await prisma.listing.findUnique({
-      where: { id: id }
+      where: { id: id },
+      include: {
+        postDetail: true, // Assuming your listing has a relation to postDetail
+        user: {
+          select: {
+            username: true,
+            avatar: true,
+          },
+        },
+      },
     });
 
     if (!listing) {
       return res.status(404).json({ error: 'Listing not found' });
     }
 
-    res.json(listing);
+    const token = req.cookies?.token;
+
+    if (token) {
+      jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
+        if (!err) {
+          const saved = await prisma.savedPost.findUnique({
+            where: {
+              userId_postId: {
+                postId: id,
+                userId: payload.id,
+              },
+            },
+          });
+          return res.status(200).json({ ...listing, isSaved: saved ? true : false });
+        }
+      });
+    }
+
+    res.status(200).json({ ...listing, isSaved: false });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
+
 
 // Get multiple listings with filters
 export const getListings = async (req, res, next) => {
