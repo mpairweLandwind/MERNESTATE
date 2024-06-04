@@ -9,6 +9,8 @@ import Chat from '../components/chat/Chat';
 import Sidebar from '../components/Sidebar';
 import Card from '../components/Card/Card';
 import { clearCurrentUser } from '../redux/user/userSlice';
+import { handleLogout, fetchData } from '../lib/utils';
+
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -17,13 +19,7 @@ export default function Profile() {
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
 
-  const fetchData = async (url, options) => {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      throw new Error(`Request failed: ${response.status} ${response.statusText}`);
-    }
-    return response.json();
-  };
+
 
   const handleShowListings = useCallback(async () => {
     try {
@@ -43,15 +39,7 @@ export default function Profile() {
     }
   }, [currentUser.id, token]);
 
-  const handleLogout = async () => {
-    try {
-      await fetchData(`api/auth/signout`, { method: 'POST' });
-      dispatch(clearCurrentUser());
-      navigate("/");
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  };
+  const onLogOut = () => handleLogout(navigate, dispatch, clearCurrentUser);
 
   useEffect(() => {
     handleShowListings();
@@ -71,7 +59,7 @@ export default function Profile() {
 
   return (
     <div className='flex'>
-    <Sidebar onLogout={handleLogout} />
+    <Sidebar onLogout={onLogOut} />
 
       <div className="profilePage p-6">
         <div className="details">

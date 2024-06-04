@@ -1,14 +1,20 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector ,useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase';
+import Sidebar from '../components/Sidebar';
+import { handleLogout } from '../lib/utils';
+import { clearCurrentUser } from '../redux/user/userSlice';
+import "./createListing.scss"
+
 import PropTypes from 'prop-types';
 
 
 export default function CreateListing() {
   const { currentUser, token } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
     listingData: { 
@@ -21,8 +27,8 @@ export default function CreateListing() {
       address: '',
       regularPrice: '',
       discountPrice: '',
-      bathrooms: 1,
-      bedrooms: 1,
+      bathrooms: '',
+      bedrooms: '',
       furnished: false,
       parking: false,
       offer: false,
@@ -195,9 +201,13 @@ export default function CreateListing() {
     }
   };
 
+  const onLogOut = () => handleLogout(navigate, dispatch, clearCurrentUser);
+
   return (
-    <main className="bg-gray-900 flex flex-col items-center justify-center p-10">
-      <form className="space-y-8 divide-y divide-gray-200 w-full max-w-4xl bg-gray-800 p-10 rounded-lg" onSubmit={handleSubmit}>
+    <div className='flex'>
+     <Sidebar onLogout={onLogOut} />
+    <main className="bg-gray-100  w-full flex flex-col items-center justify-center p-4">
+      <form className="space-y-4 divide-y divide-gray-200 w-full  bg-gray-200 pt-4 rounded-lg" onSubmit={handleSubmit}>
         <PropertyDetails formData={formData} handleChange={handleChange} />
         <ImageUploadSection 
           setFiles={setFiles} 
@@ -210,39 +220,54 @@ export default function CreateListing() {
           imageUploadError={imageUploadError} 
         />
         <AdditionalInformation formData={formData} handleChange={handleChange} />
-        <div className="mt-6 ml-52">
-          <button type="submit" className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Save Changes</button>
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        </div>
+   
+      <div className="button-container">
+          <button type="submit" className=".custom-font bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Save Changes</button>
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+      </div>
       </form>
     </main>
+    </div>
   );
 }
-
 
 function PropertyDetails({ formData, handleChange }) {
   return (
     <div className="border-b border-gray-900/10 pb-12">
-      <h2 className="text-base font-semibold text-center text-white">Add  Property Information</h2>
+      <h2 className="text-base font-semibold text-center .custom-font">Add Property Information</h2>
       <div className="grid grid-cols-2 gap-8 w-full mt-6 pr-4 pt-4 pl-10 ml-8">
         <div className="grid grid-cols-1 gap-6">
           <InputField label="Property Name" id="listingData.name" type="text" value={formData.listingData.name} onChange={handleChange} placeholder="Enter property name" />
           <InputField label="Property Address" id="listingData.address" type="text" value={formData.listingData.address} onChange={handleChange} placeholder="Enter property address" />
-          <InputField label="City/Districtict/Location" id="listingData.city" type="text" value={formData.listingData.city} onChange={handleChange} placeholder="Enter location" />        
+          <InputField label="City/District/Location" id="listingData.city" type="text" value={formData.listingData.city} onChange={handleChange} placeholder="Enter location" />
           <InputField label="Latitude" id="listingData.latitude" type="text" value={formData.listingData.latitude} onChange={handleChange} placeholder="Enter latitude" />
-          <InputField label="Longitude" id="listingData.longitude" type="text" value={formData.listingData.longitude} onChange={handleChange} placeholder="Enter longitude" />         
+          <InputField label="Longitude" id="listingData.longitude" type="text" value={formData.listingData.longitude} onChange={handleChange} placeholder="Enter longitude" />
           <CheckboxField label="Furnished" id="listingData.furnished" checked={formData.listingData.furnished} onChange={handleChange} />
           <CheckboxField label="Parking Spot" id="listingData.parking" checked={formData.listingData.parking} onChange={handleChange} />
           <CheckboxField label="Offer" id="listingData.offer" checked={formData.listingData.offer} onChange={handleChange} />
-          </div>
-        <div className="grid grid-cols-1 gap-6">
+        </div>
+        <div className="grid grid-cols-1 gap-6 pr-12 ">
           <InputField label="Regular Price($)" id="listingData.regularPrice" type="text" value={formData.listingData.regularPrice} onChange={handleChange} placeholder="Enter regular price" />
           <InputField label="Discount Price($)" id="listingData.discountPrice" type="text" value={formData.listingData.discountPrice} onChange={handleChange} placeholder="Enter discount price" />
-          <InputField label="Bedrooms" id="listingData.bedrooms" type="text" value={formData.listingData.bedrooms} onChange={handleChange} placeholder="Enter number of bedrooms" />
-          <InputField label="Bathrooms" id="listingData.bathrooms" type="text" value={formData.listingData.bathrooms} onChange={handleChange} placeholder="Enter number of bathrooms" />
+          <InputField label="Bedrooms" id="listingData.bedrooms" type="number" value={formData.listingData.bedrooms} onChange={handleChange} placeholder="Enter number of bedrooms" />
+          <InputField label="Bathrooms" id="listingData.bathrooms" type="number" value={formData.listingData.bathrooms} onChange={handleChange} placeholder="Enter number of bathrooms" />
           <InputField label="Property Type" id="listingData.property" type="text" value={formData.listingData.property} onChange={handleChange} placeholder="Enter property type" />
-          <SelectField label="Status" id="listingData.status" type="text" value={formData.listingData.status} onChange={handleChange} placeholder="Enter property status" options={['available', 'occupied', 'under_contract', 'for_sale', 'under_renovation', 'pending_approval', 'sold', 'terminated', 'pending_availability', 'inactive']}  />
-          <SelectField label="Transaction Type" id="listingData.type" value={formData.listingData.type} onChange={handleChange} options={[{value: 'rent', label: 'Rent'}, {value: 'sale', label: 'Sale'}]} />
+          <SelectField label="Status" id="listingData.status" value={formData.listingData.status} onChange={handleChange} placeholder="Enter property status" options={[
+            { value: 'available', label: 'Available' },
+            { value: 'occupied', label: 'Occupied' },
+            { value: 'under_contract', label: 'Under Contract' },
+            { value: 'for_sale', label: 'For Sale' },
+            { value: 'under_renovation', label: 'Under Renovation' },
+            { value: 'pending_approval', label: 'Pending Approval' },
+            { value: 'sold', label: 'Sold' },
+            { value: 'terminated', label: 'Terminated' },
+            { value: 'pending_availability', label: 'Pending Availability' },
+            { value: 'inactive', label: 'Inactive' },
+          ]} />
+          <SelectField label="Transaction Type" id="listingData.type" value={formData.listingData.type} onChange={handleChange} options={[
+            { value: 'rent', label: 'Rent' },
+            { value: 'sale', label: 'Sale' },
+          ]} />
           <TextAreaField label="Description" id="listingData.description" value={formData.listingData.description} onChange={handleChange} placeholder="Enter property description" />
         </div>
       </div>
@@ -263,7 +288,7 @@ function CheckboxField({ label, id, checked, onChange }) {
         />
       </div>
       <div className="text-sm leading-6">
-        <label htmlFor={id} className="font-medium text-white">
+        <label htmlFor={id} className="font-medium .custom-font">
           {label}
         </label>
       </div>
@@ -271,11 +296,14 @@ function CheckboxField({ label, id, checked, onChange }) {
   );
 }
 
+CheckboxField.defaultProps = {
+  checked: false,
+};
 
-function ImageUploadSection({ setFiles, handleImageSubmit, handleRemoveImage, uploading, formData, imageUploadError }) {
+function ImageUploadSection({ setFiles, handleImageSubmit, handleRemoveImage, uploading, formData,imageUploadError }) {
   return (
-    <div className="border-b border-gray-900/10 pb-12">
-      <h2 className="text-base font-semibold text-white">Photos</h2>
+    <div className="border-b border-gray-900/10 pb-4  pr-12 pl-12">
+      <h2 className="text-base font-semibold .custom-font">Photos</h2>
       <div className="mt-3 flex flex-col">
         <input 
           type="file"
@@ -285,15 +313,15 @@ function ImageUploadSection({ setFiles, handleImageSubmit, handleRemoveImage, up
           className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
         />
         {imageUploadError && <p className="text-red-500 mt-2">{imageUploadError}</p>}
-        {uploading && <p className="text-white mt-2">Uploading images...</p>}
+        {uploading && <p className=".custom-font mt-2">Uploading images...</p>}
         {formData.listingData.imageUrls.length > 0 && (
-          <div className="grid grid-cols-3 gap-4 mt-4">
+          <div className="grid grid-cols-3 gap-4 mt-1">
             {formData.listingData.imageUrls.map((url, index) => (
               <div key={index} className="relative">
                 <img src={url} alt={`Image ${index + 1}`} className="w-full h-32 object-cover" />
                 <button 
                   type="button"
-                  className="absolute top-2 right-2 text-red-600 bg-white rounded-full p-1 shadow-md"
+                  className=" relative top-2 right-2 text-red-600 bg-white rounded-full p-1 shadow-md "
                   onClick={() => handleRemoveImage(index)}
                 >
                   X
@@ -305,7 +333,7 @@ function ImageUploadSection({ setFiles, handleImageSubmit, handleRemoveImage, up
         <button 
           type="button"
           onClick={handleImageSubmit}
-          className="mt-2 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
+          className=" button-container .custom-font bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
         >
           Upload Images
         </button>
@@ -313,12 +341,11 @@ function ImageUploadSection({ setFiles, handleImageSubmit, handleRemoveImage, up
     </div>
   );
 }
-
 function AdditionalInformation({ formData, handleChange }) {
   return (
-    <div className="pt-8">
-      <h2 className="text-base font-semibold text-white">Additional Information</h2>
-      <div className="grid grid-cols-2 gap-8 mt-6 pr-4 pt-4 pl-10 ml-8">
+    <div className="pt-2 pl-12 pr-12">
+      <h2 className="text-base font-semibold .custom-font">Additional Information</h2>
+      <div className="grid grid-cols-2 gap-8 mt-3 pr-4 pt-2 pl-10 ml-8 mb-1 pb-1">
         <div className="grid grid-cols-1 gap-6">
           <TextAreaField label="Post Description" id="postDetail.desc" value={formData.postDetail.desc} onChange={handleChange} placeholder="Enter post description" />
           <InputField label="Utilities" id="postDetail.utilities" value={formData.postDetail.utilities} onChange={handleChange} placeholder="Enter utilities details" />
@@ -338,30 +365,17 @@ function AdditionalInformation({ formData, handleChange }) {
 
 function InputField({ label, id, type, value, onChange, placeholder }) {
   return (
-    <div>
-      <label htmlFor={id} className="block text-sm font-medium leading-6 text-white">{label}</label>
-      <input 
+    <div className="flex flex-col">
+      <label htmlFor={id} className="block text-sm font-medium .custom-font">
+        {label}
+      </label>
+      <input
         type={type}
         id={id}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="mt-1 px-2 py-1 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:border-green-600 focus:ring-green-600 sm:text-sm w-full"
-      />
-    </div>
-  );
-}
-
-function TextAreaField({ label, id, value, onChange, placeholder }) {
-  return (
-    <div>
-      <label htmlFor={id} className="block text-sm font-medium leading-6 text-white">{label}</label>
-      <textarea 
-        id={id}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className="mt-1 px-2 py-1 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:border-green-600 focus:ring-green-600 sm:text-sm w-full"
+        className="mt-2 block w-full px-12 py-2 bg-gray-200 border border-gray-600 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm .custom-font"
       />
     </div>
   );
@@ -369,25 +383,54 @@ function TextAreaField({ label, id, value, onChange, placeholder }) {
 
 function SelectField({ label, id, value, onChange, options }) {
   return (
-    <div>
-      <label htmlFor={id} className="block text-sm font-medium leading-6 text-white">{label}</label>
-      <select 
+    <div className="flex flex-col">
+      <label htmlFor={id} className="block text-sm font-medium .custom-font">
+        {label}
+      </label>
+      <select
         id={id}
         value={value}
         onChange={onChange}
-        className="mt-1 px-2 py-1 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:border-green-600 focus:ring-green-600 sm:text-sm w-full"
+        className="mt-2 block w-full px-12 py-2 bg-gray-200 border border-gray-600 rounded-full shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm .custom-font"
       >
-        {options.map(option => (
-          <option key={option.value} value={option.value}>{option.label}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
         ))}
       </select>
     </div>
   );
 }
 
+function TextAreaField({ label, id, value, onChange, placeholder }) {
+  return (
+    <div className="flex flex-col">
+      <label htmlFor={id} className="block text-sm font-medium .custom-font .custom-font">
+        {label}
+      </label>
+      <textarea
+        id={id}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="mt-2 block w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm .custom-font"
+      />
+    </div>
+  );
+}
+
+// Prop types
 PropertyDetails.propTypes = {
   formData: PropTypes.object.isRequired,
   handleChange: PropTypes.func.isRequired,
+};
+
+CheckboxField.propTypes = {
+  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  checked: PropTypes.bool,
+  onChange: PropTypes.func.isRequired,
 };
 
 ImageUploadSection.propTypes = {
@@ -396,7 +439,6 @@ ImageUploadSection.propTypes = {
   handleRemoveImage: PropTypes.func.isRequired,
   uploading: PropTypes.bool.isRequired,
   formData: PropTypes.object.isRequired,
-  loading: PropTypes.bool.isRequired,
   error: PropTypes.string,
   imageUploadError: PropTypes.string,
 };
@@ -410,34 +452,26 @@ InputField.propTypes = {
   label: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]).isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   onChange: PropTypes.func.isRequired,
-  placeholder: PropTypes.string.isRequired,
-};
-
-TextAreaField.propTypes = {
-  label: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  placeholder: PropTypes.string.isRequired,
-};
-
-CheckboxField.propTypes = {
-  label: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  checked: PropTypes.bool.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
-
-CheckboxField.defaultProps = {
-  checked: false,
+  placeholder: PropTypes.string,
 };
 
 SelectField.propTypes = {
   label: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   onChange: PropTypes.func.isRequired,
-  options: PropTypes.arrayOf(PropTypes.object).isRequired,
+  options: PropTypes.arrayOf(PropTypes.shape({
+    value: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+  })).isRequired,
+};
+
+TextAreaField.propTypes = {
+  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
 };

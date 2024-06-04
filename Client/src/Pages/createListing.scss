@@ -1,0 +1,21 @@
+.button-container {
+    display: flex;
+    justify-content: center;
+    /* Centers the button horizontally */
+    align-items: center;
+    /* Centers the button vertically */
+    margin-top: 1.5rem;
+    /* Equivalent to mt-6 */
+    margin-left: auto;
+    /* Centers the container horizontally */
+    margin-right: auto;
+    /* Centers the container horizontally */
+}
+
+.custom-font {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+
+
+}
