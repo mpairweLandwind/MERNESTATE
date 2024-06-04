@@ -15,6 +15,7 @@ export default function CreateListing() {
     property: '',      
     status: 'available',        
     description: '',
+    city: '',
     address: '',
     regularPrice: '',           
     discountPrice: '',           
@@ -188,52 +189,60 @@ formData.discountPrice = parseFloat(formData.discountPrice);
 
   return (
     <main className='p-3 max-w-6xl mx-auto bg-slate-700 text-white'>
-      <h1 className='text-3xl font-semibold text-center my-7'>Add Property</h1>
-      <form onSubmit={handleSubmit} className='space-y-12'>
-        <div className="border-b border-gray-900/10 pb-12">
-          <h2 className="text-base font-semibold text-center text-white">Property Details</h2>
-          <p className="mt-1 text-md text-white text-center">
-            Provide details about the property you are Creating.
-          </p>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-6 mt-10">
-            <InputField label="Property Name" id="name" type="text" value={formData.name} onChange={handleChange} />            
-            <SelectField label="Type" id="type" options={[ 'rent', 'sale']} value={formData.type} onChange={handleChange} />
+    <h1 className='text-3xl font-semibold text-center my-7'>Add Property</h1>
+    <form onSubmit={handleSubmit} className='space-y-12'>
+      <div className="border-b border-gray-900/10 ">
+        <h2 className="text-base font-semibold text-center text-white">Property Details</h2>
+        <p className="mt-1 text-md text-white text-center">
+          Provide details about the property you are creating.
+        </p>
+        <div className="grid grid-cols-2 gap-8 w-full mt-6  pr-4 pt-4 pl-10 ml-8">
+          <div className="grid grid-cols-1 gap-6">
+            <InputField label="Property Name" id="name" type="text" value={formData.name} onChange={handleChange} />
             <SelectField label="Status" id="status" options={['available', 'occupied', 'under_contract', 'for_sale', 'under_renovation', 'pending_approval', 'sold', 'terminated', 'pending_availability', 'inactive']} value={formData.status} onChange={handleChange} />
-            <SelectField label="Property Type" id="property" options={['apartment', 'house', 'condo', 'land']} value={formData.property} onChange={handleChange} />
-            <TextareaField label="Description" id="description" value={formData.description} onChange={handleChange} />            
+            <TextareaField label="Description" id="description" value={formData.description} onChange={handleChange} />
             <InputField label="Address" id="address" type="text" autoComplete="street-address" value={formData.address} onChange={handleChange} />
-            <InputField label="Latitude" id="latitude" type="text" value={formData.latitude} onChange={handleChange} placeholder="Enter latitude" />
             <InputField label="Longitude" id="longitude" type="text" value={formData.longitude} onChange={handleChange} placeholder="Enter longitude" />
-           
+          </div>
+          <div className="grid grid-cols-1 gap-6 pr-6 pt-6 pl-6 ml-6 selection:">
+            <SelectField label="Type" id="type" options={['rent', 'sale']} value={formData.type} onChange={handleChange} /> <br />
+            <SelectField label="Property Type" id="property" options={['apartment', 'house', 'condo', 'land']} value={formData.property} onChange={handleChange} />
+            <InputField label="City/District/Location" id="city" type="text" autoComplete="location" value={formData.city} onChange={handleChange} />
+            <InputField label="Latitude" id="latitude" type="text" value={formData.latitude} onChange={handleChange} placeholder="Enter latitude" />
           </div>
         </div>
-        <PropertyOptions formData={formData} handleChange={handleChange} />
-        <ImageUploadSection 
-          setFiles={setFiles} 
-          handleImageSubmit={handleImageSubmit} 
-          handleRemoveImage={handleRemoveImage} 
-          uploading={uploading} 
-          formData={formData} 
-          loading={loading} 
-          error={error} 
-          imageUploadError={imageUploadError}
-        />
-      </form>
-    </main>
+      </div>
+      <PropertyOptions formData={formData} handleChange={handleChange} />
+      <ImageUploadSection 
+        setFiles={setFiles} 
+        handleImageSubmit={handleImageSubmit} 
+        handleRemoveImage={handleRemoveImage} 
+        uploading={uploading} 
+        formData={formData} 
+        loading={loading} 
+        error={error} 
+        imageUploadError={imageUploadError}
+      />
+    </form>
+  </main>  
   );
 }
-
 function PropertyOptions({ formData, handleChange }) {
   const propertyOptions = ['parking', 'furnished', 'offer'];
-  const propertyFields = ['bedrooms', 'bathrooms', 'regularPrice', 'discountPrice'];
+  const propertyFields = [
+    { id: 'bedrooms', label: 'Bedrooms' },
+    { id: 'bathrooms', label: 'Bathrooms' },
+    { id: 'regularPrice', label: 'Regular Price ($)' },
+    { id: 'discountPrice', label: 'Discount Price ($)' }
+  ];
 
   return (
-    <div className="sm:col-span-6 flex flex-wrap gap-6">
+    <div className="sm:col-span-6 flex flex-wrap gap-10 ml-16">
       {propertyOptions.map((type) => (
         <CheckboxField key={type} id={type} label={`${type} ${type === 'offer' ? '50% off' : ''}`} checked={formData[type]} onChange={handleChange} />
       ))}
       {propertyFields.map((field) => (
-        <InputField key={field} type="number" id={field} min="0" max="20000" label={field.replace(/([a-z])([A-Z])/g, '$1 $2')} value={formData[field]} onChange={handleChange} />
+        <InputField key={field.id} type="number" id={field.id} min="0" max="20000" label={field.label} value={formData[field.id]} onChange={handleChange} />
       ))}
     </div>
   );
@@ -241,7 +250,7 @@ function PropertyOptions({ formData, handleChange }) {
 
 function ImageUploadSection({ setFiles, handleImageSubmit, handleRemoveImage, uploading, formData, loading, error, imageUploadError }) {
   return (
-    <div className="space-y-6 bg-slate-900 p-3 rounded-lg shadow-md">
+    <div className="space-y-6 bg-slate-900 p-2 rounded-lg shadow-md">
       <div className='flex gap-4'>
         <input onChange={(e) => setFiles(e.target.files)} className='p-3 border border-gray-300 rounded w-full' type='file' id='images' accept='image/*' multiple />
         <button type='button' disabled={uploading} onClick={handleImageSubmit} className='p-3 border border-white rounded uppercase hover:shadow-lg disabled:opacity-80'>{uploading ? 'Uploading...' : 'Upload'}</button>
@@ -272,7 +281,7 @@ function SelectField({ label, id, options, value, onChange }) {
   return (
     <div className="sm:col-span-2">
       <label htmlFor={id} className="block text-sm font-medium leading-6 text-gray-900">{label}</label>
-      <select id={id} name={id} className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm" onChange={onChange} value={value}>
+      <select id={id} name={id} className=" block w-full rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm" onChange={onChange} value={value}>
         {options.map(option => <option key={option} value={option}>{option}</option>)}
       </select>
     </div>
@@ -283,15 +292,15 @@ function TextareaField({ label, id, value, onChange }) {
   return (
     <div className="sm:col-span-4">
       <label htmlFor={id} className="block text-sm font-medium leading-6 text-gray-900">{label}</label>
-      <textarea id={id} name={id} autoComplete="off" placeholder="Describe the property" className="mt-2 block w-full/2 rounded-md border-0 p-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" onChange={onChange} value={value} />
+      <textarea id={id} name={id} autoComplete="off" placeholder="Describe the property" className="mt-2 block w-full rounded-md border-0 p-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" onChange={onChange} value={value} />
     </div>
   );
 }
 
 function CheckboxField({ id, label, checked, onChange }) {
   return (
-    <div className='flex items-center gap-2'>
-      <input type='checkbox' id={id} className='w-5 h-5' onChange={onChange} checked={checked} />
+    <div className='flex items-center gap-4'>
+      <input type='checkbox' id={id} className='w-6 h-6' onChange={onChange} checked={checked} />
       <label htmlFor={id} className='text-sm text-white capitalize'>{label}</label>
     </div>
   );

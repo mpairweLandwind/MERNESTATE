@@ -36,9 +36,9 @@ export default function Profile() {
         throw new Error('Data is not an array');
       }
 
-      setUserListings(data.listings);
+      setUserListings([...new Set(data.listings.map(listing => JSON.stringify(listing)))].map(str => JSON.parse(str)));
     } catch (error) {
-      setShowListingsError(true);
+      setShowListingsError(false);
       console.error('Error fetching listings:', error);
     }
   }, [currentUser.id, token]);
@@ -93,20 +93,15 @@ export default function Profile() {
             </div>
             <div className="title">
               <h1>My List</h1>
-           
             </div>
-            <List listing={Array.isArray(userListings) ? userListings : []} />
-            <div className="title">
-              <h1>Saved List</h1>
-            </div>
-            <List listing={Array.isArray(userListings) ? userListings : []} />
-            {userListings && userListings.length > 0 ? (
+            <List listings={userListings} />
+            {userListings.length > 0 ? (
               userListings.map((listing) => <Card key={listing.id} listing={listing} />)
             ) : (
               <p className='text-red-700 mt-5'>{showListingsError ? 'Error showing listings' : 'No listings found'}</p>
             )}
           </div>
-        </div>
+        </div>i
         <div className="chatContainer">
           <div className="wrapper">
             {userListings && userListings.length > 0 && (
