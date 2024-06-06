@@ -61,11 +61,9 @@ export default function Header() {
     <header className='header'>
       <div className="content">
         <div className="left">
-          <Link to='/' className="logo-container">
-            <a href='/' className='logo'>
+          <Link to='/' className="logo-container">           
               <img src="./logo.jpeg" alt="" width={100} />
-              <span>GestImpact</span>
-            </a>
+              <span>GestImpact</span>           
           </Link>
           <Link to='/'className='nav-item'>Home</Link>
           <Link to='/about'className='nav-item'>About</Link>
