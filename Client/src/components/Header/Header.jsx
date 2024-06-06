@@ -1,21 +1,31 @@
 import { useEffect, useState } from 'react';
-import { FaSearch, FaGlobe } from 'react-icons/fa';
+import { FaSearch, FaGlobe, FaBell } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import './header.scss';
+import { useNotificationStore } from '../../lib/notificationStore';
 
 export default function Header() {
   const { i18n } = useTranslation();
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, token } = useSelector((state) => state.user);
   const [searchTerm, setSearchTerm] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  
+  const fetch = useNotificationStore((state) => state.fetch);
+  const number = useNotificationStore((state) => state.number);
 
   const handleLanguageChange = (lang) => {
     i18n.changeLanguage(lang);
     setDropdownOpen(false);
   };
+
+  useEffect(() => {
+    if (currentUser && token) {
+      fetch(token);
+    }
+  }, [currentUser, token, fetch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -83,40 +93,43 @@ export default function Header() {
               <FaSearch className='search-icon' />
             </button>
           </form>
-        </div>
+        </div> 
         <div className="right">
-          <div className='user'>
-            {currentUser ? (
-              <>
-                <Link to={getProfileLink()}>
-                  <img className='rounded-full h-12 w-12 object-cover' src={currentUser.avatar} alt='profile' />
-                </Link>
-                <span>{currentUser?.username}</span>
-                <Link to={getProfileLink()} className='profile'>
-                  <div className="notification">3</div>
-                  <span>Profile</span>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link to='/sign-in'>Sign in</Link>
-                <Link to="/sign-up" className='register'>Sign up</Link>
-              </>
-            )}
-          </div>
-          <div className='language-selector'>
-            <button onClick={() => setDropdownOpen(!dropdownOpen)} className='language-button'>
-              <FaGlobe size={20} className='globe-icon' />
-            </button>
-            {dropdownOpen && (
-              <ul className='language-dropdown'>
-                <li onClick={() => handleLanguageChange('en')}>English</li>
-                <li onClick={() => handleLanguageChange('fr')}>Français</li>
-              </ul>
-            )}
-          </div>
+          {currentUser ? (
+            <div className="user">
+              <Link to={getProfileLink()}>
+                <img
+                  className="rounded-full h-8 w-8 object-cover"
+                  src={currentUser.avatar}
+                  alt="profile"
+                />
+              </Link>
+              <span>{currentUser.username}</span>
+              <Link to={getProfileLink()} className="profile">
+                {number > 0 && <div className="notification">{number}</div>}
+                <span><FaBell /></span>
+              </Link>
+            </div>
+          ) : (
+            <div className="auth-links">
+              <Link to="/sign-in">Sign in</Link>
+              <Link to="/sign-up" className="register">Sign up</Link>
+            </div>
+          )}
+        </div>       
+
+        <div className='language-selector'>
+          <button onClick={() => setDropdownOpen(!dropdownOpen)} className='language-button'>
+            <FaGlobe size={20} className='globe-icon' />
+          </button>
+          {dropdownOpen && (
+            <ul className='language-dropdown'>
+              <li onClick={() => handleLanguageChange('en')}>English</li>
+              <li onClick={() => handleLanguageChange('fr')}>Français</li>
+            </ul>
+          )}
         </div>
-      </div>
+      </div>      
     </header>
   );
 }

@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBed, faBath, faHeart, faCommentDots, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import './Card.scss';
 
 function Card({ listing }) {
@@ -22,27 +20,27 @@ function Card({ listing }) {
                     </Link>
                 </h2>
                 <p className="adress">
-                    <FontAwesomeIcon icon={faMapMarkerAlt} />
+                <img src="/pin.png" alt="" />
                     {listing.address}
                 </p>
                 <span className="price">${listing.offer ? listing.discountPrice : listing.regularPrice}</span>
                 <div className="bottom">
                     <div className="features">
                         <div className="feature">
-                            <FontAwesomeIcon icon={faBed} />
+                        <img src="/bed.png" alt="" />
                             <span>{listing.bedrooms > 1 ? `${listing.bedrooms} bedrooms` : `${listing.bedrooms} bedroom`}</span>
                         </div>
                         <div className="feature">
-                            <FontAwesomeIcon icon={faBath} />
+                        <img src="/bath.png" alt="" />
                             <span>{listing.bathrooms > 1 ? `${listing.bathrooms} bathrooms` : `${listing.bathrooms} bathroom`}</span>
                         </div>
                     </div>
                     <div className="icons">
                         <button className="icon">
-                            <FontAwesomeIcon icon={faHeart} className="h-6 w-6" />
+                        <img src="/save.png" alt="" />
                         </button>
                         <button className="icon">
-                            <FontAwesomeIcon icon={faCommentDots} className="h-6 w-6" />
+                        <img src="/chat.png" alt="" />
                         </button>
                     </div>
                 </div>

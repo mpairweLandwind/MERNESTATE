@@ -202,22 +202,22 @@
             }
 
             .buttons {
-                display: flex;
+                display: block;
                 justify-content: space-between;
 
                 button {
-                    padding: 20px;
+                    padding: 4px;
                     display: flex;
                     align-items: center;
                     gap: 5px;
                     background-color: white;
-                    border: 1px solid #fece51;
+                    border: 1px solid #f7f6f3;
                     border-radius: 5px;
                     cursor: pointer;
 
                     img {
-                        width: 16px;
-                        height: 16px;
+                        width: 2px;
+                            height: 2px;
                     }
                 }
             }

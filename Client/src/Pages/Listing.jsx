@@ -193,8 +193,8 @@ export default function Listing() {
                 <Map items={[listing]} />
               </div>
             </div>
-          </div>
-          <div className="actions">
+         
+          <div className="buttons">
             {currentUser && (
               <button onClick={handleContactClick} className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'>
                 <img src="/chat.png" alt="" />
@@ -212,6 +212,7 @@ export default function Listing() {
               {saved ? "Place Saved" : "Save the Place"}
             </button>
           </div>
+        </div>
         </div>
       )}
     </main>
