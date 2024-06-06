@@ -2,35 +2,52 @@ import prisma from '../lib/prisma.js';
 import { errorHandler } from '../utils/error.js';
 import jwt from "jsonwebtoken";
 
+
 export const createListing = async (req, res) => {
 
-  const body = req.body;
+  console.log('Request Body:', req.body); 
+
+  const { listingData, postDetail } = req.body;
+
+
+  // Log incoming request data for debugging
+  console.log('Received postData:', listingData);
+  console.log('Received postDetail:', postDetail);
+  console.log('User:', req.user);
+
+  // Check if required fields are present
+  if (!listingData || !listingData.name || !listingData.type ) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
   try {
+    const userId = req.user.id; // Extract user ID from the verified token
+
     const listing = await prisma.listing.create({
       data: {
-        ...body.postData,
-        userId: body.user.id,
-        postDetail: {
-          create: body.postDetail,
-        },
+        ...listingData,
+        userRef: userId, // Reference the user ID from the request object
+        postDetail: postDetail ? { create: postDetail } : undefined,
       },
-      
       select: {
-        id: true, // Selectively retrieve only the ID of the newly created listing
-        name: true, // Optionally retrieve other fields as needed
+        id: true,
+        name: true,
         // Add other fields as necessary
       }
     });
+
     res.status(201).json({
       success: true,
       message: 'Listing created successfully',
-      _id: listing.id, // Ensuring the ID is returned under the key '_id'
+      _id: listing.id,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to create listing', error: error.message });
   }
 };
+
+
 
 export const deleteListing = async (req, res) => {
   try {
@@ -82,15 +99,17 @@ export const updateListing = async (req, res) => {
   }
 };
 
-// Get a specific listing by ID, including post details and user info if a token is provided
+/// Get a specific listing by ID, including post details and user info if a token is provided
 export const getListing = async (req, res) => {
   const { id } = req.params;
 
+  // Check if the ID parameter is provided
   if (!id) {
     return res.status(400).json({ error: 'ID parameter is required' });
   }
 
   try {
+    // Find the listing with the associated post details and user info
     const listing = await prisma.listing.findUnique({
       where: { id: id },
       include: {
@@ -104,19 +123,24 @@ export const getListing = async (req, res) => {
       },
     });
 
+    // Check if the listing was not found
     if (!listing) {
       return res.status(404).json({ error: 'Listing not found' });
     }
 
+    // Extract the authorization header
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
+    // Process the request based on the presence of a token
     if (token) {
       jwt.verify(token, process.env.JWT_SECRET, async (err, payload) => {
         if (err) {
+          // Respond with an error if the token is invalid
           return res.status(403).json({ error: 'Invalid token' });
         }
 
+        // Check if the current user has saved this post
         const saved = await prisma.savedPost.findUnique({
           where: {
             userId_postId: {
@@ -126,13 +150,17 @@ export const getListing = async (req, res) => {
           },
         });
 
+        // Respond with the listing and its saved status
         return res.status(200).json({ ...listing, isSaved: saved ? true : false });
       });
     } else {
+      // Respond with the listing but indicate it is not saved (no token provided)
       res.status(200).json({ ...listing, isSaved: false });
     }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Handle unexpected errors
+    console.error('Failed to retrieve listing:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 

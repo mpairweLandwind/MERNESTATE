@@ -36,10 +36,11 @@ const App = () => {
           <Route path='/admin-dashboard/*' element={<Admin />} />
         )}
 
-        <Route element={<PrivateRoute />}>
-          <Route path='/listing/:listingId' element={<Listing />} />
-        </Route>
-
+         <Route
+          path='/listing/:listingId'
+          element={<PrivateRoute component={Listing} />}
+         
+        />
         {currentUserRole === 'user' && (
           <Route path='/user-dashboard' element={<User />} />
         )}

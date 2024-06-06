@@ -2,12 +2,11 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-const PrivateRoute = ({ allowedRoles, redirectPath = '/sign-in' }) => {
+const PrivateRoute = ({ component: Component, allowedRoles, redirectPath = '/sign-in' }) => {
   const location = useLocation();
-  const { currentUser, token } = useSelector((state) => state.user);
+  const { currentUser, token } = useSelector(state => state.user);
 
   if (!token || !currentUser) {
-    // Redirect unauthorized users to sign-in and pass the current location in state
     return <Navigate to={redirectPath} replace state={{ from: location }} />;
   }
 
@@ -15,10 +14,16 @@ const PrivateRoute = ({ allowedRoles, redirectPath = '/sign-in' }) => {
     return <Navigate to="/" replace />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      {Component ? <Component /> : null}
+      <Outlet />
+    </>
+  );
 };
 
 PrivateRoute.propTypes = {
+  component: PropTypes.elementType,
   allowedRoles: PropTypes.arrayOf(PropTypes.string),
   redirectPath: PropTypes.string,
 };

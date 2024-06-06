@@ -61,12 +61,16 @@ export default function Header() {
     <header className='header'>
       <div className="content">
         <div className="left">
-          <Link to='/' className="logo-container">           
-              <img src="./logo.jpeg" alt="" width={100} />
-              <span>GestImpact</span>           
-          </Link>
-          <Link to='/'className='nav-item'>Home</Link>
-          <Link to='/about'className='nav-item'>About</Link>
+          <div className="flex items-center space-x-4">
+            <Link to='/' className="logo-container">           
+              <img src="./logo.jpeg" alt="Logo" width={100} />                     
+            </Link>
+            <span className='text-xl font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 rounded-lg shadow-lg'>
+              GestImpact
+            </span>
+          </div>   
+          <Link to='/' className='nav-item'>Home</Link>
+          <Link to='/about' className='nav-item'>About</Link>
           <form onSubmit={handleSubmit} className='search-form'>
             <input
               type='text'
@@ -94,13 +98,13 @@ export default function Header() {
                 </Link>
               </>
             ) : (
-                <>
-                  <a href='/'>Sign in</a>
-                  <a href="/" className='register'>Sign up</a>
-                </>
+              <>
+                <Link to='/sign-in'>Sign in</Link>
+                <Link to="/sign-up" className='register'>Sign up</Link>
+              </>
             )}
           </div>
-          <a className='language-selector'>
+          <div className='language-selector'>
             <button onClick={() => setDropdownOpen(!dropdownOpen)} className='language-button'>
               <FaGlobe size={20} className='globe-icon' />
             </button>
@@ -110,7 +114,7 @@ export default function Header() {
                 <li onClick={() => handleLanguageChange('fr')}>Français</li>
               </ul>
             )}
-          </a>
+          </div>
         </div>
       </div>
     </header>

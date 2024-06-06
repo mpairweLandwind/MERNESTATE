@@ -9,8 +9,6 @@ import '../i18n';
 import { SocketContextProvider } from './context/SocketContext.jsx';
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { SidebarProvider } from "./context/SidebarContext.jsx";
-// import 'dotenv/config';
-
 
 ReactDOM.createRoot(document.getElementById('root')).render(
  <React.StrictMode> {/* Wrap your application with StrictMode */}

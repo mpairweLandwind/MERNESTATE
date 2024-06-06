@@ -151,25 +151,27 @@ export default function CreateListing() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (formData.listingData.imageUrls.length < 1) {
       return setError('You must upload at least one image');
     }
-
+  
     if (+formData.listingData.regularPrice < +formData.listingData.discountPrice) {
       return setError('Discount price must be lower than regular price or zero');
     }
-
+  
     setLoading(true);
     setError(false);
-
-    // Ensure bathrooms and bedrooms are integers
-    const sanitizedData = {
-      ...formData.listingData,
-      bathrooms: parseInt(formData.listingData.bathrooms, 10),
-      bedrooms: parseInt(formData.listingData.bedrooms, 10),
-    };
-
+  
+    // No need to redefine sanitizedData since we can use formData directly
+    // Ensure bathrooms and bedrooms are integers and properly formatted
+    formData.listingData.bathrooms = parseInt(formData.listingData.bathrooms, 10);
+    formData.listingData.bedrooms = parseInt(formData.listingData.bedrooms, 10);
+    formData.postDetail.size = parseInt(formData.postDetail.size, 10);
+    formData.postDetail.school = parseInt(formData.postDetail.school, 10);
+    formData.postDetail.restaurant = parseInt(formData.postDetail.restaurant, 10);
+    formData.postDetail.bus = parseInt(formData.postDetail.bus, 10);
+  
     try {
       const res = await fetch('/api/listing/create', {
         method: 'POST',
@@ -178,18 +180,19 @@ export default function CreateListing() {
           'Authorization': `Bearer ${token}` // Using token for authorization
         },
         body: JSON.stringify({
-          ...sanitizedData,
-          userRef: currentUser.id,
+          listingData: formData.listingData,
+          postDetail: formData.postDetail,
+          userRef: currentUser.id, // Assuming userRef is part of the listingData in your real application structure
         }),
       });
-
+  
       if (!res.ok) {
         throw new Error('Failed to create listing');
       }
-
+  
       const data = await res.json();
       setLoading(false);
-
+  
       if (data.success === false) {
         setError(data.message);
       } else {
@@ -200,6 +203,7 @@ export default function CreateListing() {
       setLoading(false);
     }
   };
+  
 
   const onLogOut = () => handleLogout(navigate, dispatch, clearCurrentUser);
 
@@ -251,18 +255,28 @@ function PropertyDetails({ formData, handleChange }) {
           <InputField label="Discount Price($)" id="listingData.discountPrice" type="text" value={formData.listingData.discountPrice} onChange={handleChange} placeholder="Enter discount price" />
           <InputField label="Bedrooms" id="listingData.bedrooms" type="number" value={formData.listingData.bedrooms} onChange={handleChange} placeholder="Enter number of bedrooms" />
           <InputField label="Bathrooms" id="listingData.bathrooms" type="number" value={formData.listingData.bathrooms} onChange={handleChange} placeholder="Enter number of bathrooms" />
-          <InputField label="Property Type" id="listingData.property" type="text" value={formData.listingData.property} onChange={handleChange} placeholder="Enter property type" />
-          <SelectField label="Status" id="listingData.status" value={formData.listingData.status} onChange={handleChange} placeholder="Enter property status" options={[
-            { value: 'available', label: 'Available' },
-            { value: 'occupied', label: 'Occupied' },
-            { value: 'under_contract', label: 'Under Contract' },
-            { value: 'for_sale', label: 'For Sale' },
-            { value: 'under_renovation', label: 'Under Renovation' },
-            { value: 'pending_approval', label: 'Pending Approval' },
-            { value: 'sold', label: 'Sold' },
-            { value: 'terminated', label: 'Terminated' },
-            { value: 'pending_availability', label: 'Pending Availability' },
-            { value: 'inactive', label: 'Inactive' },
+          <SelectField label="Property Type" id="listingData.property" type="text" value={formData.listingData.property} onChange={handleChange} placeholder="select property type" options={[
+             { value: 'condo', label: 'condo' },
+             { value: 'house', label: 'house' },
+             { value: 'apartment', label: 'apartment' },
+             { value: 'land', label: 'land' },
+          ]} />
+
+            <SelectField label=" Type" id="listingData.type" type="text" value={formData.listingData.type} onChange={handleChange} placeholder="select  type" options={[
+             { value: 'rent', label: 'rent' },
+             { value: 'sale', label: 'sale' },
+            ]} />
+          <SelectField label="Status" id="listingData.status" type="text" value={formData.listingData.status} onChange={handleChange} placeholder="Enter property status" options={[
+            { value: 'available', label: 'available' },
+            { value: 'occupied', label: 'occupied' },
+            { value: 'under_contract', label: 'under_ontract' },
+            { value: 'for_sale', label: 'for_sale' },
+            { value: 'under_renovation', label: 'under_renovation' },
+            { value: 'pending_approval', label: 'pending_approval' },
+            { value: 'sold', label: 'sold' },
+            { value: 'terminated', label: 'terminated' },
+            { value: 'pending_availability', label: 'pending_availability' },
+            { value: 'inactive', label: 'inactive' },
           ]} />
           <SelectField label="Transaction Type" id="listingData.type" value={formData.listingData.type} onChange={handleChange} options={[
             { value: 'rent', label: 'Rent' },
@@ -321,7 +335,7 @@ function ImageUploadSection({ setFiles, handleImageSubmit, handleRemoveImage, up
                 <img src={url} alt={`Image ${index + 1}`} className="w-full h-32 object-cover" />
                 <button 
                   type="button"
-                  className=" relative top-2 right-2 text-red-600 bg-white rounded-full p-1 shadow-md "
+                  className=" absolute top-2 right-2 text-red-600 bg-white rounded-full p-1 shadow-md "
                   onClick={() => handleRemoveImage(index)}
                 >
                   X
@@ -348,15 +362,24 @@ function AdditionalInformation({ formData, handleChange }) {
       <div className="grid grid-cols-2 gap-8 mt-3 pr-4 pt-2 pl-10 ml-8 mb-1 pb-1">
         <div className="grid grid-cols-1 gap-6">
           <TextAreaField label="Post Description" id="postDetail.desc" value={formData.postDetail.desc} onChange={handleChange} placeholder="Enter post description" />
-          <InputField label="Utilities" id="postDetail.utilities" value={formData.postDetail.utilities} onChange={handleChange} placeholder="Enter utilities details" />
-          <InputField label="Pet Policy" id="postDetail.pet" value={formData.postDetail.pet} onChange={handleChange} placeholder="Enter pet policy" />
+          <SelectField label="Utilities" id="postDetail.utilities" value={formData.postDetail.utilities} onChange={handleChange} placeholder="Enter utilities details"
+          options={[
+            { value: 'owner', label: 'Owner is responsible' },
+            { value: 'tenant', label: 'Tenant is responsible' },
+            { value: 'shared', label: 'Shared' },
+           ]} />
+          <SelectField label="Pet Policy" id="postDetail.pet" value={formData.postDetail.pet} onChange={handleChange} placeholder="Enter pet policy"  options={[
+            { value: 'allowed', label: 'Allowed' },
+            { value: 'not-allowed', label: 'Not Allowed' },
+           
+           ]}/>
           <InputField label="Income Requirements" id="postDetail.income" value={formData.postDetail.income} onChange={handleChange} placeholder="Enter income requirements" />
         </div>
         <div className="grid grid-cols-1 gap-6">         
-          <InputField label="Size Details" id="postDetail.size" value={formData.postDetail.size} onChange={handleChange} placeholder="Enter size details" />
-          <InputField label="Nearby Schools" id="postDetail.school" value={formData.postDetail.school} onChange={handleChange} placeholder="Enter nearby schools" />
-          <InputField label="Nearby Bus Stops" id="postDetail.bus" value={formData.postDetail.bus} onChange={handleChange} placeholder="Enter nearby bus stops" />
-          <InputField label="Nearby Restaurants" id="postDetail.restaurant" value={formData.postDetail.restaurant} onChange={handleChange} placeholder="Enter nearby restaurants" />
+          <InputField label="Total Size (sqft)" min={0} id="postDetail.size" type="number" value={formData.postDetail.size} onChange={handleChange} placeholder="Enter size details" />
+          <InputField label="Nearby Schools(Distance (m)))" min={0} type="number" id="postDetail.school" value={formData.postDetail.school} onChange={handleChange} placeholder="Enter nearby schools" />
+          <InputField label="Nearby Bus Stops (m)" min={0}  type="number" id="postDetail.bus" value={formData.postDetail.bus} onChange={handleChange} placeholder="Enter nearby bus stops" />
+          <InputField label="Nearby Restaurants(m)" min={0}  type="number"  id="postDetail.restaurant" value={formData.postDetail.restaurant} onChange={handleChange} placeholder="Enter nearby restaurants" />
         </div>
       </div>
     </div>

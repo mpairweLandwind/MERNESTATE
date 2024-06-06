@@ -68,7 +68,7 @@ function User() {
         </div>
       </div>
       <div className="mapContainer">
-        <Map listings={[...offerListings, ...rentListings, ...saleListings]} />
+        <Map items={[...offerListings, ...rentListings, ...saleListings]} />
       </div>
     </div>
   );
