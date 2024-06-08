@@ -11,15 +11,13 @@ import Card from '../components/Card/Card';
 import { clearCurrentUser } from '../redux/user/userSlice';
 import { handleLogout, fetchData } from '../lib/utils';
 
-
 export default function Profile() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentUser, token } = useSelector(state => state.user);
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
-
-
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   const handleShowListings = useCallback(async () => {
     try {
@@ -34,7 +32,7 @@ export default function Profile() {
 
       setUserListings([...new Set(data.listings.map(listing => JSON.stringify(listing)))].map(str => JSON.parse(str)));
     } catch (error) {
-      setShowListingsError(false);
+      setShowListingsError(true);
       console.error('Error fetching listings:', error);
     }
   }, [currentUser.id, token]);
@@ -47,19 +45,42 @@ export default function Profile() {
 
   const handleListingDelete = async (listingId) => {
     try {
-      await fetchData(`/api/listing/delete/${listingId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      console.log(`Attempting to delete listing with ID: ${listingId}`);
+      const response = await fetch(`/api/listing/delete/${listingId}`, {
+        method: 'DELETE',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
-
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response from server:', errorData);
+        throw new Error(errorData.message || 'Network response was not ok');
+      }
+  
+      // Parse the response as JSON
+      const data = await response.json();
+      console.log('Delete successful, response data:', data);
+  
+      // Update the state and show success message
       setUserListings(prev => prev.filter(listing => listing._id !== listingId));
+      setDeleteSuccess(true);
+  
+      // Optionally hide the message after a few seconds
+      setTimeout(() => {
+        setDeleteSuccess(false);
+      }, 3000);
+  
     } catch (error) {
       console.error('Error deleting listing:', error);
     }
   };
-
+  
   return (
     <div className='flex'>
-    <Sidebar onLogout={onLogOut} />
+      <Sidebar onLogout={onLogOut} />
 
       <div className="profilePage p-6">
         <div className="details">
@@ -89,9 +110,15 @@ export default function Profile() {
               <p className='text-red-700 mt-5'>{showListingsError ? 'Error showing listings' : 'No listings found'}</p>
             )}
           </div>
-        </div>i
+        </div>
         <div className="chatContainer">
           <div className="wrapper">
+
+            {deleteSuccess && (
+              <div className="alert alert-success text-green-600 text-xl">
+                Property deleted successfully!
+              </div>
+            )}
             {userListings && userListings.length > 0 && (
               <div className='flex flex-col gap-4'>
                 <h1 className='text-center mt-7 text-2xl font-semibold'>Property List</h1>

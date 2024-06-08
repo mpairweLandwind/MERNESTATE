@@ -19,7 +19,7 @@ export default function Sidebar() {
                 </Typography>
             </div>
             <List>
-                <Link to='/dashboard' aria-label="Dashboard">
+                <Link to='/landlord' aria-label="Dashboard">
                     <HoverableListItem icon={<PresentationChartBarIcon className="h-5 w-5" />}>
                         Dashboard
                     </HoverableListItem>

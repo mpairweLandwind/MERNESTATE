@@ -16,6 +16,7 @@ import Admin from './Pages/Admin';
 import './index.css';
 import '../i18n';
 import Logout from "./components/Logout";
+import ProfileManagement from "./components/ProfileManagement";
 
 const App = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -47,6 +48,7 @@ const App = () => {
 
         <Route element={<PrivateRoute allowedRoles={['landlord']} />}>
           <Route path='/landlord' element={<Profile />} />
+          <Route path='/profile' element={<ProfileManagement />} />
           <Route path='/create-listing' element={<CreateListing />} />
           <Route path='/update-listing/:listingId' element={<UpdateListing />} />
         </Route>

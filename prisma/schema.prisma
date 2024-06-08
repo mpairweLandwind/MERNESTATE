@@ -111,7 +111,7 @@ model PostDetail {
   school     Int?
   bus        Int?
   restaurant Int?
-  listing    Listing    @relation(fields: [postId], references: [id])
+  listing    Listing    @relation(fields: [postId], references: [id], onDelete: Cascade) // Add onDelete: Cascade
   postId     String  @unique @db.ObjectId
 }
 

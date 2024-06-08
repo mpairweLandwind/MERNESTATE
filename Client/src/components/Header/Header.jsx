@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
-import { FaSearch, FaGlobe, FaBell } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import './header.scss';
+import { FaSearch, FaBell, FaGlobe } from 'react-icons/fa';
 import { useNotificationStore } from '../../lib/notificationStore';
+import './header.scss';
 
 export default function Header() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { currentUser, token } = useSelector((state) => state.user);
   const [searchTerm, setSearchTerm] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  
+
   const fetch = useNotificationStore((state) => state.fetch);
   const number = useNotificationStore((state) => state.number);
 
@@ -50,8 +50,6 @@ export default function Header() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownOpen]);
-
-  const { t } = useTranslation();
 
   const getProfileLink = () => {
     if (!currentUser) return '/sign-in';
@@ -93,8 +91,20 @@ export default function Header() {
               <FaSearch className='search-icon' />
             </button>
           </form>
-        </div> 
+        </div>
+       
         <div className="right">
+          <div className='language-selector pr-8'>
+            <button onClick={() => setDropdownOpen(!dropdownOpen)} className='language-button'>
+              <FaGlobe size={20} className='globe-icon' />
+            </button>
+            {dropdownOpen && (
+              <ul className='language-dropdown'>
+                <li onClick={() => handleLanguageChange('en')}>English</li>
+                <li onClick={() => handleLanguageChange('fr')}>Français</li>
+              </ul>
+            )}
+          </div>
           {currentUser ? (
             <div className="user">
               <Link to={getProfileLink()}>
@@ -105,10 +115,15 @@ export default function Header() {
                 />
               </Link>
               <span>{currentUser.username}</span>
-              <Link to={getProfileLink()} className="profile">
-                {number > 0 && <div className="notification">{number}</div>}
-                <span><FaBell /></span>
+              <Link to='/logout' aria-label="Log Out">
+                <button className="logout-button">
+                  Log Out
+                </button>
               </Link>
+              <Link to={getProfileLink()} className="profile">                
+              </Link>
+              {number > 0 && <div className="notification" data-count={number}></div>}
+              <span><FaBell /></span>
             </div>
           ) : (
             <div className="auth-links">
@@ -117,19 +132,7 @@ export default function Header() {
             </div>
           )}
         </div>       
-
-        <div className='language-selector'>
-          <button onClick={() => setDropdownOpen(!dropdownOpen)} className='language-button'>
-            <FaGlobe size={20} className='globe-icon' />
-          </button>
-          {dropdownOpen && (
-            <ul className='language-dropdown'>
-              <li onClick={() => handleLanguageChange('en')}>English</li>
-              <li onClick={() => handleLanguageChange('fr')}>Français</li>
-            </ul>
-          )}
-        </div>
-      </div>      
+      </div>   
     </header>
   );
 }

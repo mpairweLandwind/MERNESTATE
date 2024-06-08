@@ -196,17 +196,15 @@ export default function Listing() {
          
           <div className="buttons">
             {currentUser && (
-              <button onClick={handleContactClick} className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'>
+              <button onClick={handleContactClick} className='button contact'>
                 <img src="/chat.png" alt="" />
-                Contact landlord
+                Contact Landlord
               </button>
             )}
             {contact && <Contact listing={listing} authToken={token} />}
             <button
               onClick={handleSave}
-              style={{
-                backgroundColor: saved ? "#fece51" : "white",
-              }}
+              className={`button save ${saved ? 'saved' : ''}`}
             >
               <img src="/save.png" alt="" />
               {saved ? "Place Saved" : "Save the Place"}

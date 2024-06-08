@@ -67,6 +67,7 @@ export const deleteListing = async (req, res) => {
       where: { id: req.params.id },
     });
     res.status(200).json({ message: 'Listing has been deleted!' });
+    console.log("listing deleted successfully!")
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to delete listing' });
@@ -143,9 +144,9 @@ export const getListing = async (req, res) => {
         // Check if the current user has saved this post
         const saved = await prisma.savedPost.findUnique({
           where: {
-            userId_postId: {
+            userRef_postId: {
               postId: id,
-              userId: payload.id,
+              userRef: payload.id,
             },
           },
         });
