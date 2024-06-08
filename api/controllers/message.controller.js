@@ -1,7 +1,7 @@
 import prisma from "../lib/prisma.js";
 
 export const addMessage = async (req, res) => {
-  const tokenUserId = req.userId;
+  const tokenUserId = req.userRef;
   const chatId = req.params.chatId;
   const text = req.body.text;
 
@@ -9,7 +9,7 @@ export const addMessage = async (req, res) => {
     const chat = await prisma.chat.findUnique({
       where: {
         id: chatId,
-        userIDs: {
+        userRefs: {
           hasSome: [tokenUserId],
         },
       },

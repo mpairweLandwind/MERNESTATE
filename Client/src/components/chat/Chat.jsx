@@ -7,8 +7,7 @@ import SocketContext from "../../context/SocketContext";
 import { useNotificationStore } from "../../lib/notificationStore";
 import PropTypes from "prop-types";
 import { clearCurrentUser } from "../../redux/user/userSlice";
-// eslint-disable-next-line no-unused-vars
-import React from "react";
+
 
 
 function Chat({ chats }) {

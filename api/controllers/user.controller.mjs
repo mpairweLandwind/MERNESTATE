@@ -115,14 +115,14 @@ export const checkEmail = async (req, res) => {
 };
 
 export const savePost = async (req, res) => {
-  const postId = req.body.postId;
-  const tokenUserId = req.userId;
+  const postId = req.body.listingId;
+  const tokenUserId = req.userRef;
 
   try {
     const savedPost = await prisma.savedPost.findUnique({
       where: {
-        userId_postId: {
-          userId: tokenUserId,
+        userRef_postId: {
+          userRef: tokenUserId,
           postId,
         },
       },
@@ -138,7 +138,7 @@ export const savePost = async (req, res) => {
     } else {
       await prisma.savedPost.create({
         data: {
-          userId: tokenUserId,
+          userRef: tokenUserId,
           postId,
         },
       });
@@ -151,15 +151,15 @@ export const savePost = async (req, res) => {
 };
 
 export const profilePosts = async (req, res) => {
-  const tokenUserId = req.userId;
+  const tokenUserId = req.userRef;
   try {
-    const userPosts = await prisma.post.findMany({
-      where: { userId: tokenUserId },
+    const userPosts = await prisma.listing.findMany({
+      where: { userRef: tokenUserId },
     });
     const saved = await prisma.savedPost.findMany({
-      where: { userId: tokenUserId },
+      where: { userRef: tokenUserId },
       include: {
-        post: true,
+        listing: true,
       },
     });
 
@@ -172,11 +172,11 @@ export const profilePosts = async (req, res) => {
 };
 
 export const getNotificationNumber = async (req, res) => {
-  const tokenUserId = req.userId;
+  const tokenUserId = req.userRef;
   try {
     const number = await prisma.chat.count({
       where: {
-        userIDs: {
+        userRefs: {
           hasSome: [tokenUserId],
         },
         NOT: {
@@ -186,9 +186,16 @@ export const getNotificationNumber = async (req, res) => {
         },
       },
     });
-    res.status(200).json(number);
+
+    // Check if number is null or undefined
+    if (number == null) {
+      // Return 0 or handle null case as needed
+      res.status(200).json(0);
+    } else {
+      res.status(200).json(number);
+    }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Failed to get profile posts!" });
+    res.status(500).json({ message: "Failed to get notification count!" });
   }
 };

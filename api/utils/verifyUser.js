@@ -13,10 +13,10 @@ export const verifyToken = (req, res, next) => {
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       console.log('Token verification failed:', err);
-      return next(errorHandler(403, 'Forbidden'));
-    }
+      return next(errorHandler(403, 'Forbidden'));    }
 
     req.user = user;
+    req.userRef = user.id;
     console.log('Token verified successfully:', user);
     next();
   });

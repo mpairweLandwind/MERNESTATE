@@ -19,7 +19,7 @@ export default function CreateListing() {
   const [formData, setFormData] = useState({
     listingData: { 
       name: '',
-      type: 'rent',
+      type: '',
       property: '',
       status: '',
       description: '',
@@ -256,6 +256,7 @@ function PropertyDetails({ formData, handleChange }) {
           <InputField label="Bedrooms" id="listingData.bedrooms" type="number" value={formData.listingData.bedrooms} onChange={handleChange} placeholder="Enter number of bedrooms" />
           <InputField label="Bathrooms" id="listingData.bathrooms" type="number" value={formData.listingData.bathrooms} onChange={handleChange} placeholder="Enter number of bathrooms" />
           <SelectField label="Property Type" id="listingData.property" type="text" value={formData.listingData.property} onChange={handleChange} placeholder="select property type" options={[
+             {value:'select', lablel:' click to select'},
              { value: 'condo', label: 'condo' },
              { value: 'house', label: 'house' },
              { value: 'apartment', label: 'apartment' },
@@ -263,10 +264,12 @@ function PropertyDetails({ formData, handleChange }) {
           ]} />
 
             <SelectField label=" Type" id="listingData.type" type="text" value={formData.listingData.type} onChange={handleChange} placeholder="select  type" options={[
-             { value: 'rent', label: 'rent' },
+            {value:"select", lablel:' click to select'},
+            { value: 'rent', label: 'rent' },
              { value: 'sale', label: 'sale' },
             ]} />
           <SelectField label="Status" id="listingData.status" type="text" value={formData.listingData.status} onChange={handleChange} placeholder="Enter property status" options={[
+            {value:'select', lablel:' click to select'},
             { value: 'available', label: 'available' },
             { value: 'occupied', label: 'occupied' },
             { value: 'under_contract', label: 'under_ontract' },
@@ -277,11 +280,7 @@ function PropertyDetails({ formData, handleChange }) {
             { value: 'terminated', label: 'terminated' },
             { value: 'pending_availability', label: 'pending_availability' },
             { value: 'inactive', label: 'inactive' },
-          ]} />
-          <SelectField label="Transaction Type" id="listingData.type" value={formData.listingData.type} onChange={handleChange} options={[
-            { value: 'rent', label: 'Rent' },
-            { value: 'sale', label: 'Sale' },
-          ]} />
+          ]} />          
           <TextAreaField label="Description" id="listingData.description" value={formData.listingData.description} onChange={handleChange} placeholder="Enter property description" />
         </div>
       </div>
@@ -361,14 +360,16 @@ function AdditionalInformation({ formData, handleChange }) {
       <h2 className="text-base font-semibold .custom-font">Additional Information</h2>
       <div className="grid grid-cols-2 gap-8 mt-3 pr-4 pt-2 pl-10 ml-8 mb-1 pb-1">
         <div className="grid grid-cols-1 gap-6">
-          <TextAreaField label="Post Description" id="postDetail.desc" value={formData.postDetail.desc} onChange={handleChange} placeholder="Enter post description" />
+          <TextAreaField label="Post Description e.g General " id="postDetail.desc" value={formData.postDetail.desc} onChange={handleChange} placeholder="Enter post description" />
           <SelectField label="Utilities" id="postDetail.utilities" value={formData.postDetail.utilities} onChange={handleChange} placeholder="Enter utilities details"
           options={[
+            {value:'', lablel:' click to select'},
             { value: 'owner', label: 'Owner is responsible' },
             { value: 'tenant', label: 'Tenant is responsible' },
             { value: 'shared', label: 'Shared' },
            ]} />
           <SelectField label="Pet Policy" id="postDetail.pet" value={formData.postDetail.pet} onChange={handleChange} placeholder="Enter pet policy"  options={[
+            {value:'select', lablel:' click to select'},
             { value: 'allowed', label: 'Allowed' },
             { value: 'not-allowed', label: 'Not Allowed' },
            
