@@ -124,7 +124,7 @@ export default function Listing() {
           </div>
           <div className="features">
             <div className="wrapper">
-              <p className="title">General</p>
+                 <p> <span>{listing.postDetail.desc}</span></p>         
               <div className="listVertical">
                 <div className="feature">
                   <img src="/utility.png" alt="" />
@@ -181,7 +181,7 @@ export default function Listing() {
                   </div>
                 </div>
                 <div className="feature">
-                  <img src="/fee.png" alt="" />
+                  <img src="/restal.png" alt="" />
                   <div className="featureText">
                     <span>Restaurant</span>
                     <p>{listing.postDetail.restaurant}m away</p>
@@ -194,22 +194,23 @@ export default function Listing() {
               </div>
             </div>
          
-          <div className="buttons">
-            {currentUser && (
-              <button onClick={handleContactClick} className='button contact'>
-                <img src="/chat.png" alt="" />
-                Contact Landlord
-              </button>
-            )}
-            {contact && <Contact listing={listing} authToken={token} />}
-            <button
-              onClick={handleSave}
-              className={`button save ${saved ? 'saved' : ''}`}
-            >
-              <img src="/save.png" alt="" />
-              {saved ? "Place Saved" : "Save the Place"}
-            </button>
-          </div>
+            <div className="flex justify-between items-center">
+  {currentUser && (
+    <button onClick={handleContactClick} className='flex items-center rounded-full  button contact'>
+      <img src="/msg1.png" alt="" className="w-10 h-10 mr-2" />
+      <p className='text-gray-700'> Contact Landlord</p>
+    </button>
+  )}
+  {contact && <Contact listing={listing} authToken={token} />}
+  <button
+    onClick={handleSave}
+    className={`flex text-gray-700 rounded-full   items-center button save ${saved ? 'saved' : ''}`}
+  >
+    <img src="/wish.png" alt="" className="w-10 h-10 mr-2 " />
+  <span className='text-gray-700'> {saved ? "Place Saved" : "Save the Place"}</span>  
+  </button>
+</div>
+
         </div>
         </div>
       )}

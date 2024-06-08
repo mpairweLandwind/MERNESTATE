@@ -138,7 +138,16 @@ export default function CreateListing() {
           [subKey]: parseInt(value, 10),
         },
       });
-    } else {
+    }else if (mainKey === 'listingData' && (subKey === 'latitude' || subKey === 'longitude')) {
+      setFormData({
+        ...formData,
+        listingData: {
+          ...formData.listingData,
+          [subKey]: parseFloat(value),
+        },
+      });
+    }   
+    else {
       setFormData({
         ...formData,
         [mainKey]: {
@@ -161,10 +170,8 @@ export default function CreateListing() {
     }
   
     setLoading(true);
-    setError(false);
-  
-    // No need to redefine sanitizedData since we can use formData directly
-    // Ensure bathrooms and bedrooms are integers and properly formatted
+    setError(false);  
+   
     formData.listingData.bathrooms = parseInt(formData.listingData.bathrooms, 10);
     formData.listingData.bedrooms = parseInt(formData.listingData.bedrooms, 10);
     formData.postDetail.size = parseInt(formData.postDetail.size, 10);
@@ -244,8 +251,8 @@ function PropertyDetails({ formData, handleChange }) {
           <InputField label="Property Name" id="listingData.name" type="text" value={formData.listingData.name} onChange={handleChange} placeholder="Enter property name" />
           <InputField label="Property Address" id="listingData.address" type="text" value={formData.listingData.address} onChange={handleChange} placeholder="Enter property address" />
           <InputField label="City/District/Location" id="listingData.city" type="text" value={formData.listingData.city} onChange={handleChange} placeholder="Enter location" />
-          <InputField label="Latitude" id="listingData.latitude" type="text" value={formData.listingData.latitude} onChange={handleChange} placeholder="Enter latitude" />
-          <InputField label="Longitude" id="listingData.longitude" type="text" value={formData.listingData.longitude} onChange={handleChange} placeholder="Enter longitude" />
+          <InputField label="Latitude" id="listingData.latitude" type="number" step="any" value={formData.listingData.latitude} onChange={handleChange} placeholder="Enter latitude" />
+          <InputField label="Longitude" id="listingData.longitude" type="number" step="any" value={formData.listingData.longitude} onChange={handleChange} placeholder="Enter longitude" />
           <CheckboxField label="Furnished" id="listingData.furnished" checked={formData.listingData.furnished} onChange={handleChange} />
           <CheckboxField label="Parking Spot" id="listingData.parking" checked={formData.listingData.parking} onChange={handleChange} />
           <CheckboxField label="Offer" id="listingData.offer" checked={formData.listingData.offer} onChange={handleChange} />

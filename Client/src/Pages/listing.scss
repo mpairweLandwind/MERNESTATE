@@ -10,15 +10,15 @@ display: flex;
     }
 
   .details {
-      flex: 3;
-      height: 100%;
-      overflow-y: scroll;
+    flex: 3;
+        height: 100%;
+        overflow-y: scroll;
 
     @include md {
-            flex: none;
-            height: max-content;
-            margin-bottom: 50px;
-        }
+    flex: none;
+        height: max-content;
+        margin-bottom: 50px;
+    }
 
         .wrapper {
             padding-right: 50px;
@@ -35,8 +35,8 @@ display: flex;
                       margin-top: 50px;
 
         .top {
-                display: flex;
-                justify-content: space-between;
+        display: flex;
+            justify-content: space-between;
 
         @include sm {
                 flex-direction: column;
@@ -49,8 +49,8 @@ display: flex;
                                       gap: 20px;
 
             h1 {
-                    font-weight: 400;
-                }
+            font-weight: 400;
+            }
 
                         .address {
                             display: flex;
@@ -87,8 +87,8 @@ display: flex;
                                       font-weight: 600;
 
             @include sm {
-                    padding: 20px 50px;
-                }
+            padding: 20px 50px;
+            }
 
                         img {
                             width: 50px;
@@ -109,16 +109,16 @@ display: flex;
                                 }
 
   .features {
-      flex: 2;
-      background-color: #fcf5f3;
-      height: 100%;
-      overflow-y: scroll;
+    flex: 2;
+        background-color: #fcf5f3;
+        height: 100%;
+        overflow-y: scroll;
 
     @include md {
-            flex: none;
-            height: max-content;
-            margin-bottom: 50px;
-        }
+    flex: none;
+        height: max-content;
+        margin-bottom: 50px;
+    }
 
         .wrapper {
             padding: 0px 20px;
@@ -147,8 +147,8 @@ display: flex;
                       gap: 10px;
 
         img {
-                background-color: rgba(254, 205, 81, 0.209);
-            }
+        background-color: rgba(254, 205, 81, 0.209);
+        }
 
                 .featureText {
                     span {
@@ -183,8 +183,8 @@ display: flex;
                       justify-content: space-between;
 
         @include lg {
-                font-size: 12px;
-            }
+        font-size: 12px;
+        }
 
                 .size {
                     display: flex;
@@ -203,59 +203,38 @@ display: flex;
 
                   .buttons {
         display: flex;
-            justify-content: space-between;
-        padding: 1rem;
-        
-            @include md {
-                flex-direction: column;
-                gap: 1rem;
-            }
+        justify-content: space-between;
+        margin: 3rem 3rem;
 
-                                button {
+        button {
+        padding: 10px;
         display: flex;
-            align-items: center;
-        justify-content: center;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            font-weight: bold;
-            color: #333;
-            background-color: #f7f6f3;
-            border: 1px solid #ddd;
+            align-items: right;
+                gap: 12px;
+                background-color: white;
+                border: 1px solid #f7f6f3;
             border-radius: 5px;
             cursor: pointer;
-        transition: background-color 0.3s ease, color 0.3s ease;
 
         img {
-            width: 20px;
-                height: 20px;
-                margin-right: 0.5rem;
+            width: 24px;
+                height: 24px;
             }
             
             &.contact {
-                background-color: #007bff;
-                color: white;
-            
-                &:hover {
-                    background-color: #0056b3;
-                }
+            order: 1;
             }
             
             &.save {
-                background-color: #28a745;
-                color: white;
+            order: 2;
+                background-color: #fece51;
+            color: #fff;
+                font-weight: bold;
             
                 &.saved {
-                    background-color: #fece51;
-                    color: #333;
-                }
-            
-                &:hover {
-                    background-color: #218838;
-            
-                    &.saved {
-                        background-color: #e0a800;
-                    }
-                }
+            background-color: #ffffff;
+                color: #000;
+            }
             }
             }
             }
