@@ -11,8 +11,8 @@ function Pin({ item }) {
           <img src={item.imageUrls[0]} alt="" />
           <div className="textContainer">
             <Link to={`/${item.id}`}>{item.name}</Link>
-            <span>{item.bedroom} bedroom</span>
-            <b>$ {item.price}</b>
+            <span>{item.bedrooms} bedrooms</span>
+            <b>$ {item.regularPrice}</b>
           </div>
         </div>
       </Popup>
@@ -27,8 +27,8 @@ Pin.propTypes = {
     latitude: PropTypes.number.isRequired,
     longitude: PropTypes.number.isRequired,
     imageUrls: PropTypes.arrayOf(PropTypes.string).isRequired,
-    bedroom: PropTypes.number.isRequired,
-    price: PropTypes.number.isRequired,
+    bedrooms: PropTypes.number.isRequired,
+    regularPrice: PropTypes.number.isRequired,
   }).isRequired,
 };
 

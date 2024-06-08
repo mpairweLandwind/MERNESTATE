@@ -18,7 +18,7 @@ function Map({ items }) {
       className="map"
     >
       <TileLayer
-        attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | $${items[0]?.regularPrice}`}
+        attribution={`  $${items[0]?.regularPrice}`}
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {items.map((item) => (
@@ -33,7 +33,7 @@ Map.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      title: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
       latitude: PropTypes.number.isRequired,
       regularPrice: PropTypes.number.isRequired,
       longitude: PropTypes.number.isRequired,

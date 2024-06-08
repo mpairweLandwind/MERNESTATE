@@ -258,8 +258,8 @@ function PropertyDetails({ formData, handleChange }) {
           <CheckboxField label="Offer" id="listingData.offer" checked={formData.listingData.offer} onChange={handleChange} />
         </div>
         <div className="grid grid-cols-1 gap-6 pr-12 ">
-          <InputField label="Regular Price($)" id="listingData.regularPrice" type="text" value={formData.listingData.regularPrice} onChange={handleChange} placeholder="Enter regular price" />
-          <InputField label="Discount Price($)" id="listingData.discountPrice" type="text" value={formData.listingData.discountPrice} onChange={handleChange} placeholder="Enter discount price" />
+          <InputField label="Regular Price($)" id="listingData.regularPrice" type="number" value={formData.listingData.regularPrice} onChange={handleChange} placeholder="Enter regular price" />
+          <InputField label="Discount Price($)" id="listingData.discountPrice" type="number" value={formData.listingData.discountPrice} onChange={handleChange} placeholder="Enter discount price" />
           <InputField label="Bedrooms" id="listingData.bedrooms" type="number" value={formData.listingData.bedrooms} onChange={handleChange} placeholder="Enter number of bedrooms" />
           <InputField label="Bathrooms" id="listingData.bathrooms" type="number" value={formData.listingData.bathrooms} onChange={handleChange} placeholder="Enter number of bathrooms" />
           <SelectField label="Property Type" id="listingData.property" type="text" value={formData.listingData.property} onChange={handleChange} placeholder="select property type" options={[

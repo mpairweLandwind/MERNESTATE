@@ -57,7 +57,7 @@ export default function Listing() {
     }
     try {
       setSaved(prev => !prev);
-      const response = await axios.post('/user/save', { listingId: listing.id }, {
+      const response = await axios.post('api/user/save', { listingId: listing.id }, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
