@@ -71,12 +71,20 @@ display: flex;
                             width: max-content;
                             font-size: 20px;
                             font-weight: 300;
+
 .discount-price {
         color: red;
         /* Change color for better visibility */
         font-weight: bold;
     }
 
+        .lineThrough {
+            text-decoration: line-through;
+            color: #888;
+            font-weight: bold;
+            /* or use font-weight: 700; */
+            margin-right: 5px;
+        }
     .regular-price {
         color: green;
         /* Change color for better visibility */
@@ -145,6 +153,17 @@ display: flex;
                       height: 24px;
                   }
 
+                                                                  .discountBadge {
+                                                                      position: absolute;
+                                                                      top: 10px;
+                                                                      right: 10px;
+                                                                      background-color: red;
+                                                                      color: white;
+                                                                      padding: 5px 10px;
+                                                                      border-radius: 5px;
+                                                                      font-size: 14px;
+                                                                      font-weight: bold;
+                                                                  }
                   .title {
                       font-weight: bold;
                       font-size: 18px;

@@ -127,19 +127,9 @@ export default function Listing() {
                       <span>{listing.address}</span>
                     </div>
                     <div className="price">
-                         {listing.offer ? (
-                                   <span className="discount-price">
-                            ${listing.discountPrice.toLocaleString('en-US')} (Discounted)
-                                  </span>
-                                 ) : (
-                                         <span className="regular-price">
-                                                 ${listing.regularPrice.toLocaleString('en-US')} (Regular)
-                                     </span>
-                                      ) }
-                                     {listing.type === 'rent' && ' / month'}
-                        </div>
-    
-                    
+                      ${listing.offer ? listing.discountPrice.toLocaleString('en-US') : listing.regularPrice.toLocaleString('en-US')}
+                      {listing.type === 'rent' && ' / month'}
+                    </div>
                   </div>
                   <div className="user">
                     <img src={listing.user.avatar} alt="" />
@@ -156,7 +146,7 @@ export default function Listing() {
             </div>
           </div>
           <div className="features">
-            <div className="wrapper mt-4">
+            <div className="wrapper mt-3">
                  <p> <span>{listing.postDetail.desc}</span></p>         
               <div className="listVertical">
                 <div className="feature">

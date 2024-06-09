@@ -58,9 +58,11 @@
     .lineThrough {
         text-decoration: line-through;
         color: #888;
+        font-weight: bold;
+            /* or use font-weight: 700; */
         margin-right: 5px;
     }
-
+    
     .discountPrice {
         color: #d32f2f;
         font-weight: bold;
