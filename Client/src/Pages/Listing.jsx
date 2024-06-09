@@ -3,13 +3,17 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FaMapMarkerAlt } from 'react-icons/fa';
-import DOMPurify from 'dompurify';
+import { FaMapMarkerAlt ,FaShare} from 'react-icons/fa';
+//import DOMPurify from 'dompurify';
+import 'swiper/css/bundle';
+import { Navigation } from 'swiper/modules';
+import SwiperCore from 'swiper';
 import Map from '../components/Map';
 import Contact from '../components/Contact';
 import './listing.scss';
 
 export default function Listing() {
+  SwiperCore.use([Navigation]);
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
@@ -19,6 +23,7 @@ export default function Listing() {
   const { currentUser, token } = useSelector(state => state.user);
   const [contact, setContact] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!currentUser || !token) {
@@ -56,8 +61,7 @@ export default function Listing() {
       return;
     }
     try {
-      setSaved(prev => !prev);
-      const response = await axios.post('api/user/save', { listingId: listing.id }, {
+      const response = await axios.post('/api/user/save', { listingId: listing.id }, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -66,13 +70,14 @@ export default function Listing() {
       if (!response.data.message) {
         throw new Error('Failed to save the listing');
       }
+      setSaved(true);
     } catch (error) {
       console.error('Error saving the listing:', error);
-      setSaved(prev => !prev); // Revert saved state if save fails
       setError(true);
     }
   };
-
+  
+  
   if (!currentUser || !token) {
     return null;
   }
@@ -84,7 +89,7 @@ export default function Listing() {
       {listing && !loading && !error && (
         <div className="singlePage">
           <div className="details">
-            <div className="wrapper">
+            <div className="wrapper mt-3  ml-2">
               <Swiper navigation>
                 {listing.imageUrls.map(url => (
                   <SwiperSlide key={url}>
@@ -95,35 +100,63 @@ export default function Listing() {
                   </SwiperSlide>
                 ))}
               </Swiper>
-              <div className="info">
-                <div className="top">
-                  <div className="post">
+              <div className='fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer'>
+            <FaShare
+              className='text-slate-500'
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                setCopied(true);
+                setTimeout(() => {
+                  setCopied(false);
+                }, 2000);
+              }}
+            />
+          </div>
+          {copied && (
+            <p className='fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2'>
+              Link copied!
+            </p>
+          )}
+              
+              <div className="info ">
+                <div className="top ml-4">
+                  <div className="post ">
                     <h1>{listing.name}</h1>
                     <div className="address">
                       <FaMapMarkerAlt className='text-green-700' />
                       <span>{listing.address}</span>
                     </div>
                     <div className="price">
-                      ${listing.offer ? listing.discountPrice.toLocaleString('en-US') : listing.regularPrice.toLocaleString('en-US')}
-                      {listing.type === 'rent' && ' / month'}
-                    </div>
+                         {listing.offer ? (
+                                   <span className="discount-price">
+                            ${listing.discountPrice.toLocaleString('en-US')} (Discounted)
+                                  </span>
+                                 ) : (
+                                         <span className="regular-price">
+                                                 ${listing.regularPrice.toLocaleString('en-US')} (Regular)
+                                     </span>
+                                      ) }
+                                     {listing.type === 'rent' && ' / month'}
+                        </div>
+    
+                    
                   </div>
                   <div className="user">
                     <img src={listing.user.avatar} alt="" />
                     <span>{listing.user.username}</span>
                   </div>
                 </div>
-                <div
+                {/* <div
                   className="bottom"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(listing.postDetail.desc),
                   }}
-                ></div>
+                ></div> */}
               </div>
             </div>
           </div>
           <div className="features">
-            <div className="wrapper">
+            <div className="wrapper mt-4">
                  <p> <span>{listing.postDetail.desc}</span></p>         
               <div className="listVertical">
                 <div className="feature">

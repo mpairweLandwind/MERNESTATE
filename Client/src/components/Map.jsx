@@ -37,7 +37,7 @@ Map.propTypes = {
       latitude: PropTypes.number.isRequired,
       regularPrice: PropTypes.number.isRequired,
       longitude: PropTypes.number.isRequired,
-      images: PropTypes.arrayOf(PropTypes.string).isRequired,
+      imageUrls: PropTypes.arrayOf(PropTypes.string).isRequired,
       bedroom: PropTypes.number.isRequired,
       price: PropTypes.number.isRequired,
     })

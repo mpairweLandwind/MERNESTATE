@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -41,7 +35,6 @@ model Listing {
   @@map("listings")
 }
 
-// Enums for ListingType and PropertyType
 enum ListingType {
   sale
   buy
@@ -55,7 +48,6 @@ enum PropertyType {
   house
 }
 
-// Enums for UserRole
 enum UserRole {
   admin
   landlord
@@ -75,8 +67,6 @@ enum PropertyStatus {
   inactive
 }
 
-
-// User model
 enum UserStatus {
   active
   inactive
@@ -99,8 +89,6 @@ model User {
   @@map("users")
 }
 
-
-
 model PostDetail {
   id         String  @id @default(auto()) @map("_id") @db.ObjectId
   desc       String
@@ -111,7 +99,7 @@ model PostDetail {
   school     Int?
   bus        Int?
   restaurant Int?
-  listing    Listing    @relation(fields: [postId], references: [id], onDelete: Cascade) // Add onDelete: Cascade
+  listing    Listing    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId     String  @unique @db.ObjectId
 }
 
@@ -119,8 +107,8 @@ model SavedPost {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   user      User     @relation(fields: [userRef], references: [id])
   listing      Listing     @relation(fields: [postId], references: [id])
-  userRef    String   @unique @db.ObjectId
-  postId    String   @unique @db.ObjectId
+  userRef    String   @db.ObjectId
+  postId    String   @db.ObjectId
   createdAt DateTime @default(now())
 
   @@unique([userRef, postId])

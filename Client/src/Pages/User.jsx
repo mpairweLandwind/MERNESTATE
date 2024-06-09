@@ -22,7 +22,7 @@ function User() {
   const [rentListings, setRentListings] = useState([]);
   const [saleListings, setSaleListings] = useState([]);
 
-  const { currentUser , token} = useSelector(state => state.user);
+  const { currentUser, token } = useSelector(state => state.user);
 
   const fetchListings = useCallback(async (url, setter) => {
     try {
@@ -54,7 +54,7 @@ function User() {
     <div className="listPage">
       <div className="listContainer">
         <div className="wrapper">
-          <Filter />
+          <Filter setListings={setRentListings} />
           <div className="title">
             <h2 className="primaryText">Rent Listings</h2>
             {renderListings(rentListings)}

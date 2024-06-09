@@ -165,11 +165,10 @@ export const getListing = async (req, res) => {
   }
 };
 
-
 // Get multiple listings with filters
 export const getListings = async (req, res, next) => {
   try {
-    const { searchTerm, offer, furnished, parking, type, sort, order, limit, startIndex } = req.query;
+    const { searchTerm, offer, furnished, parking, type, sort, order, limit, startIndex, city, property, bedrooms, minPrice, maxPrice } = req.query;
     const parsedLimit = parseInt(limit, 10) || 9;
     const parsedStartIndex = parseInt(startIndex, 10) || 0;
 
@@ -181,12 +180,24 @@ export const getListings = async (req, res, next) => {
       ...(offer !== undefined && { offer: offer === 'true' }),
       ...(furnished !== undefined && { furnished: furnished === 'true' }),
       ...(parking !== undefined && { parking: parking === 'true' }),
+      ...(city && { city }),
+      ...(property && { property }),
+      ...(bedrooms && { bedrooms: parseInt(bedrooms) }),
+      ...(minPrice && maxPrice && {
+        regularPrice: {
+          gte: parseFloat(minPrice),
+          lte: parseFloat(maxPrice),
+        },
+      }),
     };
 
     // Check if type is defined and not 'all'
     if (type !== undefined && type !== 'all') {
       whereClause.type = type;
     }
+
+    console.log('Query parameters:', req.query);
+    console.log('Where clause:', whereClause);
 
     const listings = await prisma.listing.findMany({
       where: whereClause,
@@ -197,9 +208,11 @@ export const getListings = async (req, res, next) => {
       take: parsedLimit,
     });
 
+    console.log('Listings found:', listings);
+
     res.status(200).json(listings);
   } catch (error) {
-    console.error(error);
+    console.error('Error occurred:', error);
     next(errorHandler(500, 'Failed to get listings'));
   }
 };

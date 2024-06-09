@@ -6,7 +6,8 @@ export default function Contact({ listing, authToken }) {
   const [landlord, setLandlord] = useState(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);  
+  const [error, setError] = useState(false);
+
   // Retrieve tenant details from Redux store
   const tenant = useSelector(state => state.user);
 
@@ -31,9 +32,9 @@ export default function Contact({ listing, authToken }) {
         setLoading(false);
       }
     };
-    
+
     fetchLandlord();
-  }, [listing, authToken]); // React to changes in listing or authToken
+  }, [listing, authToken]);
 
   const onChange = (e) => {
     setMessage(e.target.value);
@@ -60,7 +61,7 @@ export default function Contact({ listing, authToken }) {
             className='w-full border p-3 rounded-lg'
           ></textarea>
           <a
-            href={`mailto:${landlord.email}?subject=Regarding ${listing.name}&body=Hi ${landlord.username},%0A%0A${message}%0A%0AFrom: ${tenant.name || 'Your Name'}, ${tenant.email || 'your.email@example.com'}`}
+            href={`mailto:${landlord.email}?subject=Regarding ${listing.name}&body=Hi ${landlord.username},%0A%0A${message}%0A%0AFrom: ${tenant.username || 'Your Name'}%0AEmail: ${tenant.email || 'your.email@example.com'}`}
             className='bg-slate-700 text-white text-center p-3 uppercase rounded-lg hover:opacity-95'
           >
             Send Message

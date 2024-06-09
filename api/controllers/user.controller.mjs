@@ -146,9 +146,10 @@ export const savePost = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Failed to delete users!" });
+    res.status(500).json({ message: "Failed to save the post!" });
   }
 };
+
 
 export const profilePosts = async (req, res) => {
   const tokenUserId = req.userRef;

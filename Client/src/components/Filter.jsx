@@ -1,34 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import './filter.scss';
 import { useSearchParams } from "react-router-dom";
-
 import 'tailwindcss/tailwind.css';
+import { fetchData } from '../lib/utils';
 
-function Filter() {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [query, setQuery] = useState({
-      type: searchParams.get("type") || "",
-      city: searchParams.get("city") || "",
-      property: searchParams.get("property") || "",
-      minPrice: searchParams.get("minPrice") || "",
-      maxPrice: searchParams.get("maxPrice") || "",
-      bedroom: searchParams.get("bedroom") || "",
+function Filter({ setListings }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState({
+    type: searchParams.get("type") || "",
+    city: searchParams.get("city") || "",
+    property: searchParams.get("property") || "",
+    minPrice: searchParams.get("minPrice") || "",
+    maxPrice: searchParams.get("maxPrice") || "",
+    bedroom: searchParams.get("bedrooms") || "",
+  });
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      const queryString = new URLSearchParams(query).toString();
+      try {
+        const data = await fetchData(`/api/listing?${queryString}`);
+        setListings(data);
+      } catch (error) {
+        console.error('Failed to fetch listings:', error);
+        setListings([]);
+      }
+    };
+
+    fetchListings();
+  }, [query, setListings]);
+
+  const handleChange = (e) => {
+    setQuery({
+      ...query,
+      [e.target.name]: e.target.value,
     });
-  
-    const handleChange = (e) => {
-      setQuery({
-        ...query,
-        [e.target.name]: e.target.value,
-      });
-    };
-  
-    const handleFilter = () => {
-      setSearchParams(query);
-    };
-  
+  };
 
-    return (
-        <div className="filter">
+  const handleFilter = () => {
+    setSearchParams(query);
+  };
+
+  return (
+    <div className="filter">
       <h1>
         Search results for <b>{searchParams.get("city")}</b>
       </h1>
@@ -88,7 +103,7 @@ function Filter() {
         <div className="item">
           <label htmlFor="maxPrice">Max Price</label>
           <input
-            type="text"
+            type="number"
             id="maxPrice"
             name="maxPrice"
             placeholder="any"
@@ -99,7 +114,7 @@ function Filter() {
         <div className="item">
           <label htmlFor="bedroom">Bedroom</label>
           <input
-            type="text"
+            type="number"
             id="bedroom"
             name="bedroom"
             placeholder="any"
@@ -114,5 +129,9 @@ function Filter() {
     </div>
   );
 }
+
+Filter.propTypes = {
+  setListings: PropTypes.func.isRequired,
+};
 
 export default Filter;
