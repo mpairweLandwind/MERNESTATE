@@ -52,32 +52,29 @@ export default function Home() {
           <div className="content">
             <div className="background"></div>
             <div className="text-content">
-              <h1>Effortlessly Rent and Manage Your Dream Property with Our Seamless Online Platform</h1>
+              <h1><span>Effortlessly</span> Rent and Manage Your Dream Property with Our Seamless Online Platform</h1>
               <p>Find a variety of properties that suit you very easily.<br />Forget all difficulties in finding a residence for you.</p>
               <div className="get-started">
-                <Link to={'/search'} className="link">Let`s get started...</Link>
+                <Link to={'/search'} className="link"><button>Let`s get started <img src="./right_arrow.png" /></button></Link>
               </div>
               <div className="stats">
                 <div className="stat-item">
-                  <span className="number"><CountUp start={8800} end={9000} duration={4} /></span>
-                  <span className="plus">+</span>
-                  <span>Premium Products</span>
+                  <h1 className="number"><CountUp className='count' start={8800} end={9000} duration={4} />+</h1>
+                  <h2>Premium Products</h2>
                 </div>
                 <div className="stat-item">
-                  <span className="number"><CountUp start={1950} end={2000} duration={4} /></span>
-                  <span className="plus">+</span>
-                  <span>Happy Customers</span>
+                  <h1 className="number"><CountUp className='count' start={1950} end={2000} duration={4} />+</h1>
+                  <h2>Happy Customers</h2>
                 </div>
                 <div className='stat-item'>
-                  <span className="number"><CountUp end={28} /></span>
-                  <span className="plus">+</span>
-                  <span>Award Winnings</span>
+                  <h1 className="number"><CountUp className='count' end={28} />+</h1>
+                  <h2>Award Winnings</h2>
                 </div>
               </div>
             </div>
           </div>
           <div className="image-container">
-            <img src="./hero.jpg" alt="Hero" />
+            <img src="./bg.png" alt="Hero" />
           </div>
         </div>
       </section>
@@ -100,8 +97,8 @@ export default function Home() {
             </div>
           </SwiperSlide>
         )) : (
-            <SwiperSlide className='swiper-slider-2'>
-              <div className='failed'>
+          <SwiperSlide className='swiper-slider-2'>
+            <div className='failed'>
               <p>No listings available</p>
             </div>
           </SwiperSlide>

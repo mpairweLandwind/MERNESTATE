@@ -1,6 +1,6 @@
-$bg-color: #777; // Gray color example
-$text-color: white;
-$highlight-color: blue;
+$bg-color: #ffffff; // Gray color example
+$text-color: rgb(0, 0, 0);
+$highlight-color: orange;
 $shadow-color: rgba(0, 0, 0, 0.5);
 
 .page-container {
@@ -54,6 +54,10 @@ $shadow-color: rgba(0, 0, 0, 0.5);
                         line-height: tight;
                         margin-bottom: 1.5rem;
                         margin-top: 2rem;
+
+                        span {
+                            color: orange;
+                        }
                     }
 
                     p {
@@ -64,35 +68,51 @@ $shadow-color: rgba(0, 0, 0, 0.5);
                     .get-started {
                         margin-bottom: 1.5rem;
 
-                        .link {
+                        button {
+                            display: flex;
+                            gap: 10px;
                             color: $highlight-color;
                             font-size: 1.125rem; // text-lg
                             font-weight: bold;
+                            border: 1px solid orange;
+                            border-radius: 0.5rem;
+                            width: max-content;
+                            padding: 15px;
 
                             &:hover {
-                                text-decoration: underline;
+                                background-color: orange;
+                                color: white;
+                                transition: all ease 0.4s;
+                            }
+
+                            img {
+                                color: orange;
+                                width: 24px;
+                                height: 24px;
                             }
                         }
                     }
 
                     .stats {
                         display: flex;
+                        gap: 4rem;
 
                         .stat-item {
-                            margin-right: 2rem;
+                            display: block;
 
-                            span {
-                                display: block;
+                            .number {
+                                display: flex;
+                                font-size: 30px;
+                                color: orange;
 
-                                &.number {
-                                    font-size: 3rem; // text-3xl
-                                    font-weight: bold;
+                                .count {
+                                    color: black;
                                 }
+                            }
 
-                                &.plus {
-                                    color: orange;
-                                    font-size: 1.25rem; // text-xl
-                                }
+                            h2 {
+                                font-size: 20px;
+                                font-weight: 300;
                             }
                         }
                     }
@@ -100,18 +120,24 @@ $shadow-color: rgba(0, 0, 0, 0.5);
             }
 
             .image-container {
-                width: 100%;
+                flex: 2;
+                background-color: #fcf5f3;
+                position: relative;
                 display: flex;
-                justify-content: flex-end;
+                align-items: center;
 
-                @media (min-width: 1024px) {
-                    width: 33.33333%; // lg:w-1/3
+                @media md {
+                    display: none;
                 }
 
                 img {
-                    position: relative;
-                    border-radius: 0.75rem; // rounded-lg
-                    box-shadow: 0 10px 15px -3px $shadow-color, 0 4px 6px -4px $shadow-color;
+                    width: 125%;
+                    position: absolute;
+                    right: 0;
+
+                    @media lg {
+                        width: 105%;
+                    }
                 }
             }
         }
