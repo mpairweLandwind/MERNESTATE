@@ -1,9 +1,13 @@
 @import "../responsive.scss";
+
 .signin-container {
     padding: 1rem;
-    max-width: 30rem; // 768px
+    max-width: 40rem; // 768px
     margin: auto;
     margin-top: 120px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
     .title {
         display: flex;
@@ -30,6 +34,7 @@
         flex-direction: column;
         gap: 25px;
         margin-top: 50px;
+        align-items: center;
 
         .signin-input {
             display: flex;
