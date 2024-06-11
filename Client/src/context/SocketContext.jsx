@@ -9,38 +9,48 @@ export const SocketContextProvider = ({ children }) => {
   const currentUser = useSelector((state) => state.user.currentUser); // Adjust path according to your Redux store setup
   const [socket, setSocket] = useState(null);
 
+
+
+
+  useEffect(() => {
+    setSocket(io("http://localhost:4000"));
+  }, []);
+
+  useEffect(() => {
+  currentUser && socket?.emit("newUser", currentUser.id);
+  }, [currentUser, socket]);
   
-  // Effect for setting up and tearing down the socket connection
-  useEffect(() => {
-    if (currentUser) {
-      const newSocket = io("http://localhost:4000", {
-        query: { userId: currentUser.id },
-      });
-      setSocket(newSocket);
-      console.log("Connected to socket server as user:", currentUser.id);
+  // // Effect for setting up and tearing down the socket connection
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     const newSocket = io("http://localhost:4000", {
+  //       query: { userId: currentUser.id },
+  //     });
+  //     setSocket(newSocket);
+  //     console.log("Connected to socket server as user:", currentUser.id);
 
-      return () => {
-        newSocket.close();
-        console.log("Socket disconnected");
-      };
-    }
-  }, [currentUser]); 
+  //     return () => {
+  //       newSocket.close();
+  //       console.log("Socket disconnected");
+  //     };
+  //   }
+  // }, [currentUser]); 
       
-  // Separate effect for handling socket events if needed
-  useEffect(() => {
-    if (socket) {
-      socket.on("connect", () => {
-        console.log("Socket event: connected");
-      });
+  // // Separate effect for handling socket events if needed
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on("connect", () => {
+  //       console.log("Socket event: connected");
+  //     });
 
-      // Optionally add more event listeners here
+  //     // Optionally add more event listeners here
 
-      return () => {
-        socket.off("connect");
-        // Disconnect other event listeners here if added
-      };
-    }
-  }, [socket]); // Dependency only on socket for setting event listeners
+  //     return () => {
+  //       socket.off("connect");
+  //       // Disconnect other event listeners here if added
+  //     };
+  //   }
+  // }, [socket]); // Dependency only on socket for setting event listeners
 
   return (
     <SocketContext.Provider value={{ socket }}>

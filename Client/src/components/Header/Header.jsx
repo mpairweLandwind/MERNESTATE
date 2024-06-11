@@ -1,33 +1,54 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { FaSearch, FaBell, FaGlobe } from 'react-icons/fa';
 import { useNotificationStore } from '../../lib/notificationStore';
 import './header.scss';
-import { clearCurrentUser } from '../../redux/user/userSlice'; // Adjust import path as per your project structure
+import { clearCurrentUser } from '../../redux/user/userSlice';
+import { getToken,getCurrentUser } from '../../redux/user/useSelectors';
+
+
 
 export default function Header() {
+  const currentUser = useSelector(getCurrentUser);
+  const token = useSelector(getToken);
   const { i18n, t } = useTranslation();
   const dispatch = useDispatch();
-  const { currentUser, token } = useSelector((state) => state.user);
   const [searchTerm, setSearchTerm] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  const notificationStore = useNotificationStore(); // Get Zustand store instance
-  const { number, fetch } = notificationStore; // Destructure state and actions from store
+  const fetch = useNotificationStore((state) => state.fetch);
+  const number = useNotificationStore((state) => state.number);
+
+  const getProfileLink = useCallback(() => {
+    if (!currentUser) return '/sign-in';
+    switch (currentUser.role) {
+      case 'admin': return '/admin-dashboard';
+      case 'user': return '/user-dashboard';
+      case 'landlord': return '/landlord/dashboard';
+      default: return '/';
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser) {
+      fetch(token);
+    }
+  }, [currentUser, token, fetch]);
+
+  useEffect(() => {
+    if (currentUser && token) {
+      const path = getProfileLink();
+      navigate(path);
+    }
+  }, [currentUser, token, navigate, getProfileLink]);
 
   const handleLanguageChange = (lang) => {
     i18n.changeLanguage(lang);
     setDropdownOpen(false);
   };
-
-  useEffect(() => {
-    if (currentUser && token) {
-      fetch(token); // Fetch notifications when currentUser or token changes
-    }
-  }, [currentUser, token, fetch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -48,28 +69,13 @@ export default function Header() {
         setDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownOpen]);
 
   const handleLogout = () => {
     dispatch(clearCurrentUser());
-    navigate('/sign-in');
-  };
-
-  const getProfileLink = () => {
-    if (!currentUser) return '/sign-in';
-    switch (currentUser.role) {
-      case 'admin':
-        return '/admin-dashboard';
-      case 'user':
-        return '/user-dashboard';
-      case 'landlord':
-        return '/landlord';
-      default:
-        return '/';
-    }
+    navigate('/');
   };
 
   return (
@@ -127,8 +133,10 @@ export default function Header() {
               </button>
               <Link to={getProfileLink()} className="profile">
               </Link>
-              {number > 0 && <div className="notification" data-count={number}></div>}
-              <span><FaBell /></span>
+              <div className="notification">
+                {number > 0 && <div className="number">{number}</div>}
+                <FaBell className="icon" />
+              </div>
             </div>
           ) : (
             <div className="auth-links">

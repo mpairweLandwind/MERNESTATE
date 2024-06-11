@@ -2,6 +2,7 @@ import { useNavigate, Link } from 'react-router-dom';
 //useLocation ,
 import { useDispatch, useSelector } from 'react-redux';
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
+
 import OAuth from '../components/OAuth';
 import { useState } from 'react';
 import user_password from "../assets/password.png";
@@ -11,11 +12,12 @@ import './signIn.scss';
 export default function SignIn() {
   const [formData, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
+
+ 
   const navigate = useNavigate();
   // const location = useLocation();
   const dispatch = useDispatch();
 
-  // const from = location.state?.from?.pathname || '/';
 
 
   const handleChange = (e) => {

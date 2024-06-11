@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Link, useNavigate, Await } from 'react-router-dom';
+import { Link, useNavigate, Await ,useLoaderData} from 'react-router-dom';
 import List from '../components/List';
 import './Profile.scss';
 import Chat from '../components/chat/Chat';
@@ -18,18 +18,9 @@ export default function Profile() {
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
-  const [deferredChats, setDeferredChats] = useState(null); // State to handle deferred chats
+  const {chatData} = useLoaderData();
 
-  const fetchProfileData = useCallback(async () => {
-    try {
-      const chatResponse = await fetchData(`/api/chats`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      setDeferredChats(chatResponse.data); // Set deferredChats when data is available
-    } catch (error) {
-      console.error('Error fetching profile data:', error);
-    }
-  }, [token]);
+ 
 
   const handleShowListings = useCallback(async () => {
     try {
@@ -52,9 +43,9 @@ export default function Profile() {
   const onLogOut = () => handleLogout(navigate, dispatch, clearCurrentUser);
 
   useEffect(() => {
-    fetchProfileData();
+    
     handleShowListings();
-  }, [fetchProfileData, handleShowListings]);
+  }, [ handleShowListings]);
 
   const handleListingDelete = async (listingId) => {
     try {
@@ -167,15 +158,17 @@ export default function Profile() {
                 ))}
               </div>
             )}
+             <Suspense fallback={<p>Loading...</p>}>
+              <Await
+                resolve={chatData}
+                errorElement={<p>Error loading chats!</p>}
+              >
+                {(chatData) => <Chat chats={chatData} />}
+              </Await>
+            </Suspense>
+
           </div>
-          <Suspense fallback={<p>Loading...</p>}>
-            <Await
-              resolve={deferredChats} // Resolve with deferredChats instead of chats directly
-              errorElement={<p>Error loading chats!</p>}
-            >
-              {(chatResponse) => <Chat chats={chatResponse} />}
-            </Await>
-          </Suspense>
+         
         </div>
       </div>
     </div>

@@ -1,60 +1,68 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import Header from "./components/Header/Header";
 import PrivateRoute from './components/PrivateRoute';
-import Home from "./Pages/Home";
-import SignIn from "./Pages/SignIn";
-import SignUp from "./Pages/SignUp";
-import About from "./Pages/About";
-import Profile from "./Pages/Profile";
-import Listing from "./Pages/Listing";
-import Search from "./Pages/Search";
-import CreateListing from "./Pages/CreateListing";
-import UpdateListing from "./Pages/UpdateListing";
+import Home from './Pages/Home';
+import SignIn from './Pages/SignIn';
+import SignUp from './Pages/SignUp';
+import About from './Pages/About';
+import Profile from './Pages/Profile';
+import Listing from './Pages/Listing';
+import Search from './Pages/Search';
+import CreateListing from './Pages/CreateListing';
+import UpdateListing from './Pages/UpdateListing';
 import User from './Pages/User';
 import Admin from './Pages/Admin';
-import './index.css';
-import '../i18n';
-import Logout from "./components/Logout";
-import ProfileManagement from "./components/ProfileManagement";
-
+import Logout from './components/Logout';
+import ProfileManagement from './components/ProfileManagement';
+import Layout from './Layout';
+import { profileLoader } from './lib/loaders';
+import { getCurrentUser,getToken } from './redux/user/useSelectors';
 const App = () => {
-  const { currentUser } = useSelector((state) => state.user);
+  const currentUser = useSelector(getCurrentUser);
+  const token = useSelector(getToken);
   const currentUserRole = currentUser?.role;
 
-  return (
-    <BrowserRouter>    
-      <Header />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/sign-in' element={<SignIn />} />
-        <Route path='/sign-up' element={<SignUp />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/search' element={<Search />} />
-        <Route path="/logout" element={<Logout/>} />
+  // Define routes based on state
+  const getRoutes = () => [
+    {
+      path: '/',
+      element: <Layout />, // Layout includes Header and Outlet
+      children: [
+        { path: '/', element: <Home /> },
+        { path: 'sign-in', element: token ? <Navigate to="/" replace /> : <SignIn /> },
+        { path: 'sign-up', element: <SignUp /> },
+        { path: 'about', element: <About /> },
+        { path: 'search', element: <Search /> },
+        { path: 'logout', element: <Logout /> },
+        {
+          path: 'admin-dashboard/*',
+          element: currentUserRole === 'admin' ? <Admin /> : <Navigate to="/" replace />
+        },
+        {
+          path: 'listing/:listingId',
+          element: <PrivateRoute component={Listing} />
+        },
+        {
+          path: 'user-dashboard',
+          element: currentUserRole === 'user' ? <User /> : <Navigate to="/" replace />
+        },
+        {
+          path: 'landlord',
+          element: <PrivateRoute allowedRoles={['landlord']} />,
+          children: [
+            { path: 'dashboard', element: <Profile />, loader: profileLoader },
+            { path: 'profile', element: <ProfileManagement /> },
+            { path: 'create-listing', element: <CreateListing /> },
+            { path: 'update-listing/:listingId', element: <UpdateListing /> }
+          ]
+        }
+      ]
+    }
+  ];
 
-        {currentUserRole === 'admin' && (
-          <Route path='/admin-dashboard/*' element={<Admin />} />
-        )}
+  const router = createBrowserRouter(getRoutes());
 
-         <Route
-          path='/listing/:listingId'
-          element={<PrivateRoute component={Listing} />}
-         
-        />
-        {currentUserRole === 'user' && (
-          <Route path='/user-dashboard' element={<User />} />
-        )}
-
-        <Route element={<PrivateRoute allowedRoles={['landlord']} />}>
-          <Route path='/landlord' element={<Profile />} />
-          <Route path='/profile' element={<ProfileManagement />} />
-          <Route path='/create-listing' element={<CreateListing />} />
-          <Route path='/update-listing/:listingId' element={<UpdateListing />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+  return <RouterProvider router={router} />;
 };
 
 export default App;

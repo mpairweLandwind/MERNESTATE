@@ -8,12 +8,18 @@ export function cn(...inputs) {
 
 // utils.js
 export async function fetchData(url, options) {
-  const response = await fetch(url, options);
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Network or server error:', error);
+    throw error;
   }
-  return response.json();
 }
+
 
 export async function handleLogout(navigate, dispatch, clearCurrentUser) {
   try {

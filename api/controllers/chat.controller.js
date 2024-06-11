@@ -3,7 +3,16 @@ import prisma from "../lib/prisma.js";
 export const getChats = async (req, res) => {
   const tokenUserId = req.userRef;
 
+  // Log the received user ID or lack thereof
+  console.log("Received user ID:", tokenUserId);
+
+  if (!tokenUserId) {
+    console.log("No user ID provided in the request.");
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
   try {
+    console.log(`Retrieving chats for user ID: ${tokenUserId}`);
     const chats = await prisma.chat.findMany({
       where: {
         userRefs: {
@@ -12,28 +21,43 @@ export const getChats = async (req, res) => {
       },
     });
 
-    for (const chat of chats) {
+    // Log the retrieved chats
+    console.log(`Retrieved ${chats.length} chats for user ID: ${tokenUserId}`);
+
+    const enhancedChats = await Promise.all(chats.map(async (chat) => {
       const receiverId = chat.userRefs.find((id) => id !== tokenUserId);
 
-      const receiver = await prisma.user.findUnique({
-        where: {
-          id: receiverId,
-        },
-        select: {
-          id: true,
-          username: true,
-          avatar: true,
-        },
-      });
-      chat.receiver = receiver;
-    }
+      if (receiverId) {
+        console.log(`Fetching details for receiver ID: ${receiverId}`);
+        const receiver = await prisma.user.findUnique({
+          where: {
+            id: receiverId,
+          },
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        });
+        console.log(`Details fetched for receiver ID: ${receiverId}`, receiver);
+        chat.receiver = receiver;
+      } else {
+        console.log(`No receiver ID found different from sender ID: ${tokenUserId}`);
+        chat.receiver = null;
+      }
 
-    res.status(200).json(chats);
+      return chat;
+    }));
+
+    // Log the enhanced chats before sending the response
+    console.log("Sending back enhanced chats data");
+    res.status(200).json(enhancedChats);
   } catch (err) {
-    console.log(err);
+    console.error("Error retrieving chats:", err);
     res.status(500).json({ message: "Failed to get chats!" });
   }
 };
+
 
 export const getChat = async (req, res) => {
   const tokenUserId = req.userRef;

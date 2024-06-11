@@ -1,14 +1,42 @@
 import { defer } from "react-router-dom";
 import apiRequest from "./apiRequest";
 import axios from "axios";
+import { fetchData } from './utils';
+import { getAuthToken } from "./getAuthToken";
+
 
 export const listing = async ({ params }) => {
   const res = await apiRequest("/listings/" + params.id);
   return res.data;
 };
 
-// src/loaders/listingLoader.js
-// In your route configuration file or above your component
+export const profileLoader = async () => {
+  const token = getAuthToken(); // get the token
+
+  const chatDataPromise = fetchData(`/api/chats/`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  return defer({
+    chatData: chatDataPromise
+  });
+};
+
+
+// // chatLoader.js
+
+// export const profileLoader = async () => {
+//   const token = localStorage.getItem('token'); // Or retrieve the token from your state management
+
+//   const chatDataPromise = fetchData(`/api/chats/`, {
+//     headers: { 'Authorization': `Bearer ${token}` }
+//   });
+
+//   return defer({
+//     chatData: chatDataPromise
+//   });
+// };
+
 
  export const listingLoader = async ({ params }) => {
   try {
@@ -28,11 +56,3 @@ export const listPageLoader = async ({ request }) => {
   });
 };
 
-export const profilePageLoader = async () => {
-  const postPromise = apiRequest("/user/profilePosts");
-  const chatPromise = apiRequest("/chats");
-  return defer({
-    postResponse: postPromise,
-    chatResponse: chatPromise,
-  });
-};

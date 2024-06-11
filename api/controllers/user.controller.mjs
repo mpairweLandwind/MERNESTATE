@@ -194,6 +194,7 @@ export const getNotificationNumber = async (req, res) => {
       res.status(200).json(0);
     } else {
       res.status(200).json(number);
+      console.log("no. of msga"+number);
     }
   } catch (err) {
     console.log(err);
