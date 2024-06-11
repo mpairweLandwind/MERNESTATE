@@ -1,8 +1,11 @@
 .signup-container {
     padding: 1rem;
-    max-width: 30rem;
+    max-width: 40rem;
     margin: auto;
     margin-top: 80px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
     .title {
         display: flex;
@@ -29,6 +32,7 @@
         flex-direction: column;
         gap: 25px;
         margin-top: 50px;
+        align-items: center;
 
         .signup-input,
         .signup-select {
