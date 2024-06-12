@@ -6,10 +6,13 @@ import SocketContext from "../../context/SocketContext";
 import { useNotificationStore } from "../../lib/notificationStore";
 import PropTypes from "prop-types";
 import { fetchData } from "../../lib/utils";
+import { getCurrentUser, getToken } from "../../redux/user/useSelectors";
+import { FaPaperPlane } from 'react-icons/fa';
 
 function Chat({ chats }) {
   const [chat, setChat] = useState(null);
-  const [currentUser, token] = useSelector(state => [state.user.currentUser, state.user.token]);
+  const currentUser = useSelector(getCurrentUser);
+  const token = useSelector(getToken);
 
   const { socket } = useContext(SocketContext);
   const messageEndRef = useRef();
@@ -21,10 +24,9 @@ function Chat({ chats }) {
 
   const handleOpenChat = async (id, receiver) => {
     try {
-      const res = await fetchData("/api/chats/" + id, {
+      const res = await fetchData(`/api/chats/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      // Debugging output to inspect the response
       console.log('API response:', res);
 
       if (res && res.id) {
@@ -36,7 +38,7 @@ function Chat({ chats }) {
         console.error('Unexpected API response structure:', res);
       }
     } catch (err) {
-      console.log(err);
+      console.error('Failed to open chat:', err);
     }
   };
 
@@ -46,7 +48,7 @@ function Chat({ chats }) {
     const text = formData.get("text");
     if (!text) return;
     try {
-      const res = await fetchData("/api/messages/" + chat.id, {
+      const res = await fetchData(`/api/messages/${chat.id}`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -54,23 +56,24 @@ function Chat({ chats }) {
         },
         body: JSON.stringify({ text })
       });
-      setChat(prev => ({ ...prev, messages: [...prev.messages, res.data] }));
+      const newMessage = res.data;
+      setChat(prev => ({ ...prev, messages: [...prev.messages, newMessage] }));
       e.target.reset();
       if (socket) {
         socket.emit("sendMessage", {
           receiverId: chat.receiver.id,
-          data: res.data,
+          data: newMessage,
         });
       }
     } catch (err) {
-      console.log(err);
+      console.error('Failed to send message:', err);
     }
   };
 
   useEffect(() => {
     const read = async () => {
       try {
-        await fetchData("/api/chats/read/" + chat.id, {
+        await fetchData(`/api/chats/read/${chat.id}`, {
           method: "PUT",
           headers: {
             'Content-Type': 'application/json',
@@ -79,9 +82,10 @@ function Chat({ chats }) {
           body: JSON.stringify({ seen: true })
         });
       } catch (err) {
-        console.log(err);
+        console.error('Failed to mark chat as read:', err);
       }
     };
+
     if (chat && socket) {
       socket.on("getMessage", (data) => {
         if (chat.id === data.chatId) {
@@ -132,21 +136,23 @@ function Chat({ chats }) {
           <div className="center">
             {chat.messages?.length > 0 ? (
               chat.messages.map((message) => (
-                <div
-                  className="chatMessage"
-                  style={{
-                    alignSelf:
-                      message.userId === currentUser.id
-                        ? "flex-end"
-                        : "flex-start",
-                    textAlign:
-                      message.userId === currentUser.id ? "right" : "left",
-                  }}
-                  key={message.id}
-                >
-                  <p>{message.text}</p>
-                  <span>{format(message.createdAt)}</span>
-                </div>
+                message && ( // Add check for message
+                  <div
+                    className="chatMessage"
+                    style={{
+                      alignSelf:
+                        message.userId === currentUser.id
+                          ? "flex-end"
+                          : "flex-start",
+                      textAlign:
+                        message.userId === currentUser.id ? "right" : "left",
+                    }}
+                    key={message.id}
+                  >
+                    <p>{message.text}</p>
+                    <span>{format(message.createdAt)}</span>
+                  </div>
+                )
               ))
             ) : (
               <p>No messages yet</p>
@@ -155,7 +161,9 @@ function Chat({ chats }) {
           </div>
           <form onSubmit={handleSubmit} className="bottom">
             <textarea name="text"></textarea>
-            <button>Send</button>
+            <button type="submit">
+              <FaPaperPlane /> Send
+            </button>
           </form>
         </div>
       )}
