@@ -1,13 +1,13 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import "./chat.scss";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import { format } from "timeago.js";
 import SocketContext from "../../context/SocketContext";
 import { useNotificationStore } from "../../lib/notificationStore";
 import PropTypes from "prop-types";
 import { fetchData } from "../../lib/utils";
 import { getCurrentUser, getToken } from "../../redux/user/useSelectors";
-import { FaPaperPlane } from 'react-icons/fa'; // Importing the send icon
+import { FaPaperPlane } from "react-icons/fa"; // Importing the send icon
+import "./chat.scss";
 
 function Chat({ chats }) {
   const [chat, setChat] = useState(null);
@@ -25,9 +25,8 @@ function Chat({ chats }) {
   const handleOpenChat = async (id, receiver) => {
     try {
       const res = await fetchData(`/api/chats/${id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      console.log('API response:', res);
 
       if (res && res.id) {
         if (!res.seenBy.includes(currentUser.id)) {
@@ -35,10 +34,10 @@ function Chat({ chats }) {
         }
         setChat({ ...res, receiver });
       } else {
-        console.error('Unexpected API response structure:', res);
+        console.error("Unexpected API response structure:", res);
       }
     } catch (err) {
-      console.error('Failed to open chat:', err);
+      console.error("Failed to open chat:", err);
     }
   };
 
@@ -52,20 +51,18 @@ function Chat({ chats }) {
       const res = await fetchData(`/api/messages/${chat.id}`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text }),
       });
 
-      console.log('API response:', res);
-
       if (!res || !res.id) {
-        throw new Error('Invalid API response');
+        throw new Error("Invalid API response");
       }
 
       const newMessage = res;
-      setChat(prev => ({ ...prev, messages: [...prev.messages, newMessage] }));
+      setChat((prev) => ({ ...prev, messages: [...prev.messages, newMessage] }));
       e.target.reset();
 
       if (socket) {
@@ -78,7 +75,7 @@ function Chat({ chats }) {
         });
       }
     } catch (err) {
-      console.error('Failed to send message:', err);
+      console.error("Failed to send message:", err);
     }
   };
 
@@ -88,13 +85,13 @@ function Chat({ chats }) {
         await fetchData(`/api/chats/read/${chat.id}`, {
           method: "PUT",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ seen: true })
+          body: JSON.stringify({ seen: true }),
         });
       } catch (err) {
-        console.error('Failed to mark chat as read:', err);
+        console.error("Failed to mark chat as read:", err);
       }
     };
 
@@ -105,8 +102,8 @@ function Chat({ chats }) {
             ...prev,
             messages: [
               ...prev.messages,
-              { chatId: data.chatId, text: data.text, userId: data.userId, createdAt: data.createdAt }
-            ]
+              { chatId: data.chatId, text: data.text, userId: data.userId, createdAt: data.createdAt },
+            ],
           }));
           read();
         }
@@ -121,7 +118,7 @@ function Chat({ chats }) {
   }, [socket, chat, token]);
 
   return (
-    <div className="chat">
+    <div className="chatContainer">
       <div className="messages">
         <h1>Messages</h1>
 
@@ -130,24 +127,24 @@ function Chat({ chats }) {
             className="message"
             key={c.id}
             style={{
-              backgroundColor:
-                c.seenBy.includes(currentUser.id) || chat?.id === c.id
-                  ? "white"
-                  : "#fecd514e",
+              backgroundColor: c.seenBy.includes(currentUser.id) || chat?.id === c.id ? "white" : "#fecd514e",
             }}
             onClick={() => handleOpenChat(c.id, c.receiver)}
           >
             <img src={c.receiver.avatar || "/noavatar.jpg"} alt="" />
-            <span>{c.receiver.username}</span>
-            <p>{c.lastMessage}</p>
+            <div className="messageInfo">
+              <span>{c.receiver.username}</span>
+              <p>{c.lastMessage}</p>
+            </div>
           </div>
         ))}
       </div>
+
       {chat && (
         <div className="chatBox">
           <div className="top">
             <div className="user">
-              <img src={chat.receiver.avatar || "noavatar.jpg"} alt="" />
+              <img src={chat.receiver.avatar || "/noavatar.jpg"} alt="" />
               {chat.receiver.username}
             </div>
             <span className="close" onClick={() => setChat(null)}>
@@ -156,32 +153,24 @@ function Chat({ chats }) {
           </div>
           <div className="center">
             {chat.messages?.length > 0 ? (
-              chat.messages.map((message) => (
-                message && ( // Add check for message
+              chat.messages.map((message) =>
+                message ? (
                   <div
-                    className="chatMessage"
-                    style={{
-                      alignSelf:
-                        message.userId === currentUser.id
-                          ? "flex-end"
-                          : "flex-start",
-                      textAlign:
-                        message.userId === currentUser.id ? "right" : "left",
-                    }}
+                    className={`chatMessage ${message.userId === currentUser.id ? "own" : ""}`}
                     key={message.id}
                   >
                     <p>{message.text}</p>
                     <span>{format(message.createdAt)}</span>
                   </div>
-                )
-              ))
+                ) : null
+              )
             ) : (
               <p>No messages yet</p>
             )}
             <div ref={messageEndRef}></div>
           </div>
           <form onSubmit={handleSubmit} className="bottom">
-            <textarea name="text"></textarea>
+            <textarea name="text" />
             <button type="submit">
               <FaPaperPlane /> Send
             </button>

@@ -6,11 +6,11 @@ import { FaSearch, FaBell, FaGlobe } from 'react-icons/fa';
 import { useNotificationStore } from '../../lib/notificationStore';
 import './header.scss';
 import { clearCurrentUser } from '../../redux/user/userSlice';
-import { getToken, getCurrentUser } from '../../redux/user/useSelectors';
+// import { getToken, getCurrentUser } from '../../redux/user/useSelectors';
 
 export default function Header() {
-  const currentUser = useSelector(getCurrentUser);
-  const token = useSelector(getToken);
+  const { currentUser , token} = useSelector((state) => state.user);
+ 
   const { i18n, t } = useTranslation();
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,7 +20,13 @@ export default function Header() {
   const fetch = useNotificationStore((state) => state.fetch);
   const number = useNotificationStore((state) => state.number);
 
-  
+  useEffect(() => {
+    if (currentUser) {
+      console.log("Fetching notifications for user:", currentUser.username);
+      fetch(token); // Pass the token to the fetch function
+    }
+  }, [currentUser, token, fetch]);
+
   const getProfileLink = useCallback(() => {
     if (!currentUser) return '/sign-in';
     switch (currentUser.role) {
@@ -30,13 +36,6 @@ export default function Header() {
       default: return '/';
     }
   }, [currentUser]);
-
-  useEffect(() => {
-    if (currentUser) {
-      console.log("Fetching notifications for user:", currentUser.username);
-      fetch(token); // Pass the token to the fetch function
-    }
-  }, [currentUser, token, fetch]);
 
   useEffect(() => {
     if (currentUser && token) {
@@ -131,8 +130,6 @@ export default function Header() {
               <button onClick={handleLogout} className="logout-button">
                 Log Out
               </button>
-              <Link to={getProfileLink()} className="profile">
-              </Link>
               <div className="notification">
                 {number > 0 && <div className="number">{number}</div>}
                 <FaBell className="icon" />

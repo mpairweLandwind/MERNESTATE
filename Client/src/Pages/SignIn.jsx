@@ -1,8 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
-//useLocation ,
 import { useDispatch, useSelector } from 'react-redux';
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
-
 import OAuth from '../components/OAuth';
 import { useState } from 'react';
 import user_password from "../assets/password.png";
@@ -12,13 +10,8 @@ import './signIn.scss';
 export default function SignIn() {
   const [formData, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
-
- 
   const navigate = useNavigate();
-  // const location = useLocation();
   const dispatch = useDispatch();
-
-
 
   const handleChange = (e) => {
     setFormData({
@@ -40,31 +33,26 @@ export default function SignIn() {
       const responseText = await res.text();
       if (res.ok) {
         const data = JSON.parse(responseText);
-        console.log(data);
-
         if (!data.success || !data.token) {
           dispatch(signInFailure(data.message || 'Authentication failed'));
           return;
         }
-         
-        // dispatch(signInSuccess({ user: data.user, token: data.token }));
-        // navigate(from, { replace: true });
-        // Dispatch success action with the user and token
-        dispatch(signInSuccess({ user: data.user, token: data.token }));
 
-        // Persist token in localStorage if needed
+        dispatch(signInSuccess({ user: data.user, token: data.token }));
         localStorage.setItem('token', data.token);
 
-        // Redirect based on the role property in the data object
-        const role = data.user.role;
-        if (role === 'admin') {
-          navigate('/admin-dashboard');
-        } else if (role === 'landlord') {
-          navigate('/landlord');
-        } else if (role === 'user') {
-          navigate('/user-dashboard');
-        } else {
-          navigate('/'); // Default redirection if role is undefined or not handled
+        switch (data.user.role) {
+          case 'admin':
+            navigate('/admin-dashboard');
+            break;
+          case 'landlord':
+            navigate('/landlord/dashboard');
+            break;
+          case 'user':
+            navigate('/user-dashboard');
+            break;
+          default:
+            navigate('/');
         }
       } else {
         const errorData = JSON.parse(responseText);
@@ -109,9 +97,7 @@ export default function SignIn() {
             {loading ? 'Loading...' : 'Sign In'}
           </button>
           <Link to='/sign-up'>
-            <button
-              className="signin-button"
-            >
+            <button className="signin-button">
               Sign Up
             </button>
           </Link>
