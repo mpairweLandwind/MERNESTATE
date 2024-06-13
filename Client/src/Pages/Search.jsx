@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ListingItem from '../components/ListingItem';
+import './search.scss'
 
 export default function Search() {
   const navigate = useNavigate();
@@ -128,9 +129,9 @@ export default function Search() {
     setListings([...listings, ...data]);
   };
   return (
-    <div className='flex flex-col md:flex-row'>
-      <div className='p-7  border-b-2 md:border-r-2 md:min-h-screen'>
-        <form onSubmit={handleSubmit} className='flex flex-col gap-8'>
+    <div className='flex flex-col md:flex-row search-container'>
+      <div className='p-7  border-b-2 md:border-r-2 md:min-h-screen mt-5 pt-5'>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-8 mt-5'>
           <div className='flex items-center gap-2'>
             <label className='whitespace-nowrap font-semibold'>
               Search Term:
@@ -229,7 +230,7 @@ export default function Search() {
           </button>
         </form>
       </div>
-      <div className='flex-1'>
+      <div className='flex-1 mt-8'>
         <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>
           Listing results:
         </h1>

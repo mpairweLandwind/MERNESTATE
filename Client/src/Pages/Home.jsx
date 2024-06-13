@@ -47,7 +47,7 @@ export default function Home() {
 
   return (
     <div>
-      <section className="relative bg-gray-500 text-white overflow-hidden">
+      <section className="relative bg-gray-500 text-white overflow-hidden mt-12 flex">
         <div className="container mx-auto px-4 lg:px-24 py-16 flex flex-wrap items-center justify-between">
           <div className="w-full lg:w-2/3 relative">
             <div className="absolute inset-0 bg-gradient-to-r from-gray-500 via-transparent to-transparent opacity-50 z-0"></div>

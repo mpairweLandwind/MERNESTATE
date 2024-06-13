@@ -12,8 +12,8 @@ import {
 
 export default function Sidebar() {
     return (
-        <Card className="h-[calc(100vh-2rem)] w-full max-w-[16rem] p-4 shadow-xl shadow-blue-gray-900/5">
-            <div className="mb-2 p-4">
+        <Card className="h-[calc(100vh-2rem)] w-full max-w-[16rem] p-2 shadow-xl shadow-blue-gray-900/5 mt-20 ">
+            <div className="mb-2 p-2 mt-8">
                 <Typography variant="h3" color="orange">
                     DashBoard
                 </Typography>

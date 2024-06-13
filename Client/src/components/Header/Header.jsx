@@ -6,11 +6,9 @@ import { FaSearch, FaBell, FaGlobe } from 'react-icons/fa';
 import { useNotificationStore } from '../../lib/notificationStore';
 import './header.scss';
 import { clearCurrentUser } from '../../redux/user/userSlice';
-// import { getToken, getCurrentUser } from '../../redux/user/useSelectors';
 
 export default function Header() {
-  const { currentUser , token} = useSelector((state) => state.user);
- 
+  const { currentUser, token } = useSelector((state) => state.user);
   const { i18n, t } = useTranslation();
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
