@@ -1,5 +1,5 @@
-import prisma from '../lib/prisma.js';
-import { errorHandler } from '../utils/error.js';
+import prisma from '../lib/prisma.mjs';
+import { errorHandler } from '../utils/error.mjs';
 import jwt from "jsonwebtoken";
 
 

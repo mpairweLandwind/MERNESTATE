@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
-import { errorHandler } from '../utils/error.js';
-import prisma from "../lib/prisma.js";
+import { errorHandler } from '../utils/error.mjs';
+import prisma from '../lib/prisma.mjs';
+import { ObjectId } from 'mongodb';
 
 export const updateUser = async (req, res, next) => {
   if (req.user.id !== req.params.id)
@@ -172,9 +173,16 @@ export const profilePosts = async (req, res) => {
   }
 };
 
+// userController.js
 export const getNotificationNumber = async (req, res) => {
-  const tokenUserId = req.userRef;
   try {
+    const tokenUserId = req.userRef // Hardcoded valid ObjectId for testing
+    console.log('user id:',tokenUserId)
+    if (!ObjectId.isValid(tokenUserId)) {
+      console.error("Invalid user ID format");
+      return res.status(400).json({ message: "Invalid user ID format" });
+    }
+
     const number = await prisma.chat.count({
       where: {
         userRefs: {
@@ -188,16 +196,10 @@ export const getNotificationNumber = async (req, res) => {
       },
     });
 
-    // Check if number is null or undefined
-    if (number == null) {
-      // Return 0 or handle null case as needed
-      res.status(200).json(0);
-    } else {
-      res.status(200).json(number);
-      console.log("no. of msga"+number);
-    }
+    console.log('Query successful, count:', number);
+    res.status(200).json({ count: number });
   } catch (err) {
-    console.log(err);
+    console.error('Error in getNotificationNumber:', err.message);
     res.status(500).json({ message: "Failed to get notification count!" });
   }
 };

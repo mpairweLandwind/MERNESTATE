@@ -1,16 +1,17 @@
 // notificationStore.js
 import { create } from "zustand";
-import { fetchData } from "./utils";
+import apiRequest from "./apiRequest";
+//import { getToken } from "../redux/user/useSelectors";
+
 
 
 export const useNotificationStore = create((set) => ({
   number: 0,
   fetch: async (token) => {
     try {
-      const res = await fetchData("/api/user/notification", {
+      const res = await apiRequest("/user/notification", {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',  // Ensure Content-Type is set
         },
       });
       set({ number: res.data });

@@ -7,7 +7,7 @@ import { useNotificationStore } from "../../lib/notificationStore";
 import PropTypes from "prop-types";
 import { fetchData } from "../../lib/utils";
 import { getCurrentUser, getToken } from "../../redux/user/useSelectors";
-import { FaPaperPlane } from 'react-icons/fa';
+import { FaPaperPlane } from 'react-icons/fa'; // Importing the send icon
 
 function Chat({ chats }) {
   const [chat, setChat] = useState(null);
@@ -47,6 +47,7 @@ function Chat({ chats }) {
     const formData = new FormData(e.target);
     const text = formData.get("text");
     if (!text) return;
+
     try {
       const res = await fetchData(`/api/messages/${chat.id}`, {
         method: "POST",
@@ -56,13 +57,24 @@ function Chat({ chats }) {
         },
         body: JSON.stringify({ text })
       });
-      const newMessage = res.data;
+
+      console.log('API response:', res);
+
+      if (!res || !res.id) {
+        throw new Error('Invalid API response');
+      }
+
+      const newMessage = res;
       setChat(prev => ({ ...prev, messages: [...prev.messages, newMessage] }));
       e.target.reset();
+
       if (socket) {
         socket.emit("sendMessage", {
           receiverId: chat.receiver.id,
-          data: newMessage,
+          chatId: chat.id,
+          text: newMessage.text,
+          userId: newMessage.userRef,
+          createdAt: newMessage.createdAt,
         });
       }
     } catch (err) {
@@ -87,16 +99,25 @@ function Chat({ chats }) {
     };
 
     if (chat && socket) {
-      socket.on("getMessage", (data) => {
-        if (chat.id === data.chatId) {
-          setChat((prev) => ({ ...prev, messages: [...prev.messages, data] }));
+      const handleMessage = (data) => {
+        if (data && chat.id === data.chatId) {
+          setChat((prev) => ({
+            ...prev,
+            messages: [
+              ...prev.messages,
+              { chatId: data.chatId, text: data.text, userId: data.userId, createdAt: data.createdAt }
+            ]
+          }));
           read();
         }
-      });
+      };
+
+      socket.on("getMessage", handleMessage);
+
+      return () => {
+        socket.off("getMessage", handleMessage);
+      };
     }
-    return () => {
-      socket.off("getMessage");
-    };
   }, [socket, chat, token]);
 
   return (

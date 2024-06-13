@@ -10,6 +10,8 @@ import chatRoute from './routes/chat.route.mjs';
 import messageRoute from './routes/message.route.mjs';
 import listingRouter from './routes/listing.route.mjs';
 import connectDB from './config/db.mjs';
+import { getNotificationNumber } from './controllers/user.controller.mjs';
+import { verifyToken } from './utils/verifyUser.mjs';
 
 dotenv.config();
 connectDB();
@@ -33,6 +35,9 @@ app.use(bodyParser.urlencoded({ extended: true })); // Parses URL-encoded bodies
 app.use(cookieParser());
 
 // Routes
+
+
+app.get('/api/user/notification', verifyToken, getNotificationNumber);
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/listing', listingRouter);

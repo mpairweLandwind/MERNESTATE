@@ -1,8 +1,9 @@
 import express from 'express';
 import { deleteUser, updateUser,  getUserListings, getUser, checkEmail, savePost,
-    profilePosts,
-    getNotificationNumber} from '../controllers/user.controller.mjs';
-import { verifyToken } from '../utils/verifyUser.js';
+    profilePosts
+    } from '../controllers/user.controller.mjs';
+import { verifyToken } from '../utils/verifyUser.mjs';
+//import { getNotificationNumber } from '../controllers/user.controller.mjs';
 
 
 const router = express.Router();
@@ -15,7 +16,7 @@ router.get('/listings/', verifyToken, getUserListings)
 router.get('/:id', verifyToken, getUser)
 router.post("/save", verifyToken, savePost);
 router.get("/profilePosts", verifyToken, profilePosts);
-router.get("/notification", verifyToken, getNotificationNumber);
+//router.get("/notification", verifyToken, getNotificationNumber);
 
 
 export default router;

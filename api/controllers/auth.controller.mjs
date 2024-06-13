@@ -1,6 +1,6 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../lib/prisma.mjs";
 import bcrypt from 'bcrypt';
-import { errorHandler } from '../utils/error.js';
+import { errorHandler } from '../utils/error.mjs';
 import jwt from 'jsonwebtoken';
 
 // User Signup

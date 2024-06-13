@@ -6,9 +6,7 @@ import { FaSearch, FaBell, FaGlobe } from 'react-icons/fa';
 import { useNotificationStore } from '../../lib/notificationStore';
 import './header.scss';
 import { clearCurrentUser } from '../../redux/user/userSlice';
-import { getToken,getCurrentUser } from '../../redux/user/useSelectors';
-
-
+import { getToken, getCurrentUser } from '../../redux/user/useSelectors';
 
 export default function Header() {
   const currentUser = useSelector(getCurrentUser);
@@ -22,6 +20,7 @@ export default function Header() {
   const fetch = useNotificationStore((state) => state.fetch);
   const number = useNotificationStore((state) => state.number);
 
+  
   const getProfileLink = useCallback(() => {
     if (!currentUser) return '/sign-in';
     switch (currentUser.role) {
@@ -34,7 +33,8 @@ export default function Header() {
 
   useEffect(() => {
     if (currentUser) {
-      fetch(token);
+      console.log("Fetching notifications for user:", currentUser.username);
+      fetch(token); // Pass the token to the fetch function
     }
   }, [currentUser, token, fetch]);
 

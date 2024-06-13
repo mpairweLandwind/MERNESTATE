@@ -6,7 +6,7 @@ import {
   getListing,
   getListings  
 } from '../controllers/listing.controller.mjs';
-import { verifyToken } from '../utils/verifyUser.js';
+import { verifyToken } from '../utils/verifyUser.mjs';
 
 // Middleware to check if the user has the required role
 const requireRole = (role) => (req, res, next) => {

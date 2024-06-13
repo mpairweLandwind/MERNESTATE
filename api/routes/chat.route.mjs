@@ -4,8 +4,8 @@ import {
   getChat,
   addChat,
   readChat,
-} from "../controllers/chat.controller.js";
-import { verifyToken } from '../utils/verifyUser.js';
+} from "../controllers/chat.controller.mjs";
+import { verifyToken } from '../utils/verifyUser.mjs';
 
 const router = express.Router();
 

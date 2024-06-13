@@ -1,8 +1,8 @@
 import express from "express";
 import {
   addMessage
-} from "../controllers/message.controller.js";
-import { verifyToken } from '../utils/verifyUser.js';
+} from "../controllers/message.controller.mjs";
+import { verifyToken } from '../utils/verifyUser.mjs';
 
 const router = express.Router();
 

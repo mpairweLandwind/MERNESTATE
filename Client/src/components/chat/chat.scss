@@ -1,7 +1,9 @@
 .chat {
   height: 100%;
+  width: 100%;
     display: flex;
     flex-direction: column;
+
   
     .messages {
       flex: 1;
@@ -42,6 +44,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      height: max-content;
   
       .top {
         background-color: #f7c14b85;
@@ -106,6 +109,7 @@
           height: 100%;
           border: none;
           padding: 20px;
+          width: 70%;
         }
   
         button {
