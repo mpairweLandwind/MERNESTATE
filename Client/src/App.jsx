@@ -18,6 +18,7 @@ import RoleBasedRedirect from './RoleBasedRedirect';
 import { getCurrentUser, getToken } from './redux/user/useSelectors';
 import ProfileManagement from './components/ProfileManagement';
 import { profileLoader } from './lib/loaders';
+import Listing from './Pages/Listing';
 
 const App = () => {
  // const { i18n } = useTranslation();
@@ -53,6 +54,13 @@ const App = () => {
         {
           path: 'admin-dashboard/*',
           element: currentUserRole === 'admin' ? <Admin /> : <Navigate to="/" replace />
+        },
+        {
+          path: 'listing/:listingId',
+          element: <PrivateRoute allowedRoles={['admin', 'user', 'landlord']} />,
+          children: [
+            { path: '', element: <Listing /> }
+          ]
         },
         {
           path: 'user-dashboard',
