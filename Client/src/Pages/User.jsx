@@ -1,19 +1,25 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { Await, useLoaderData } from 'react-router-dom';
 import Filter from '../components/Filter';
 import Map from '../components/Map';
 import Card from '../components/Card/Card';
 import './user.scss';
-import Chat from '../components/chat/Chat'; // Import Chat component
+import Chat from '../components/chat/Chat';
+import Button from '@mui/material/Button';
+import { IoCloseCircle } from "react-icons/io5";
 
 function User() {
   const [offerListings, setOfferListings] = useState([]);
   const [rentListings, setRentListings] = useState([]);
   const [saleListings, setSaleListings] = useState([]);
-  const [chats, setChats] = useState([]); // State to hold chats
+  const [activeChatReceiverId, setActiveChatReceiverId] = useState(null); // State to track active chat receiver
+  const [showChat, setShowChat] = useState(false); // State to track chat visibility
 
-  const { currentUser, token } = useSelector(state => state.user);
+  const currentUser = useSelector(state => state.user.currentUser);
+  const token = useSelector(state => state.user.token);
+  const { chatData } = useLoaderData();
 
   const fetchListings = useCallback(async (url, setter) => {
     try {
@@ -29,24 +35,15 @@ function User() {
     }
   }, [token]);
 
-  const fetchChats = useCallback(async () => {
-    try {
-      const response = await axios.get('/api/chats', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setChats(response.data);
-    } catch (error) {
-      console.error('Failed to fetch chats:', error);
-      setChats([]);
-    }
-  }, [token]);
+  const handleChatClick = (userRef) => {
+    console.log('Chat clicked for userRef:', userRef);
+    setActiveChatReceiverId(userRef);
+    setShowChat(true);
+  };
 
-  const handleChatClick = (receiverId) => {
-    // Handle chat click logic here, e.g., opening a chat box
-    console.log('Chat clicked for receiverId:', receiverId);
-    // You can implement your logic to open the chat here
+  const handleCloseChat = () => {
+    setShowChat(false);
+    setActiveChatReceiverId(null);
   };
 
   useEffect(() => {
@@ -54,9 +51,8 @@ function User() {
       fetchListings('/api/listing/get?offer=true&limit=4', setOfferListings);
       fetchListings('/api/listing/get?type=rent&limit=4', setRentListings);
       fetchListings('/api/listing/get?type=sale&limit=4', setSaleListings);
-      fetchChats();
     }
-  }, [currentUser, fetchListings, fetchChats, token]);
+  }, [currentUser, fetchListings, token]);
 
   if (!currentUser || !token) {
     return <p>Please sign in to view listings.</p>;
@@ -71,9 +67,7 @@ function User() {
             <h2 className="primaryText">Rent Listings</h2>
             {rentListings.length > 0 ? (
               rentListings.map((listing) => (
-                <Card key={listing.id} listing={listing} onChatClick={handleChatClick}>
-                  <Chat chats={chats} /> {/* Pass chats to Chat component */}
-                </Card>
+                <Card key={listing.id} listing={listing} onChatClick={handleChatClick} />
               ))
             ) : (
               <p>No rent listings available</p>
@@ -82,9 +76,7 @@ function User() {
             <h2 className="text-xl font-bold text-gray-800">Offer Listings</h2>
             {offerListings.length > 0 ? (
               offerListings.map((listing) => (
-                <Card key={listing.id} listing={listing} onChatClick={handleChatClick}>
-                  <Chat chats={chats} /> {/* Pass chats to Chat component */}
-                </Card>
+                <Card key={listing.id} listing={listing} onChatClick={handleChatClick} />
               ))
             ) : (
               <p>No offer listings available</p>
@@ -93,9 +85,7 @@ function User() {
             <h2 className="text-xl font-bold text-gray-800">Sale Listings</h2>
             {saleListings.length > 0 ? (
               saleListings.map((listing) => (
-                <Card key={listing.id} listing={listing} onChatClick={handleChatClick}>
-                  <Chat chats={chats} /> {/* Pass chats to Chat component */}
-                </Card>
+                <Card key={listing.id} listing={listing} onChatClick={handleChatClick} />
               ))
             ) : (
               <p>No sale listings available</p>
@@ -104,7 +94,21 @@ function User() {
         </div>
       </div>
       <div className="mapContainer">
-        <Map items={[...offerListings, ...rentListings, ...saleListings]} />
+       
+        {!showChat && <Map items={[...offerListings, ...rentListings, ...saleListings]} />}
+    
+        {showChat && (
+          <div className="chatContainer">
+            <Button variant="outlined" onClick={handleCloseChat} className="closeChatButton"> <IoCloseCircle />Close Chat</Button>
+            <Suspense fallback={<p>Loading chat...</p>}>
+              <Await resolve={chatData} errorElement={<p>Error loading chats!</p>}>
+                {(chatData) => (
+                  <Chat receiverId={activeChatReceiverId} chats={chatData} />
+                )}
+              </Await>
+            </Suspense>
+          </div>
+        )}
       </div>
     </div>
   );

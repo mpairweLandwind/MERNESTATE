@@ -10,6 +10,7 @@ import chatRoute from './routes/chat.route.mjs';
 import messageRoute from './routes/message.route.mjs';
 import listingRouter from './routes/listing.route.mjs';
 import connectDB from './config/db.mjs';
+import emailRoutes from './routes/emailRoute.mjs'
 import { getNotificationNumber } from './controllers/user.controller.mjs';
 import { verifyToken } from './utils/verifyUser.mjs';
 
@@ -43,6 +44,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/listing', listingRouter);
 app.use('/api/chats', chatRoute);
 app.use('/api/messages', messageRoute);
+app.use('/api/email', emailRoutes);
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'Client', 'dist')));

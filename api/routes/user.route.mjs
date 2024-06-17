@@ -1,6 +1,6 @@
 import express from 'express';
 import { deleteUser, updateUser,  getUserListings, getUser, checkEmail, savePost,
-    profilePosts
+    profilePosts,getUserRoleMonthlyCounts
     } from '../controllers/user.controller.mjs';
 import { verifyToken } from '../utils/verifyUser.mjs';
 //import { getNotificationNumber } from '../controllers/user.controller.mjs';
@@ -16,6 +16,8 @@ router.get('/listings/', verifyToken, getUserListings)
 router.get('/:id', verifyToken, getUser)
 router.post("/save", verifyToken, savePost);
 router.get("/profilePosts", verifyToken, profilePosts);
+router.get('/user-role-monthly-counts', getUserRoleMonthlyCounts);
+
 //router.get("/notification", verifyToken, getNotificationNumber);
 
 

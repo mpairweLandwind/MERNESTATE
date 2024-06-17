@@ -3,13 +3,15 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FaMapMarkerAlt ,FaShare} from 'react-icons/fa';
+import { FaMapMarkerAlt, FaShare } from 'react-icons/fa';
 //import DOMPurify from 'dompurify';
 import 'swiper/css/bundle';
 import { Navigation } from 'swiper/modules';
 import SwiperCore from 'swiper';
 import Map from '../components/Map';
 import Contact from '../components/Contact';
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
 import './listing.scss';
 
 export default function Listing() {
@@ -77,7 +79,6 @@ export default function Listing() {
     }
   };
   
-  
   if (!currentUser || !token) {
     return null;
   }
@@ -89,7 +90,7 @@ export default function Listing() {
       {listing && !loading && !error && (
         <div className="singlePage">
           <div className="details">
-            <div className="wrapper mt-3  ml-2">
+            <div className="wrapper ml-2">
               <Swiper navigation>
                 {listing.imageUrls.map(url => (
                   <SwiperSlide key={url}>
@@ -101,26 +102,25 @@ export default function Listing() {
                 ))}
               </Swiper>
               <div className='fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer'>
-            <FaShare
-              className='text-slate-500'
-              onClick={() => {
-                navigator.clipboard.writeText(window.location.href);
-                setCopied(true);
-                setTimeout(() => {
-                  setCopied(false);
-                }, 2000);
-              }}
-            />
-          </div>
-          {copied && (
-            <p className='fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2'>
-              Link copied!
-            </p>
-          )}
-              
-              <div className="info ">
+                <FaShare
+                  className='text-slate-500'
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    setCopied(true);
+                    setTimeout(() => {
+                      setCopied(false);
+                    }, 2000);
+                  }}
+                />
+              </div>
+              {copied && (
+                <p className='fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2'>
+                  Link copied!
+                </p>
+              )}
+              <div className="info">
                 <div className="top ml-4">
-                  <div className="post ">
+                  <div className="post">
                     <h1>{listing.name}</h1>
                     <div className="address">
                       <FaMapMarkerAlt className='text-green-700' />
@@ -136,105 +136,108 @@ export default function Listing() {
                     <span>{listing.user.username}</span>
                   </div>
                 </div>
-                {/* <div
-                  className="bottom"
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(listing.postDetail.desc),
-                  }}
-                ></div> */}
               </div>
             </div>
           </div>
-          <div className="features">
-            <div className="wrapper mt-3">
-                 <p> <span>{listing.postDetail.desc}</span></p>         
-              <div className="listVertical">
-                <div className="feature">
-                  <img src="/utility.png" alt="" />
-                  <div className="featureText">
-                    <span>Utilities</span>
-                    <p>{listing.postDetail.utilities === "owner" ? "Owner is responsible" : "Tenant is responsible"}</p>
+          <div className='features' >
+            <div className="wrapper  mt-8 pt-5">
+              {!contact && (
+                <>
+                  <p><span>{listing.postDetail.desc}</span></p>
+                  <div className="listVertical">
+                    <div className="feature">
+                      <img src="/utility.png" alt="" />
+                      <div className="featureText">
+                        <span>Utilities</span>
+                        <p>{listing.postDetail.utilities === "owner" ? "Owner is responsible" : "Tenant is responsible"}</p>
+                      </div>
+                    </div>
+                    <div className="feature">
+                      <img src="/pet.png" alt="" />
+                      <div className="featureText">
+                        <span>Pet Policy</span>
+                        <p>{listing.postDetail.pet === "allowed" ? "Pets Allowed" : "Pets not Allowed"}</p>
+                      </div>
+                    </div>
+                    <div className="feature">
+                      <img src="/fee.png" alt="" />
+                      <div className="featureText">
+                        <span>Income Requirement</span>
+                        <p>{listing.postDetail.income}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="feature">
-                  <img src="/pet.png" alt="" />
-                  <div className="featureText">
-                    <span>Pet Policy</span>
-                    <p>{listing.postDetail.pet === "allowed" ? "Pets Allowed" : "Pets not Allowed"}</p>
+                  <div className="sizes">
+                    <div className="size">
+                      <img src="/size.png" alt="" />
+                      <span>{listing.postDetail.size} sqft</span>
+                    </div>
+                    <div className="size">
+                      <img src="/bed.png" alt="" />
+                      <span>{listing.bedrooms} beds</span>
+                    </div>
+                    <div className="size">
+                      <img src="/bath.png" alt="" />
+                      <span>{listing.bathrooms} bath</span>
+                    </div>
                   </div>
-                </div>
-                <div className="feature">
-                  <img src="/fee.png" alt="" />
-                  <div className="featureText">
-                    <span>Income Requirement</span>
-                    <p>{listing.postDetail.income}</p>
+                  <div className="listHorizontal">
+                    <div className="feature">
+                      <img src="/school.png" alt="" />
+                      <div className="featureText">
+                        <span>School</span>
+                        <p>{listing.postDetail.school > 999
+                          ? listing.postDetail.school / 1000 + "km"
+                          : listing.postDetail.school + "m"}{" "}
+                          away</p>
+                      </div>
+                    </div>
+                    <div className="feature">
+                      <img src="/bus.png" alt="" />
+                      <div className="featureText">
+                        <span>Bus Stop</span>
+                        <p>{listing.postDetail.bus}m away</p>
+                      </div>
+                    </div>
+                    <div className="feature">
+                      <img src="/restal.png" alt="" />
+                      <div className="featureText">
+                        <span>Restaurant</span>
+                        <p>{listing.postDetail.restaurant}m away</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="sizes">
-                <div className="size">
-                  <img src="/size.png" alt="" />
-                  <span>{listing.postDetail.size} sqft</span>
-                </div>
-                <div className="size">
-                  <img src="/bed.png" alt="" />
-                  <span>{listing.bedrooms} beds</span>
-                </div>
-                <div className="size">
-                  <img src="/bath.png" alt="" />
-                  <span>{listing.bathrooms} bath</span>
-                </div>
-              </div>
-              <div className="listHorizontal">
-                <div className="feature">
-                  <img src="/school.png" alt="" />
-                  <div className="featureText">
-                    <span>School</span>
-                    <p>{listing.postDetail.school > 999
-                      ? listing.postDetail.school / 1000 + "km"
-                      : listing.postDetail.school + "m"}{" "}
-                      away</p>
+                  <p className="title">Location</p>
+                  <div className="mapContainer">
+                    <Map items={[listing]} />
                   </div>
-                </div>
-                <div className="feature">
-                  <img src="/bus.png" alt="" />
-                  <div className="featureText">
-                    <span>Bus Stop</span>
-                    <p>{listing.postDetail.bus}m away</p>
-                  </div>
-                </div>
-                <div className="feature">
-                  <img src="/restal.png" alt="" />
-                  <div className="featureText">
-                    <span>Restaurant</span>
-                    <p>{listing.postDetail.restaurant}m away</p>
-                  </div>
-                </div>
-              </div>
-              <p className="title">Location</p>
-              <div className="mapContainer">
-                <Map items={[listing]} />
+                </>
+              )}
+              <div className='buttons'>
+                {currentUser && !contact && (
+                  <Tooltip title="Click to send email to landlord" placement="top" arrow>
+                    <Button onClick={handleContactClick} className='flex rounded-full contact'>
+                      <img src="/msg1.png" alt="" className="w-14 h-14 mr-2" />
+                      <p className='text-gray-700'> Send Email</p>
+                    </Button>
+                  </Tooltip>
+                )}
+                {contact && <Contact listing={listing} authToken={token} />}
+                {!contact && (
+                  <Tooltip title="Click to save the place to wishlist" placement="top" arrow>
+                    <Button
+                      variant="outlined" color='primary'
+                      onClick={handleSave}
+                      className={`chat-icon-button ${saved ? 'saved' : ''}`}
+                      startIcon={<img src="/save.png" alt="" className='w-10 h-10' />}
+                    >
+                      {saved ? 'Saved' : 'Save'}
+                    </Button>
+                  </Tooltip>
+                )}
               </div>
             </div>
-         
-            <div className="flex justify-between items-center">
-  {currentUser && (
-    <button onClick={handleContactClick} className='flex items-center rounded-full  button contact'>
-      <img src="/msg1.png" alt="" className="w-10 h-10 mr-2" />
-      <p className='text-gray-700'> Contact Landlord</p>
-    </button>
-  )}
-  {contact && <Contact listing={listing} authToken={token} />}
-  <button
-    onClick={handleSave}
-    className={`flex text-gray-700 rounded-full   items-center button save ${saved ? 'saved' : ''}`}
-  >
-    <img src="/wish.png" alt="" className="w-10 h-10 mr-2 " />
-  <span className='text-gray-700'> {saved ? "Place Saved" : "Save the Place"}</span>  
-  </button>
-</div>
-
-        </div>
+          </div>
         </div>
       )}
     </main>

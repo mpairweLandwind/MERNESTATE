@@ -18,7 +18,8 @@ height: 8rem;
 
     .left {
     display: flex;
-        align-items: center;
+    position: relative;
+    align-items: center;
     gap: 1.5rem;
 
     .logo-container {
@@ -88,19 +89,28 @@ height: 8rem;
 
     .language-selector {
             position: relative;
+            display: flex;
+                align-items: center;
     
             .language-button {
                 background: none;
                 border: none;
                 cursor: pointer;
+                display: flex;
+                    align-items: center;
     
                 .globe-icon {
-                    color: gray;
+                    color: rgb(4, 15, 117);
     
                     &:hover {
                         color: orange;
                     }
                 }
+                                                                .selected-language {
+                                                                    margin-left: 0.5rem;
+                                                                    color: grey;
+                                                                    font-weight: bold;
+                                                                }
             }
     
             .language-dropdown {
@@ -137,7 +147,7 @@ height: 8rem;
 
                                                 .notification {
                                                     position: relative;
-                color: rgb(8, 1, 1);
+                color: rgb(48, 3, 3);
                 
                     .icon {
                         font-size: 24px; // Adjust the size of the icon as needed

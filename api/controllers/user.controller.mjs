@@ -203,3 +203,49 @@ export const getNotificationNumber = async (req, res) => {
     res.status(500).json({ message: "Failed to get notification count!" });
   }
 };
+
+
+export const getUserRoleMonthlyCounts = async (req, res) => {
+  try {
+    const currentYear = new Date().getFullYear();
+    const roleCounts = await prisma.user.groupBy({
+      by: ['role', 'month'],
+      _count: true,
+      where: {
+        NOT: {
+          role: 'admin'
+        },
+        createdAt: {
+          gte: new Date(`${currentYear}-01-01`),
+          lte: new Date(`${currentYear}-12-31`)
+        }
+      },
+      _sum: {
+        createdAt: Prisma.sql`EXTRACT(MONTH FROM "createdAt")`
+      }
+    });
+
+    // Transform data into a format suitable for the frontend
+    const months = Array.from({length: 12}, (_, i) => ({
+      month: new Date(0, i).toLocaleString('default', { month: 'short' }),
+      landlord: 0,
+      user: 0
+    }));
+
+    roleCounts.forEach(item => {
+      const index = parseInt(item._sum.createdAt) - 1;
+      if (index >= 0 && index < 12) {
+        if (item.role === 'landlord') {
+          months[index].landlord += item._count;
+        } else if (item.role === 'user') {
+          months[index].user += item._count;
+        }
+      }
+    });
+
+    res.json(months);
+  } catch (error) {
+    console.error("Error fetching monthly user role counts:", error);
+    res.status(500).send("Failed to fetch data.");
+  }
+};

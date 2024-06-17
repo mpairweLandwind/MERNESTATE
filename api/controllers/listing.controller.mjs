@@ -201,6 +201,9 @@ export const getListings = async (req, res, next) => {
 
     const listings = await prisma.listing.findMany({
       where: whereClause,
+      include: {
+        user: true,  // Include user details in the result
+      },
       orderBy: {
         [sort || 'createdAt']: order || 'desc',
       },
@@ -210,9 +213,46 @@ export const getListings = async (req, res, next) => {
 
     console.log('Listings found:', listings);
 
-    res.status(200).json(listings);
+    res.status(200).json(listings.map(listing => ({
+      ...listing,
+      user: {
+        id: listing.user.id,
+        username: listing.user.username,
+        email: listing.user.email,
+        status: listing.user.status
+      }
+    })));
   } catch (error) {
     console.error('Error occurred:', error);
     next(errorHandler(500, 'Failed to get listings'));
+  }
+};
+
+
+
+// calculating percentage
+export const getPropertyStatusPercentages = async (req, res) => {
+  try {
+    // Fetch total number of listings
+    const totalListings = await prisma.listing.count();
+
+    // Fetch count of listings by status
+    const statusCounts = await prisma.listing.groupBy({
+      by: ['status'],
+      _count: {
+        status: true,
+      },
+    });
+
+    // Calculate percentage for each status
+    const statusPercentages = statusCounts.map(item => ({
+      name: item.status,
+      percentValues: totalListings > 0 ? (item._count.status / totalListings) * 100 : 0,
+    }));
+
+    res.json(statusPercentages);
+  } catch (error) {
+    console.error("Error fetching property status percentages:", error);
+    res.status(500).send("Failed to fetch data.");
   }
 };

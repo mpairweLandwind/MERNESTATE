@@ -1,12 +1,25 @@
 import { Link } from "react-router-dom";
 import PropTypes from 'prop-types';
 import './Card.scss';
+import { IoChatbubbleEllipses } from "react-icons/io5";
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Card({ listing, onChatClick }) {
+
+  const { currentUser, token } = useSelector(state => state.user);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState(false);
+  const navigate = useNavigate();
+
   if (!listing) {
     return <div>Loading...</div>; // Or any other loading indicator or message
   }
-  
+
   let discountPercentage = 0;
   let newPrice = listing.regularPrice;
 
@@ -21,8 +34,36 @@ function Card({ listing, onChatClick }) {
   
   discountPercentage = (1 - newPrice / listing.regularPrice) * 100;
 
+  const handleSave = async () => {
+    if (!currentUser) {
+      navigate("/sign-in");
+      return;
+    }
+
+    try {
+      const response = await axios.post('/api/user/save', { listingId: listing.id }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.data.message) {
+        throw new Error('Failed to save the listing');
+      }
+      setSaved(true);
+    } catch (error) {
+      console.error('Error saving the listing:', error);
+      setError(true);
+    }
+  };
+
+  if (!currentUser || !token) {
+    return null;
+  }
+
   return (
     <div className='card'>
+      {error && <p className='text-center my-7 text-2xl'>Something went wrong!</p>}
       <Link to={`/listing/${listing.id}`} className="imageContainer">
         <img src={listing.imageUrls[0]} alt={listing.name} />
         {(listing.offer || listing.discountPrice > 0) && (
@@ -66,12 +107,27 @@ function Card({ listing, onChatClick }) {
             </div>
           </div>
           <div className="icons">
-            <button className="icon">
-              <img src="/save.png" alt="" />
-            </button>
-            <button className="icon" onClick={() => onChatClick(listing.userRef)}>
-              <img src="/chat.png" alt="" />
-            </button>
+            <Tooltip title="Click to save the place to wishlist" placement="top" arrow>
+              <Button
+                variant="outlined" color='primary'
+                onClick={handleSave}
+                className={`chat-icon-button ${saved ? 'saved' : ''}`}
+                startIcon={<img src="/save.png" alt="" />}
+              >
+                {saved ? 'Saved' : 'Save'}
+              </Button>
+            </Tooltip>
+            <Tooltip title="Click to open chat" placement="top" arrow>
+              <Button
+                variant="contained"
+                color="primary"
+                className="chat-icon-button"
+                onClick={() => onChatClick(listing.userRef)}
+               
+              >
+                 <IoChatbubbleEllipses size={24} />
+              </Button>
+            </Tooltip>
           </div>
         </div>
       </div>

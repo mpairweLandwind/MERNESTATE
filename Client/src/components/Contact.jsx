@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
 
-export default function Contact({ listing, authToken }) {
+export default function Contact({ listing }) {
   const [landlord, setLandlord] = useState(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  // Retrieve tenant details from Redux store
-  const tenant = useSelector(state => state.user);
+  // Retrieve currentUser and token from Redux store
+  const { currentUser, token } = useSelector(state => state.user);
 
   useEffect(() => {
     const fetchLandlord = async () => {
@@ -18,15 +20,16 @@ export default function Contact({ listing, authToken }) {
         try {
           const res = await fetch(`/api/user/${listing.userRef}`, {
             headers: {
-              'Authorization': `Bearer ${authToken}`,
+              'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json'
             }
           });
+          if (!res.ok) throw new Error('Failed to fetch landlord data');
           const data = await res.json();
           setLandlord(data);
           setError(false);
         } catch (error) {
-          console.error(error);
+          console.error('Error fetching landlord details:', error);
           setError(true);
         }
         setLoading(false);
@@ -34,10 +37,38 @@ export default function Contact({ listing, authToken }) {
     };
 
     fetchLandlord();
-  }, [listing, authToken]);
+  }, [listing, token]);
 
   const onChange = (e) => {
     setMessage(e.target.value);
+  };
+
+  const sendEmail = async () => {
+    const emailData = {
+      tenantEmail: currentUser.email,
+      tenantName: currentUser.username,
+      landlordEmail: landlord.email,
+      subject: `Regarding ${listing.name}`,
+      message: message
+    };
+      // Log emailData to the console for debugging
+  console.log("Sending email with the following data:", emailData);
+
+    try {
+      const response = await fetch('/api/email/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailData)
+      });
+      if (!response.ok) throw new Error('Failed to send email');
+      alert('Email sent successfully');
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      alert('Failed to send email');
+    }
   };
 
   return (
@@ -45,7 +76,7 @@ export default function Contact({ listing, authToken }) {
       {loading && <p>Loading landlord details...</p>}
       {error && <p>Could not load landlord details. Please try again later.</p>}
       {landlord && (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 w-1/2'>
           <p>
             Contact <span className='font-semibold'>{landlord.username}</span>
             {' '}for{' '}
@@ -60,23 +91,23 @@ export default function Contact({ listing, authToken }) {
             placeholder='Enter your message here...'
             className='w-full border p-3 rounded-lg'
           ></textarea>
-          <a
-            href={`mailto:${landlord.email}?subject=Regarding ${listing.name}&body=Hi ${landlord.username},%0A%0A${message}%0A%0AFrom: ${tenant.username || 'Your Name'}%0AEmail: ${tenant.email || 'your.email@example.com'}`}
-            className='bg-slate-700 text-white text-center p-3 uppercase rounded-lg hover:opacity-95'
+           <Tooltip title="Click to send email to landlord " placement="top" arrow>
+          <Button
+            onClick={sendEmail}
+            className='bg-slate-700 text-gray-900 text-center p-3 uppercase rounded-md hover:opacity-95'
           >
             Send Message
-          </a>
+          </Button>
+          </Tooltip>
         </div>
       )}
     </>
   );
 }
 
-// Define propTypes for Contact component
 Contact.propTypes = {
   listing: PropTypes.shape({
     userRef: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
   }).isRequired,
-  authToken: PropTypes.string,
 };

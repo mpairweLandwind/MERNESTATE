@@ -4,7 +4,7 @@ import {
   deleteListing,
   updateListing,
   getListing,
-  getListings  
+  getListings,getPropertyStatusPercentages  
 } from '../controllers/listing.controller.mjs';
 import { verifyToken } from '../utils/verifyUser.mjs';
 
@@ -22,6 +22,7 @@ const router = express.Router();
 router.post('/create', verifyToken, createListing);
 router.delete('/delete/:id', verifyToken, deleteListing);
 router.post('/update/:id', verifyToken, updateListing);
+router.get('/property-status-percentages', getPropertyStatusPercentages);
 router.get('/get/:id', getListing);
 router.get('/get/', getListings);
 export default router;

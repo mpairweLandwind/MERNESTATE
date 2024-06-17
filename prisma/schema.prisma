@@ -6,7 +6,6 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
-
 model Listing {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   name          String
@@ -14,7 +13,7 @@ model Listing {
   property      PropertyType 
   status        PropertyStatus  
   description   String
-  city          String      @default("Bujumbura") 
+  city          String        @default("Bujumbura") 
   address       String
   regularPrice  Float
   discountPrice Float
@@ -31,9 +30,16 @@ model Listing {
   createdAt     DateTime      @default(now())
   postDetail    PostDetail?
   savedPosts    SavedPost[]
+  approvalStatus ApprovalStatus @default(DISAPPROVED)
 
   @@map("listings")
 }
+
+enum ApprovalStatus {
+  APPROVED
+  DISAPPROVED
+}
+
 
 enum ListingType {
   sale

@@ -1,152 +1,96 @@
-import { useContext } from "react";
+import { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer
+} from 'recharts';
 import { ThemeContext } from "../../../context/ThemeContext";
-import { FaArrowUpLong } from "react-icons/fa6";
 import { LIGHT_THEME } from "../../../constants/themeConstants";
 import "./AreaCharts.scss";
 
-const data = [
-  {
-    month: "Jan",
-    loss: 70,
-    profit: 100,
-  },
-  {
-    month: "Feb",
-    loss: 55,
-    profit: 85,
-  },
-  {
-    month: "Mar",
-    loss: 35,
-    profit: 90,
-  },
-  {
-    month: "April",
-    loss: 90,
-    profit: 70,
-  },
-  {
-    month: "May",
-    loss: 55,
-    profit: 80,
-  },
-  {
-    month: "Jun",
-    loss: 30,
-    profit: 50,
-  },
-  {
-    month: "Jul",
-    loss: 32,
-    profit: 75,
-  },
-  {
-    month: "Aug",
-    loss: 62,
-    profit: 86,
-  },
-  {
-    month: "Sep",
-    loss: 55,
-    profit: 78,
-  },
-];
-
 const AreaBarChart = () => {
   const { theme } = useContext(ThemeContext);
+  const [data, setData] = useState([]);
 
-  const formatTooltipValue = (value) => {
-    return `${value}k`;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Initialize data with months from Jan to Dec
+        const initialData = Array.from({ length: 12 }, (_, i) => ({
+          month: new Date(2000, i).toLocaleString('default', { month: 'short' }),
+          landlord: 0,
+          user: 0
+        }));
+
+        const response = await axios.get('http://localhost:3000/api/user/user-role-monthly-counts');
+        // Merge API data with initialized months
+        response.data.forEach(dataPoint => {
+          const index = initialData.findIndex(month => month.month === dataPoint.month);
+          if (index !== -1) {
+            initialData[index] = { ...initialData[index], ...dataPoint };
+          }
+        });
+
+        setData(initialData);
+      } catch (error) {
+        console.error('Error fetching monthly user role counts:', error);
+        // Even in case of an error, set initial data to show months on the X-axis
+        setData(Array.from({ length: 12 }, (_, i) => ({
+          month: new Date(2000, i).toLocaleString('default', { month: 'short' }),
+          landlord: 0,
+          user: 0
+        })));
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const formatTooltipValue = (value, name) => {
+    return `${value} ${name === 'landlord' ? 'landlords' : 'users'}`;
   };
 
-  const formatYAxisLabel = (value) => {
-    return `${value}k`;
-  };
-
-  const formatLegendValue = (value) => {
-    return value.charAt(0).toUpperCase() + value.slice(1);
-  };
+  const formatYAxisLabel = (value) => `${value} users`;
 
   return (
     <div className="bar-chart">
       <div className="bar-chart-info">
-        <h5 className="bar-chart-title">Total Revenue</h5>
-        <div className="chart-info-data">
-          <div className="info-data-value">$50.4K</div>
-          <div className="info-data-text">
-            <FaArrowUpLong />
-            <p>5% than last month.</p>
-          </div>
-        </div>
+        <h5 className="bar-chart-title">Monthly User Roles Distribution</h5>
       </div>
       <div className="bar-chart-wrapper">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={300}>
           <BarChart
-            width={500}
-            height={200}
             data={data}
             margin={{
               top: 5,
-              right: 5,
-              left: 0,
+              right: 30,
+              left: 20,
               bottom: 5,
             }}
           >
             <XAxis
-              padding={{ left: 10 }}
               dataKey="month"
-              tickSize={0}
-              axisLine={false}
-              tick={{
-                fill: `${theme === LIGHT_THEME ? "#676767" : "#f3f3f3"}`,
-                fontSize: 14,
-              }}
+              tick={{ fill: theme === LIGHT_THEME ? "#676767" : "#f3f3f3" }}
             />
             <YAxis
-              padding={{ bottom: 10, top: 10 }}
               tickFormatter={formatYAxisLabel}
-              tickCount={6}
-              axisLine={false}
-              tickSize={0}
-              tick={{
-                fill: `${theme === LIGHT_THEME ? "#676767" : "#f3f3f3"}`,
-              }}
+              domain={[0, 'dataMax']}
+              tick={{ fill: theme === LIGHT_THEME ? "#676767" : "#f3f3f3" }}
             />
-            <Tooltip
-              formatter={formatTooltipValue}
-              cursor={{ fill: "transparent" }}
-            />
-            <Legend
-              iconType="circle"
-              iconSize={10}
-              verticalAlign="top"
-              align="right"
-              formatter={formatLegendValue}
+            <Tooltip formatter={formatTooltipValue} />
+            <Legend />
+            <Bar
+              dataKey="landlord"
+              name="Landlords"
+              fill="#8884d8"
+              barSize={20}
+              radius={[10, 10, 0, 0]}
             />
             <Bar
-              dataKey="profit"
-              fill="#475be8"
-              activeBar={false}
-              isAnimationActive={false}
-              barSize={24}
-              radius={[4, 4, 4, 4]}
-            />
-            <Bar
-              dataKey="loss"
-              fill="#e3e7fc"
-              activeBar={false}
-              isAnimationActive={false}
-              barSize={24}
-              radius={[4, 4, 4, 4]}
+              dataKey="user"
+              name="Users"
+              fill="#82ca9d"
+              barSize={20}
+              radius={[10, 10, 0, 0]}
             />
           </BarChart>
         </ResponsiveContainer>
@@ -155,4 +99,4 @@ const AreaBarChart = () => {
   );
 };
 
-export default AreaBarChart;
+export default AreaBarChart

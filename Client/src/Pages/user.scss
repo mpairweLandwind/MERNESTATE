@@ -1,31 +1,64 @@
 @import "../responsive.scss";
 .listPage {
-    display: flex;
+display: flex;
     height: 100%;
     background-color: #fcf5f3;
+width: 100%;
+    margin-left: 2rem;
+    margin-right: 2rem;
 
-    .listContainer {
-        flex: 3;
+.listContainer {
+    flex: 2;
         height: calc(100vh - 20px);
 
-        .wrapper {
+    .wrapper {
             height: 100%;
             padding-right: 50px;
             display: flex;
             flex-direction: column;
             gap: 50px;
-            overflow-y: scroll;
-            padding-bottom: 50px;
+    margin-top: 12rem;
+    overflow-y: scroll;
+        padding-bottom: 50px;
 
-            .title {
-                margin-left: 20px;
-            }
+    .title {
+            margin-left: 20px;
         }
     }
-
+    }
     .mapContainer {
-        flex: 2;
+        flex: 1.5;
         height: 100%;
         background-color: #fcf5f3;
-    }
+        display: flex;
+            position: relative;
+            margin-top: 12rem;
+            margin-left: 0.5rem;
+            margin-right: 1rem;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 5;
+        
+            .chatContainer {
+                position: relative;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: white;
+                z-index: 10;
+                display: flex;
+                flex-direction: column;
+        
+                .closeChatButton {
+                    align-self: center; // Center the button horizontally
+                    margin: 8px;
+                    padding: 1rem;
+                    background-color: #929c9c;
+                    color: rgb(35, 128, 7);
+                    border: none;
+                    cursor: pointer;
+                }
+            }
+  }
 }

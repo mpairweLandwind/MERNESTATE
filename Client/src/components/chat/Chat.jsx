@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { format } from "timeago.js";
 import SocketContext from "../../context/SocketContext";
@@ -9,7 +9,7 @@ import { getCurrentUser, getToken } from "../../redux/user/useSelectors";
 import { FaPaperPlane } from "react-icons/fa"; // Importing the send icon
 import "./chat.scss";
 
-function Chat({ chats }) {
+function Chat({ chats, receiverId }) {
   const [chat, setChat] = useState(null);
   const currentUser = useSelector(getCurrentUser);
   const token = useSelector(getToken);
@@ -40,6 +40,27 @@ function Chat({ chats }) {
       console.error("Failed to open chat:", err);
     }
   };
+
+  const handleNewChat = useCallback(async (receiver) => {
+    try {
+      const res = await fetchData(`/api/chats/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ senderId: currentUser.id, receiverId: receiver.id }),
+      });
+
+      if (res && res.id) {
+        setChat({ ...res, receiver });
+      } else {
+        console.error("Unexpected API response structure:", res);
+      }
+    } catch (err) {
+      console.error("Failed to create new chat:", err);
+    }
+  }, [token, currentUser.id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -117,6 +138,12 @@ function Chat({ chats }) {
     }
   }, [socket, chat, token]);
 
+  useEffect(() => {
+    if (receiverId && !chats.some(c => c.receiver.id === receiverId)) {
+      handleNewChat({ id: receiverId });
+    }
+  }, [receiverId, chats, handleNewChat]);
+
   return (
     <div className="chatContainer">
       <div className="messages">
@@ -193,7 +220,8 @@ Chat.propTypes = {
       }).isRequired,
       lastMessage: PropTypes.string.isRequired,
     })
-  ),
+  ).isRequired,
+  receiverId: PropTypes.string.isRequired,
 };
 
 export default Chat;

@@ -111,19 +111,23 @@
                             display: flex;
                             gap: 20px;
 
-                .icon {
-                        border: 1px solid #999;
-                        padding: 2px 5px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-
-                    &:hover {
-                            background-color: lightgray;
-                        }
-                    }
+                            .chat-icon-button {
+                                    background: white;
+                                    border: none;
+                                    cursor: pointer;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                padding: 5px;
+                        
+                                svg {
+                                        color: #007bff; // Customize color as needed
+                                    }
+                                
+                                    &:hover svg {
+                                        color: #0056b3; // Customize hover color as needed
+                                    }
+                                }
             }
                 }
                 }

@@ -1,18 +1,18 @@
 .filter {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-left: 12px;
+    gap: 0.5rem;
+        margin-left: 0.25rem;
 
     h1 {
         font-weight: 300;
-        font-size: 24px;
+        font-size: 16px;
     }
 
     .item {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 1px;
 
         label {
             font-size: 10px;
@@ -21,7 +21,7 @@
         input,
         select {
             width: 100px;
-            padding: 10px;
+            padding: 1rem;
             border: 1px solid #e0e0e0;
             border-radius: 5px;
             font-size: 14px;
@@ -30,7 +30,7 @@
 
     .top {
         input {
-            width: 100%;
+            width: 90%;
         }
     }
 
@@ -38,11 +38,11 @@
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
-        gap: 20px;
+        gap: 1rem;
 
         button {
-            width: 100px;
-            padding: 10px;
+            width: max-content;
+                padding: 1rem;
             border: none;
             cursor: pointer;
             background-color: #fece51;

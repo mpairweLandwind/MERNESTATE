@@ -6,22 +6,24 @@ import { FaSearch, FaBell, FaGlobe } from 'react-icons/fa';
 import { useNotificationStore } from '../../lib/notificationStore';
 import './header.scss';
 import { clearCurrentUser } from '../../redux/user/userSlice';
+import { startTransition } from 'react';
 
 export default function Header() {
   const { currentUser, token } = useSelector((state) => state.user);
-  const { i18n, t } = useTranslation();
+  const { i18n, t } = useTranslation();  
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
   const navigate = useNavigate();
-
+  
   const fetch = useNotificationStore((state) => state.fetch);
   const number = useNotificationStore((state) => state.number);
 
   useEffect(() => {
     if (currentUser) {
       console.log("Fetching notifications for user:", currentUser.username);
-      fetch(token); // Pass the token to the fetch function
+      fetch(token);
     }
   }, [currentUser, token, fetch]);
 
@@ -36,6 +38,17 @@ export default function Header() {
   }, [currentUser]);
 
   useEffect(() => {
+    const handleLanguageChanged = (lang) => {
+      setCurrentLanguage(lang);
+    };
+    i18n.on('languageChanged', handleLanguageChanged);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChanged);
+    };
+  }, [i18n]);
+
+  useEffect(() => {
     if (currentUser && token) {
       const path = getProfileLink();
       navigate(path);
@@ -43,10 +56,12 @@ export default function Header() {
   }, [currentUser, token, navigate, getProfileLink]);
 
   const handleLanguageChange = (lang) => {
-    i18n.changeLanguage(lang);
-    setDropdownOpen(false);
+    startTransition(() => {
+      i18n.changeLanguage(lang);
+      setCurrentLanguage(lang); // Update the current language state
+      setDropdownOpen(false);
+    });
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);
@@ -83,12 +98,12 @@ export default function Header() {
             <Link to='/' className="logo-container">
               <img src="./logo.jpeg" alt="Logo" width={100} />
             </Link>
-            <span className='text-xl font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 rounded-lg shadow-lg'>
+            <span className='text-l font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 rounded-lg shadow-lg'>
               GestImpact
             </span>
           </div>
-          <Link to='/' className='nav-item'>Home</Link>
-          <Link to='/about' className='nav-item'>About</Link>
+          <Link to='/' className='nav-item'>{t('home')}</Link>
+          <Link to='/about' className='nav-item'>{t('about')}</Link>
           <form onSubmit={handleSubmit} className='search-form'>
             <input
               type='text'
@@ -107,6 +122,8 @@ export default function Header() {
           <div className='language-selector pr-8'>
             <button onClick={() => setDropdownOpen(!dropdownOpen)} className='language-button'>
               <FaGlobe size={20} className='globe-icon' />
+              <span className='selected-language'></span>
+              {currentLanguage.toUpperCase()}
             </button>
             {dropdownOpen && (
               <ul className='language-dropdown'>
@@ -126,7 +143,7 @@ export default function Header() {
               </Link>
               <span>{currentUser.username}</span>
               <button onClick={handleLogout} className="logout-button">
-                Log Out
+                {t('log_out')}
               </button>
               <div className="notification">
                 {number > 0 && <div className="number">{number}</div>}
@@ -135,8 +152,8 @@ export default function Header() {
             </div>
           ) : (
             <div className="auth-links">
-              <Link to="/sign-in">Sign in</Link>
-              <Link to="/sign-up" className="register">Sign up</Link>
+              <Link to="/sign-in">{t('sign_in')}</Link>
+              <Link to="/sign-up" className="register">{t('sign_up')}</Link>
             </div>
           )}
         </div>
