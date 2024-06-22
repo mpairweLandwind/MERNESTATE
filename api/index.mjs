@@ -13,7 +13,12 @@ import connectDB from './config/db.mjs';
 import emailRoutes from './routes/emailRoute.mjs'
 import { getNotificationNumber } from './controllers/user.controller.mjs';
 import { verifyToken } from './utils/verifyUser.mjs';
-
+import { getUserRoleMonthlyCounts } from './controllers/user.controller.mjs';
+import maintenanceRoute from './routes/maintenance.route.mjs';
+import { getAdminEmailController } from './controllers/user.controller.mjs';  
+import { updateMaintenance } from './controllers/maintenanceController.mjs';
+import paypalRoutes from './routes/paypalRoutes.mjs';
+// Load environment variables from.env file
 dotenv.config();
 connectDB();
 
@@ -37,7 +42,10 @@ app.use(cookieParser());
 
 // Routes
 
-
+app.use('/api/maintenance/update/:id', verifyToken, updateMaintenance);
+app.use('/api/maintenance', maintenanceRoute);
+app.get('/api/user/count', getUserRoleMonthlyCounts);
+app.get('/api/user/admin', verifyToken, getAdminEmailController);
 app.get('/api/user/notification', verifyToken, getNotificationNumber);
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
@@ -45,6 +53,7 @@ app.use('/api/listing', listingRouter);
 app.use('/api/chats', chatRoute);
 app.use('/api/messages', messageRoute);
 app.use('/api/email', emailRoutes);
+app.use('/api/paypal', paypalRoutes);
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'Client', 'dist')));

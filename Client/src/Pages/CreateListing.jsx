@@ -215,10 +215,10 @@ export default function CreateListing() {
   const onLogOut = () => handleLogout(navigate, dispatch, clearCurrentUser);
 
   return (
-    <div className='flex'>
+    <div className='flex bg-gray-100'>
      <Sidebar onLogout={onLogOut} />
-    <main className="bg-gray-100  w-full flex flex-col items-center justify-center p-4">
-      <form className="space-y-4 divide-y divide-gray-200 w-full  bg-gray-200 pt-4 rounded-lg" onSubmit={handleSubmit}>
+    <main className="bg-white  w-full flex flex-col items-center justify-center  mainsection">
+      <form className="space-y-4 divide-y divide-gray-200 w-full  bg-white pt-4 rounded-lg" onSubmit={handleSubmit}>
         <PropertyDetails formData={formData} handleChange={handleChange} />
         <ImageUploadSection 
           setFiles={setFiles} 
@@ -406,7 +406,7 @@ function InputField({ label, id, type, value, onChange, placeholder }) {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="mt-2 block w-full px-12 py-2 bg-gray-200 border border-gray-600 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm .custom-font"
+        className="mt-2 block w-3/4 px-12 py-2 bg-gray-200 border border-gray-600 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm .custom-font"
       />
     </div>
   );
@@ -422,7 +422,7 @@ function SelectField({ label, id, value, onChange, options }) {
         id={id}
         value={value}
         onChange={onChange}
-        className="mt-2 block w-full px-12 py-2 bg-gray-200 border border-gray-600 rounded-full shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm .custom-font"
+        className="mt-2 block w-3/4  px-12 py-2 bg-gray-200 border border-gray-600 rounded-full shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm .custom-font"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -445,7 +445,7 @@ function TextAreaField({ label, id, value, onChange, placeholder }) {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="mt-2 block w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm .custom-font"
+        className="mt-2 block w-3/4 px-3 py-2 bg-gray-200 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm .custom-font"
       />
     </div>
   );

@@ -21,7 +21,7 @@ const AreaBarChart = () => {
           user: 0
         }));
 
-        const response = await axios.get('http://localhost:3000/api/user/user-role-monthly-counts');
+        const response = await axios.get('http://localhost:3000/api/user/count');
         // Merge API data with initialized months
         response.data.forEach(dataPoint => {
           const index = initialData.findIndex(month => month.month === dataPoint.month);

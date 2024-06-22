@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FaMapMarkerAlt, FaShare } from 'react-icons/fa';
-//import DOMPurify from 'dompurify';
 import 'swiper/css/bundle';
 import { Navigation } from 'swiper/modules';
 import SwiperCore from 'swiper';
@@ -12,6 +11,7 @@ import Map from '../components/Map';
 import Contact from '../components/Contact';
 import Tooltip from '@mui/material/Tooltip';
 import Button from '@mui/material/Button';
+import PaypalButton from '../components/paypalButton';
 import './listing.scss';
 
 export default function Listing() {
@@ -139,7 +139,7 @@ export default function Listing() {
               </div>
             </div>
           </div>
-          <div className='features' >
+          <div className='features'>
             <div className="wrapper  mt-8 pt-5">
               {!contact && (
                 <>
@@ -235,6 +235,15 @@ export default function Listing() {
                     </Button>
                   </Tooltip>
                 )}
+                {/* Add PayPal Button */}
+                <div className="paypal-button-container">
+                  <PaypalButton
+                    amount={listing.offer ? listing.discountPrice : listing.regularPrice}
+                    userId={currentUser.id}
+                    propertyId={listing.id}
+                    propertyType={listing.type}
+                  />
+                </div>
               </div>
             </div>
           </div>

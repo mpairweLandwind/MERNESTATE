@@ -19,6 +19,10 @@ import { getCurrentUser, getToken } from './redux/user/useSelectors';
 import ProfileManagement from './components/ProfileManagement';
 import { profileLoader } from './lib/loaders';
 import Listing from './Pages/Listing';
+import CreateMaintenance from './Pages/CreateMaintenance';
+import Maintenance from './Pages/Maintenance';
+import UpdateMaintenance from './Pages/UpdateMaintenance';
+
 
 const App = () => {
  // const { i18n } = useTranslation();
@@ -63,6 +67,13 @@ const App = () => {
           ]
         },
         {
+          path: 'maintenance/:maintenanceId',
+          element: <PrivateRoute allowedRoles={['admin','landlord']} />,
+          children: [
+            { path: '', element: <Maintenance /> }
+          ]
+        },
+        {
           path: 'user-dashboard',
           element: currentUserRole === 'user' ? <User /> : <Navigate to="/" replace />,
           loader: profileLoader
@@ -73,6 +84,8 @@ const App = () => {
           children: [
             { path: 'dashboard', element: <Profile />, loader: profileLoader  },
             { path: 'profile', element: <ProfileManagement /> },
+            { path: 'update-maintenance/:maintenanceId', element: <UpdateMaintenance /> },
+            { path: 'createMaintenance', element: <CreateMaintenance/> },
             { path: 'create-listing', element: <CreateListing /> },
             { path: 'update-listing/:listingId', element: <UpdateListing /> }
           ]

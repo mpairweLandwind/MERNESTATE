@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import Tooltip from '@mui/material/Tooltip';
 import Button from '@mui/material/Button';
 
-export default function Contact({ listing }) {
-  const [landlord, setLandlord] = useState(null);
+export default function MContact({ maintenance }) {
+  const [adminEmail, setAdminEmail] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -14,30 +14,30 @@ export default function Contact({ listing }) {
   const { currentUser, token } = useSelector(state => state.user);
 
   useEffect(() => {
-    const fetchLandlord = async () => {
-      if (listing && listing.userRef) {
-        setLoading(true);
-        try {
-          const res = await fetch(`/api/user/${listing.userRef}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          if (!res.ok) throw new Error('Failed to fetch landlord data');
-          const data = await res.json();
-          setLandlord(data);
-          setError(false);
-        } catch (error) {
-          console.error('Error fetching landlord details:', error);
-          setError(true);
-        }
-        setLoading(false);
+    const fetchAdminEmail = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/user/admin', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!res.ok) throw new Error('Failed to fetch admin email');
+        const data = await res.json();
+
+        console.log('Fetched admin email:', data.data.email);
+        setAdminEmail(data.data.email);
+        setError(false);
+      } catch (error) {
+        console.error('Error fetching admin email:', error);
+        setError(true);
       }
+      setLoading(false);
     };
 
-    fetchLandlord();
-  }, [listing, token]);
+    fetchAdminEmail();
+  }, [token]);
 
   const onChange = (e) => {
     setMessage(e.target.value);
@@ -47,12 +47,13 @@ export default function Contact({ listing }) {
     const emailData = {
       senderEmail: currentUser.email,
       senderName: currentUser.username,
-      recipientEmail: landlord.email,
-      subject: `Regarding ${listing.name}`,
+      recipientEmail: adminEmail,
+      subject: `Regarding ${maintenance.name}`,
       message: message
     };
-      // Log emailData to the console for debugging
-  console.log("Sending email with the following data:", emailData);
+
+    // Log emailData to the console for debugging
+    console.log("Sending email with the following data:", emailData);
 
     try {
       const response = await fetch('/api/email/send', {
@@ -73,14 +74,13 @@ export default function Contact({ listing }) {
 
   return (
     <>
-      {loading && <p>Loading landlord details...</p>}
-      {error && <p>Could not load landlord details. Please try again later.</p>}
-      {landlord && (
+      {loading && <p>Loading admin email...</p>}
+      {error && <p>Could not load admin email. Please try again later.</p>}
+      {adminEmail && (
         <div className='flex flex-col gap-2 w-1/2'>
           <p>
-            Contact <span className='font-semibold'>{landlord.username}</span>
-            {' '}for{' '}
-            <span className='font-semibold'>{listing.name.toLowerCase()}</span>
+            Contact admin regarding{' '}
+            <span className='font-semibold'>{maintenance.name.toLowerCase()}</span>
           </p>
           <textarea
             name='message'
@@ -91,13 +91,13 @@ export default function Contact({ listing }) {
             placeholder='Enter your message here...'
             className='w-full border p-3 rounded-lg'
           ></textarea>
-           <Tooltip title="Click to send email to landlord " placement="top" arrow>
-          <Button
-            onClick={sendEmail}
-            className='bg-slate-700 text-gray-900 text-center p-3 uppercase rounded-md hover:opacity-95'
-          >
-            Send Message
-          </Button>
+          <Tooltip title="Click to send email to admin" placement="top" arrow>
+            <Button
+              onClick={sendEmail}
+              className='bg-slate-700 text-gray-900 text-center p-3 uppercase rounded-md hover:opacity-95'
+            >
+              Send Message
+            </Button>
           </Tooltip>
         </div>
       )}
@@ -105,8 +105,8 @@ export default function Contact({ listing }) {
   );
 }
 
-Contact.propTypes = {
-  listing: PropTypes.shape({
+MContact.propTypes = {
+  maintenance: PropTypes.shape({
     userRef: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
   }).isRequired,

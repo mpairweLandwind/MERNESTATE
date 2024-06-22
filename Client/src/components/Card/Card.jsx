@@ -32,7 +32,8 @@ function Card({ listing, onChatClick }) {
     newPrice = listing.regularPrice - listing.discountPrice;
   }
   
-  discountPercentage = (1 - newPrice / listing.regularPrice) * 100;
+  discountPercentage = ((1 - newPrice / listing.regularPrice) * 100).toFixed(1);
+
 
   const handleSave = async () => {
     if (!currentUser) {

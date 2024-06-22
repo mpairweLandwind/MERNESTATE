@@ -19,27 +19,27 @@ export default function Sidebar() {
                 </Typography>
             </div>
             <List>
-                <Link to='/landlord' aria-label="Dashboard">
+                <Link to='/landlord/dashboard' aria-label="Dashboard">
                     <HoverableListItem icon={<PresentationChartBarIcon className="h-5 w-5" />}>
                         Dashboard
                     </HoverableListItem>
                 </Link>
-                <Link to='/create-listing' aria-label="E-Commerce">
+                <Link to='/landlord/create-listing' aria-label="E-Commerce">
                     <HoverableListItem icon={<ShoppingBagIcon className="h-5 w-5" />}>
-                        Add Property
+                        Add Property  (Rent&sale)
                     </HoverableListItem>
                 </Link>
-                <Link to='/inbox' aria-label="Inbox">
+                <Link to='/landlord/createMaintenance' aria-label="Inbox">
                     <HoverableListItem icon={<InboxIcon className="h-5 w-5" />}>
-                        Inbox
+                      Register For Maintenance
                     </HoverableListItem>
                 </Link>
-                <Link to='/profile' aria-label="Profile">
+                <Link to='/landlord/profile' aria-label="Profile">
                     <HoverableListItem icon={<UserCircleIcon className="h-5 w-5" />}>
                         Profile
                     </HoverableListItem>
                 </Link>
-                <Link to='/settings' aria-label="Settings">
+                <Link to='/landlord/dashboard' aria-label="Settings">
                     <HoverableListItem icon={<Cog6ToothIcon className="h-5 w-5" />}>
                         Settings
                     </HoverableListItem>

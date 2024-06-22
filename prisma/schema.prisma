@@ -6,6 +6,8 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+
 model Listing {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   name          String
@@ -31,9 +33,76 @@ model Listing {
   postDetail    PostDetail?
   savedPosts    SavedPost[]
   approvalStatus ApprovalStatus @default(DISAPPROVED)
+  transactions  Transaction[]  // Reference to transactions
 
   @@map("listings")
 }
+
+model User {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  username   String      @unique
+  email      String      @unique
+  role       UserRole    @default(user)  
+  password   String
+  avatar     String      @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+  createdAt  DateTime    @default(now())
+  listings   Listing[]
+  maintenance Maintenance[]
+  savedPosts SavedPost[]
+  chats      Chat[]      @relation(fields: [chatIDs], references: [id])   
+  chatIDs    String[]    @db.ObjectId
+  status     UserStatus  @default(active)
+  transactions Transaction[]  // Reference to transactions
+
+  @@map("users")
+}
+
+model Maintenance {
+  id                   String          @id @default(auto()) @map("_id") @db.ObjectId
+  name                 String 
+  type                 Maintenancekind
+  property             PropertyKind
+  status               PropertyState
+  description          String
+  city                 String          
+  address              String
+  size                 Float?
+  maintenanceCharge    Float
+  furnished            Boolean
+  parking              Boolean
+  latitude             Float?
+  longitude            Float?
+  imageUrls            String[]
+  yearBuilt            Float?            // Year the property was built
+  lastRenovationDate   DateTime?       // Last renovation date
+  maintenanceHistory   MaintenanceHistory[] // List of past maintenance activities
+  materialsUsed        String          // Details about the materials used in construction
+  estimatedValue       Float?          // Estimated value of the property
+  condition            PropertyCondition // Current condition of the property
+  maintenanceSchedule  String          // Schedule for regular maintenance
+  userRef              String          @db.ObjectId
+  user                 User            @relation(fields: [userRef], references: [id])
+  createdAt            DateTime        @default(now())
+  transactions         Transaction[]  // Reference to transactions
+}
+
+model Transaction {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String      @db.ObjectId
+  propertyId  String      @db.ObjectId
+  amount      Float
+  status      String
+  createdAt   DateTime    @default(now())
+  user        User        @relation(fields: [userId], references: [id])
+  listing     Listing?    @relation(fields: [propertyId], references: [id])
+  maintenance Maintenance? @relation(fields: [propertyId], references: [id])
+  
+  @@map("transactions")
+}
+
+
+
+
 
 enum ApprovalStatus {
   APPROVED
@@ -78,22 +147,51 @@ enum UserStatus {
   inactive
 }
 
-model User {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  username   String      @unique
-  email      String      @unique
-  role       UserRole    @default(user)  
-  password   String
-  avatar     String      @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
-  createdAt  DateTime    @default(now())
-  listings      Listing[]
-  savedPosts SavedPost[]
-  chats      Chat[]      @relation(fields: [chatIDs], references: [id])   
-  chatIDs    String[]    @db.ObjectId
-  status     UserStatus  @default(active)
 
-  @@map("users")
+
+
+
+
+model MaintenanceHistory {
+  id                   String          @id @default(auto()) @map("_id") @db.ObjectId
+  maintenanceId        String          @db.ObjectId
+  maintenance          Maintenance     @relation(fields: [maintenanceId], references: [id])
+  description          String
+  date                 DateTime        @default(now())
+  cost                 Float
 }
+
+enum PropertyCondition {
+  NEW
+  GOOD
+  FAIR
+  POOR
+}
+
+enum Maintenancekind {
+  Routine
+  Preventive
+  Corrective
+  Predictive
+  Emergency
+  Cosmetic
+  Seasonal
+  Deffered
+}
+enum PropertyKind {
+  RESIDENTIAL
+  COMMERCIAL
+  INDUSTRIAL
+  LAND
+}
+
+enum PropertyState {
+  UNOCCUPIED
+  RENTED
+  UNDER_MAINTENANCE
+  UNDER_SALE
+}
+
 
 model PostDetail {
   id         String  @id @default(auto()) @map("_id") @db.ObjectId

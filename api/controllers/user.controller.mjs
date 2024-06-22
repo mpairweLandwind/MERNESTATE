@@ -3,6 +3,8 @@ import { errorHandler } from '../utils/error.mjs';
 import prisma from '../lib/prisma.mjs';
 import { ObjectId } from 'mongodb';
 
+
+
 export const updateUser = async (req, res, next) => {
   if (req.user.id !== req.params.id)
     return next(errorHandler(401, 'You can only update your own account!'));
@@ -203,49 +205,101 @@ export const getNotificationNumber = async (req, res) => {
     res.status(500).json({ message: "Failed to get notification count!" });
   }
 };
-
-
 export const getUserRoleMonthlyCounts = async (req, res) => {
   try {
     const currentYear = new Date().getFullYear();
-    const roleCounts = await prisma.user.groupBy({
-      by: ['role', 'month'],
-      _count: true,
+    const startDate = new Date(currentYear, 0, 1); // January 1st of current year
+    const endDate = new Date(currentYear, 11, 31); // December 31st of current year
+
+    // Assuming you want to count by role and month without raw SQL
+    const users = await prisma.user.findMany({
       where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate
+        },
         NOT: {
           role: 'admin'
-        },
-        createdAt: {
-          gte: new Date(`${currentYear}-01-01`),
-          lte: new Date(`${currentYear}-12-31`)
         }
       },
-      _sum: {
-        createdAt: Prisma.sql`EXTRACT(MONTH FROM "createdAt")`
+      select: {
+        createdAt: true,
+        role: true
       }
     });
 
-    // Transform data into a format suitable for the frontend
-    const months = Array.from({length: 12}, (_, i) => ({
-      month: new Date(0, i).toLocaleString('default', { month: 'short' }),
-      landlord: 0,
-      user: 0
+    // Processing data in JavaScript to group by month and role
+    const counts = users.reduce((acc, user) => {
+      const month = user.createdAt.getMonth();
+      const role = user.role;
+      if (!acc[month]) acc[month] = { landlord: 0, user: 0 };
+      if (role === 'landlord' || role === 'user') {
+        acc[month][role]++;
+      }
+      return acc;
+    }, {});
+
+    // Transform counts into the desired array format
+    const result = Object.keys(counts).map(month => ({
+      month: new Date(0, month).toLocaleString('default', { month: 'short' }),
+      ...counts[month]
     }));
 
-    roleCounts.forEach(item => {
-      const index = parseInt(item._sum.createdAt) - 1;
-      if (index >= 0 && index < 12) {
-        if (item.role === 'landlord') {
-          months[index].landlord += item._count;
-        } else if (item.role === 'user') {
-          months[index].user += item._count;
-        }
-      }
-    });
-
-    res.json(months);
+    res.json(result);
   } catch (error) {
     console.error("Error fetching monthly user role counts:", error);
     res.status(500).send("Failed to fetch data.");
+  }
+};
+
+
+export const getUserMaintenances = async (req, res) => {
+  const requestedUserId = req.query.id; // Accessing the user ID from query parameters
+
+  try {
+    // Find the user by ID to ensure the user exists
+    const user = await prisma.user.findUnique({
+      where: {
+        id: requestedUserId, // Ensure this is a string that matches your user ID type
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Retrieve all listings where userRef matches the requestedUserId
+    const userMaintenances = await prisma.maintenance.findMany({
+      where: {
+        userRef: requestedUserId, // Assuming userRef is the field that references the user in the listings table
+      },
+    });
+
+    res.status(200).json({ maintenances: userMaintenances }); // Structured response
+  } catch (error) {
+    console.error('Error retrieving user listings:', error);
+    res.status(500).json({ message: 'Failed to get user listings' }); // Structured error response
+  }
+};
+
+
+export const getAdminEmailController = async (req, res) => {
+  try {
+    const admin = await prisma.user.findFirst({
+      where: { role: 'admin' },
+      select: { email: true },
+    });
+
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin user not found' });
+    }
+
+    res.json({ data: { email: admin.email } });
+    console.log('Admin email:', admin.email);
+  } catch (error) {
+    console.error('Error fetching admin email:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    await prisma.$disconnect();
   }
 };

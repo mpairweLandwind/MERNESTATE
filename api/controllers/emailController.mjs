@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 
 const emailController = {
     sendEmail: async (req, res) => {
-      const { tenantEmail, tenantName, landlordEmail, subject, message } = req.body;
+      const { senderEmail, senderName, recipientEmail, subject, message } = req.body;
   
       const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -13,10 +13,10 @@ const emailController = {
       });
   
       const mailOptions = {
-        from: `"${tenantName}" <${tenantEmail}>`, // Display name and email of tenant
-        to: landlordEmail, // Landlord's email
+        from: `"${senderName}" <${senderEmail}>`, // Display name and email of tenant
+        to: recipientEmail, // Landlord's email
         subject: subject,
-        text: `Message from ${tenantName} (${tenantEmail}):\n\n${message}`
+        text: `Message from ${senderName} (${recipientEmail}):\n\n${message}`
       };
   
       try {

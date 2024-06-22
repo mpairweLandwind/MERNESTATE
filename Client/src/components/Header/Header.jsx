@@ -18,7 +18,7 @@ export default function Header() {
   const navigate = useNavigate();
   
   const fetch = useNotificationStore((state) => state.fetch);
-  const number = useNotificationStore((state) => state.number);
+  const numberObj = useNotificationStore((state) => state.number);
 
   useEffect(() => {
     if (currentUser) {
@@ -62,6 +62,7 @@ export default function Header() {
       setDropdownOpen(false);
     });
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);
@@ -89,6 +90,9 @@ export default function Header() {
     dispatch(clearCurrentUser());
     navigate('/');
   };
+
+  // Extract the count from the number object
+  const count = numberObj?.count || 0;
 
   return (
     <header className='header'>
@@ -146,7 +150,7 @@ export default function Header() {
                 {t('log_out')}
               </button>
               <div className="notification">
-                {number > 0 && <div className="number">{number}</div>}
+                {count > 0 && <div className="number">{count}</div>}
                 <FaBell className="icon" />
               </div>
             </div>

@@ -1,5 +1,9 @@
 import  { useRef, useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import Sidebar from './Sidebar';
+import { handleLogout } from '../lib/utils';
+import { clearCurrentUser } from '../redux/user/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 import {
   getDownloadURL,
@@ -19,6 +23,7 @@ import {
 } from '../redux/user/userSlice';
 
 function ProfileManagement() {
+  const navigate = useNavigate();
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const { currentUser, loading } = useSelector((state) => state.user);
@@ -123,9 +128,13 @@ function ProfileManagement() {
     }
   };
 
+  const onLogOut = () => handleLogout(navigate, dispatch, clearCurrentUser);
 
   return (
-    <div className='p-3 max-w-lg mx-auto bg-slate-700 text-white'>
+    <div className='p-3  flex mx-auto bg-slate-700 text-white'>
+
+      <Sidebar onLogout={onLogOut} />
+      <main className="bg-gray-100  text-gray-700  w-full flex flex-col items-center justify-center  mainsection">
       <h1 className='text-3xl font-semibold text-center my-7'>Landlord Dashboard</h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
       <input
@@ -201,7 +210,7 @@ function ProfileManagement() {
         {updateSuccess ? 'User is updated successfully!' : ''}
       </p>
      
-     
+     </main>
     </div>
   );
 }
