@@ -9,10 +9,20 @@ const usePayPalScript = () => {
       return;
     }
 
+
+    const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+
+    if (!clientId) {
+      console.error('PayPal Client ID is not set');
+      return;
+    }
+    console.log(`PayPal Client ID: ${clientId}`);
+
     const script = document.createElement('script');
-    script.src = 'https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID'; // Replace with your PayPal client ID
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`; // Replace with your PayPal client ID
     script.onload = () => {
       setLoaded(true);
+      console.log('PayPal SDK loaded successfully');
     };
     script.onerror = () => {
       console.error('PayPal SDK could not be loaded.');

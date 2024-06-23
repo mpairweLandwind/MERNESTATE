@@ -8,6 +8,7 @@ import Map from '../components/Map';
 import MContact from '../components/Mcontact';
 import Tooltip from '@mui/material/Tooltip';
 import Button from '@mui/material/Button';
+import PaypalButton from '../components/paypalButton';
 
 import './maintenance.scss';
 
@@ -198,6 +199,14 @@ export default function Maintenance() {
                     <Map items={[maintenance]} />
                   </div>
                 </>
+                <div className='mt-4 bg-slate-600'>
+                <PaypalButton
+                  amount={maintenance.maintenanceCharge}
+                  userId={currentUser.id}
+                  propertyId={maintenance.id}
+                  propertyType={maintenance.type}
+                />
+              </div>
             
               
             </div>
