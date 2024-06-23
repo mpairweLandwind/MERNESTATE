@@ -48,9 +48,9 @@ function User() {
 
   useEffect(() => {
     if (currentUser && token) {
-      fetchListings('/api/listing/get?offer=true&limit=4', setOfferListings);
-      fetchListings('/api/listing/get?type=rent&limit=4', setRentListings);
-      fetchListings('/api/listing/get?type=sale&limit=4', setSaleListings);
+      fetchListings('/api/listing/get?offer=true&limit=10', setOfferListings);
+      fetchListings('/api/listing/get?type=rent&limit=10', setRentListings);
+      fetchListings('/api/listing/get?type=sale&limit=10', setSaleListings);
     }
   }, [currentUser, fetchListings, token]);
 

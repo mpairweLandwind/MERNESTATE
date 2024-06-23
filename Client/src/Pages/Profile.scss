@@ -6,6 +6,7 @@
     position: relative;
         margin-top: 10rem;
         margin-left: 3rem;
+        z-index: 5;
 
     @include md {
         flex-direction: column;

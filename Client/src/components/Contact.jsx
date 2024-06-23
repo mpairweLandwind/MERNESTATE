@@ -76,7 +76,7 @@ export default function Contact({ listing }) {
       {loading && <p>Loading landlord details...</p>}
       {error && <p>Could not load landlord details. Please try again later.</p>}
       {landlord && (
-        <div className='flex flex-col gap-2 w-1/2'>
+        <div className='flex flex-col gap-2 w-auto'>
           <p>
             Contact <span className='font-semibold'>{landlord.username}</span>
             {' '}for{' '}

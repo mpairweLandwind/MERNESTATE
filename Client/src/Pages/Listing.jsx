@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import Slider from '../components/slider/Slider';
 import { FaMapMarkerAlt, FaShare } from 'react-icons/fa';
 import 'swiper/css/bundle';
 import { Navigation } from 'swiper/modules';
@@ -12,7 +12,7 @@ import Contact from '../components/Contact';
 import Tooltip from '@mui/material/Tooltip';
 import Button from '@mui/material/Button';
 import PaypalButton from '../components/paypalButton';
-import './listing.scss';
+import './maintenance.scss';
 
 export default function Listing() {
   SwiperCore.use([Navigation]);
@@ -84,66 +84,86 @@ export default function Listing() {
   }
 
   return (
+
     <main className="features">
-      {loading && <p className='text-center my-7 text-2xl'>Loading...</p>}
-      {error && <p className='text-center my-7 text-2xl'>Something went wrong!</p>}
-      {listing && !loading && !error && (
-        <div className="singlePage">
-          <div className="details">
-            <div className="wrapper ml-2">
-              <Swiper navigation>
-                {listing.imageUrls.map(url => (
-                  <SwiperSlide key={url}>
-                    <div
-                      className='h-[550px]'
-                      style={{ background: `url(${url}) center no-repeat`, backgroundSize: 'cover' }}
-                    ></div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-              <div className='fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer'>
-                <FaShare
-                  className='text-slate-500'
-                  onClick={() => {
-                    navigator.clipboard.writeText(window.location.href);
-                    setCopied(true);
-                    setTimeout(() => {
-                      setCopied(false);
-                    }, 2000);
-                  }}
-                />
-              </div>
-              {copied && (
-                <p className='fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2'>
-                  Link copied!
-                </p>
-              )}
-              <div className="info">
-                <div className="top ml-4">
-                  <div className="post">
-                    <h1>{listing.name}</h1>
-                    <div className="address">
-                      <FaMapMarkerAlt className='text-green-700' />
-                      <span>{listing.address}</span>
-                    </div>
-                    <div className="price">
+    {loading && <p className='text-center my-7 text-2xl'>Loading...</p>}
+    {error && <p className='text-center my-7 text-2xl'>Something went wrong!</p>}
+    {listing && !loading && !error && (
+      <div className="singlePage">
+        <div className="details">
+          <div className="wrapper ml-2">
+          {listing && listing.imageUrls && (
+            <Slider images={listing.imageUrls} />
+            )}
+            <div className='fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer'>
+              <FaShare
+                className='text-slate-500'
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  setCopied(true);
+                  setTimeout(() => {
+                    setCopied(false);
+                  }, 2000);
+                }}
+              />
+            </div>
+            {copied && (
+              <p className='fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2'>
+                Link copied!
+              </p>
+            )}
+            <div className="info">
+              <div className="top ml-4">
+                <div className="post">
+                  <h1>{listing.name}</h1>
+                  <div className="address">
+                    <FaMapMarkerAlt className='text-green-700' />
+                    <span>{listing.address}</span>
+                  </div>
+                  <div className="price">
                       ${listing.offer ? listing.discountPrice.toLocaleString('en-US') : listing.regularPrice.toLocaleString('en-US')}
                       {listing.type === 'rent' && ' / month'}
                     </div>
-                  </div>
-                  <div className="user">
-                    <img src={listing.user.avatar} alt="" />
-                    <span>{listing.user.username}</span>
-                  </div>
                 </div>
-              </div>
+                <div className="user">
+                  <img src={listing.user.avatar} alt=" photo" />
+                  <span>{listing.user.username}</span>
+                </div>
+               
+               </div>
+              <div className='buttons' >
+                {currentUser && !contact && (
+                <Tooltip title="Click to send email to company" placement="top" arrow>
+                  <Button onClick={handleContactClick} className='flex-2 rounded-full contact'>
+                    <img src="/msg1.png" alt="" className="w-12 h-12  flex " />
+                    <p className='text-gray-700 text-xl font-extrabold'> Send Email </p>
+                  </Button>
+                </Tooltip>
+              )}
+               {contact && <Contact  listing={listing} authToken={token} />}
+               {!contact && (
+                  <Tooltip title="Click to save the place to wishlist" placement="top" arrow>
+                    <Button
+                      variant="outlined" color='primary'
+                      onClick={handleSave}
+                      className={`chat-icon-button ${saved ? 'saved' : ''}`}
+                      startIcon={<img src="/save.png" alt="" className='w-10 h-10' />}
+                    >
+                      {saved ? 'Saved' : 'Save'}
+                    </Button>
+                  </Tooltip>
+                )}
+
+
+               </div>
             </div>
           </div>
-          <div className='features'>
-            <div className="wrapper  mt-8 pt-5">
-              {!contact && (
-                <>
-                  <p><span>{listing.postDetail.desc}</span></p>
+        </div>
+        <div className='features'>
+          <div className="wrapper ">
+         
+              <>
+              <p><span>{listing.postDetail.desc}</span></p>
                   <div className="listVertical">
                     <div className="feature">
                       <img src="/utility.png" alt="" />
@@ -210,45 +230,23 @@ export default function Listing() {
                   <p className="title">Location</p>
                   <div className="mapContainer">
                     <Map items={[listing]} />
-                  </div>
-                </>
-              )}
-              <div className='buttons'>
-                {currentUser && !contact && (
-                  <Tooltip title="Click to send email to landlord" placement="top" arrow>
-                    <Button onClick={handleContactClick} className='flex rounded-full contact'>
-                      <img src="/msg1.png" alt="" className="w-14 h-14 mr-2" />
-                      <p className='text-gray-700'> Send Email</p>
-                    </Button>
-                  </Tooltip>
-                )}
-                {contact && <Contact listing={listing} authToken={token} />}
-                {!contact && (
-                  <Tooltip title="Click to save the place to wishlist" placement="top" arrow>
-                    <Button
-                      variant="outlined" color='primary'
-                      onClick={handleSave}
-                      className={`chat-icon-button ${saved ? 'saved' : ''}`}
-                      startIcon={<img src="/save.png" alt="" className='w-10 h-10' />}
-                    >
-                      {saved ? 'Saved' : 'Save'}
-                    </Button>
-                  </Tooltip>
-                )}
-                {/* Add PayPal Button */}
-                <div className="paypal-button-container">
-                  <PaypalButton
-                    amount={listing.offer ? listing.discountPrice : listing.regularPrice}
-                    userId={currentUser.id}
-                    propertyId={listing.id}
-                    propertyType={listing.type}
-                  />
                 </div>
-              </div>
-            </div>
+              </>
+              <div className='mt-4 bg-slate-600'>
+                      <PaypalButton
+                        amount={listing.offer ? listing.discountPrice : listing.regularPrice}
+                        userId={currentUser.id}
+                        propertyId={listing.id}
+                        propertyType={listing.type}
+                      />
+                    </div>            
           </div>
         </div>
-      )}
-    </main>
+      </div>
+    )}
+  </main>
+
+
+   
   );
 }

@@ -120,7 +120,7 @@ export default function Profile() {
   return (
     <div className='flex'>
       <Sidebar onLogout={onLogOut} />
-      <div className="profilePage relative">
+      <div className="profilePage ">
         <div className="details">
           <div className="wrapper">
             <div className="title">

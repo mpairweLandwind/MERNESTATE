@@ -98,9 +98,9 @@ export default function Header() {
     <header className='header'>
       <div className="content">
         <div className="left">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 ">
             <Link to='/' className="logo-container">
-              <img src="./logo.jpeg" alt="Logo" width={100} />
+              <img src="/logo.jpeg" alt="Logo" width={100} />
             </Link>
             <span className='text-l font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 rounded-lg shadow-lg'>
               GestImpact

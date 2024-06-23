@@ -6,27 +6,45 @@ import { ObjectId } from 'mongodb';
 
 
 export const updateUser = async (req, res, next) => {
-  if (req.user.id !== req.params.id)
+  // Log the received data
+  console.log('Received data:', req.body);
+
+  if (req.user.id !== req.params.id) {
     return next(errorHandler(401, 'You can only update your own account!'));
+  }
 
   try {
+    // Ensure role is provided in the request body
     if (!req.body.role) {
       return next(errorHandler(400, 'Role is required'));
     }
 
-    let dataToUpdate = {
-      username: req.body.username,
-      email: req.body.email,
-      role: req.body.role,
-      avatar: req.body.avatar,
-    };
+    let dataToUpdate = {};
 
+    // Add fields to dataToUpdate if they exist in req.body
+    if (req.body.username) {
+      dataToUpdate.username = req.body.username;
+    }
+    if (req.body.email) {
+      dataToUpdate.email = req.body.email;
+    }
+    if (req.body.role) {
+      dataToUpdate.role = req.body.role;
+    }
+    if (req.body.avatar) {
+      dataToUpdate.avatar = req.body.avatar;
+    }
     if (req.body.password) {
       dataToUpdate.password = await bcrypt.hash(req.body.password, 10);
     }
 
+    // Check if dataToUpdate is empty
+    if (Object.keys(dataToUpdate).length === 0) {
+      return next(errorHandler(400, 'No valid fields to update'));
+    }
+
     const updatedUser = await prisma.user.update({
-      where: { id: parseInt(req.params.id) },
+      where: { id: req.params.id }, // Treat id as a string
       data: dataToUpdate,
     });
 
@@ -37,6 +55,7 @@ export const updateUser = async (req, res, next) => {
     next(error);
   }
 };
+
 
 export const deleteUser = async (req, res, next) => {
   if (req.user.id !== req.params.id)

@@ -9,11 +9,12 @@ import {
     InboxIcon,
     PowerIcon,
 } from "@heroicons/react/24/solid";
+import './siderbar.scss';
 
 export default function Sidebar() {
     return (
-        <Card className="h-[calc(100vh-2rem)] w-full max-w-[16rem] p-2 shadow-xl shadow-blue-gray-900/5 mt-20 ">
-            <div className="mb-2 p-2 mt-8">
+        <Card className="h-[calc(100vh-2rem)] w-full max-w-[16rem] p-2 shadow-xl shadow-blue-gray-900/5  siderbar ">
+            <div className="mb-2 p-2 mt-12">
                 <Typography variant="h3" color="orange">
                     DashBoard
                 </Typography>
