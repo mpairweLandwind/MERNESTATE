@@ -57,7 +57,7 @@ app.use('/api/email', emailRoutes);
 app.use('/api/paypal', paypalRoutes);
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname,  'Client/dist')));
+app.use(express.static(path.join(__dirname,  '/Client/dist')));
 
 // The "catchall" handler: for any request that doesn't match one above, send back the React index.html file.
 app.get('*', (req, res) => {
@@ -77,6 +77,6 @@ app.use((err, req, res, next) => {
 
 // Start the server
 const PORT = process.env.PORT ;
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}!`);
 });
