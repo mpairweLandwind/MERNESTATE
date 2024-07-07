@@ -6,7 +6,7 @@
   "type": "module",
 "scripts": {
   "dev": "nodemon index.mjs",
-  "build": "yarn install --cwd ./Client && yarn build --cwd ./Client &&  npm install --prefix ./socket && npm install",
+  "build": " npm install --prefix ./socket && npm install",
   "start": "node index.mjs & node socket/app.mjs ",
   "prod": "NODE_ENV=production nodemon index.mjs & nodemon socket/app.mjs"
 },
