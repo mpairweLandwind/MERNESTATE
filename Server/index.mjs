@@ -21,7 +21,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 
 // Load environment variables from .env file
-dotenv.config();
+// dotenv.config();
 connectDB();
 
 const app = express();
@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 });
 
 // Middlewares
-app.use(cors(corsOptions)); // Allow all origins or configure specific origins
+app.use(cors()); // Allow all origins or configure specific origins
 app.use(express.json()); // Parses JSON bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Parses URL-encoded bodies (form data)
 app.use(cookieParser());
