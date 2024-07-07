@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-"scripts": {
-  "dev": "nodemon index.mjs",
-  "build": " npm install --prefix ./socket && npm install",
-  "start": "node index.mjs & node socket/app.mjs ",
-  "prod": "NODE_ENV=production nodemon index.mjs & nodemon socket/app.mjs"
-},
+  "scripts": {
+    "dev": "nodemon index.mjs",
+    "build": " npm install",
+    "start": "node index.mjs  ",
+    "prod": "NODE_ENV=production nodemon index.mjs "
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -27,7 +27,8 @@
     "mongodb": "^6.7.0",
     "mongoose": "^8.3.4",
     "node-fetch": "^3.3.2",
-    "nodemailer": "^6.9.13"
+    "nodemailer": "^6.9.13",
+    "socket.io": "^4.7.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.0",

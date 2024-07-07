@@ -10,16 +10,17 @@ import chatRoute from './routes/chat.route.mjs';
 import messageRoute from './routes/message.route.mjs';
 import listingRouter from './routes/listing.route.mjs';
 import connectDB from './config/db.mjs';
-import emailRoutes from './routes/emailRoute.mjs'
-import { getNotificationNumber } from './controllers/user.controller.mjs';
+import emailRoutes from './routes/emailRoute.mjs';
+import { getNotificationNumber, getUserRoleMonthlyCounts, getAdminEmailController } from './controllers/user.controller.mjs';
 import { verifyToken } from './utils/verifyUser.mjs';
-import { getUserRoleMonthlyCounts } from './controllers/user.controller.mjs';
 import maintenanceRoute from './routes/maintenance.route.mjs';
-import { getAdminEmailController } from './controllers/user.controller.mjs';  
 import { updateMaintenance } from './controllers/maintenanceController.mjs';
 import paypalRoutes from './routes/paypalRoutes.mjs';
 import corsOptions from './config/corsOptions.mjs';
-// Load environment variables from.env file
+import { Server } from 'socket.io';
+import { createServer } from 'http';
+
+// Load environment variables from .env file
 dotenv.config();
 connectDB();
 
@@ -42,7 +43,6 @@ app.use(bodyParser.urlencoded({ extended: true })); // Parses URL-encoded bodies
 app.use(cookieParser());
 
 // Routes
-
 app.use('/api/maintenance/update/:id', verifyToken, updateMaintenance);
 app.use('/api/maintenance', maintenanceRoute);
 app.get('/api/user/count', getUserRoleMonthlyCounts);
@@ -57,11 +57,15 @@ app.use('/api/email', emailRoutes);
 app.use('/api/paypal', paypalRoutes);
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname,  '/Client/dist')));
+app.use(express.static(path.join(__dirname, '/Client/dist')));
 
 // The "catchall" handler: for any request that doesn't match one above, send back the React index.html file.
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/Client/dist/index.html'));
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(join(__dirname, '/Client/dist/index.html'));
 });
 
 app.use((err, req, res, next) => {
@@ -74,9 +78,58 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Create HTTP server and integrate Socket.io
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173", "https://mernestate-tlmc.onrender.com", "http://localhost:3000", "http://localhost:4000"],
+  },
+});
+
+// Socket.io logic
+let onlineUsers = [];
+
+const addUser = (userId, socketId) => {
+  if (!onlineUsers.some(user => user.userId === userId)) {
+    onlineUsers.push({ userId, socketId });
+  }
+};
+
+const removeUser = (socketId) => {
+  onlineUsers = onlineUsers.filter(user => user.socketId !== socketId);
+};
+
+const getUser = (userId) => {
+  return onlineUsers.find(user => user.userId === userId);
+};
+
+io.on('connection', (socket) => {
+  console.log(`User connected: ${socket.id}`);
+
+  socket.on('newUser', (userId) => {
+    addUser(userId, socket.id);
+    console.log(`User added: ${userId}`);
+  });
+
+  socket.on('sendMessage', ({ receiverId, data }) => {
+    const receiver = getUser(receiverId);
+    if (receiver) {
+      io.to(receiver.socketId).emit('getMessage', data);
+      console.log(`Message sent to ${receiverId}:`, data);
+    } else {
+      socket.emit('error', 'Receiver not found');
+      console.log(`Message failed, receiver not found: ${receiverId}`);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    removeUser(socket.id);
+    console.log(`User disconnected: ${socket.id}`);
+  });
+});
 
 // Start the server
-const PORT = process.env.PORT ;
-app.listen(PORT,'0.0.0.0', () => {
+const PORT = process.env.PORT;
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}!`);
 });
