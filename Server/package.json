@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "dev": "nodemon index.mjs",
-    "build": "yarn install --prefix ./Client  && yarn build  --prefix ./Client && npm install --prefix ./socket && npm start --prefix ./socket && npm install",
-    "start": "node index.mjs & node socket/app.mjs",
-    "prod": "NODE_ENV=production nodemon index.mjs & nodemon socket/app.mjs"
-  },
+"scripts": {
+  "dev": "nodemon index.mjs",
+  "build": "yarn install --prefix ./Client && yarn build --prefix ./Client && npm install --prefix ./socket && npm install",
+  "start": "node index.mjs & node socket/app.mjs",
+  "start:socket": "npm start --prefix ./socket",
+  "prod": "NODE_ENV=production nodemon index.mjs & nodemon socket/app.mjs"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
