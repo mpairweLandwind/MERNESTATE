@@ -1,0 +1,26 @@
+{
+  "search": "Search",
+  "home": "Home",
+  "home_content": {
+    "title": "Effortlessly Rent and Manage Your Dream Property with Our Seamless Online Platform",
+    "description": "Find a variety of properties that suit you very easily. Forget all difficulties in finding a residence for you.",
+    "getStarted": "Let's get started...",
+    "premiumProducts": "Premium Products",
+    "happyCustomers": "Happy Customers",
+    "awardWinnings": "Award Winnings",
+    "noListings": "No listings available",
+    "loading": "Loading...",
+    "recentOffers": "Recent offers",
+    "showMoreOffers": "Show more offers",
+    "recentRent": "Recent places for rent",
+    "showMoreRent": "Show more places for rent",
+    "recentSale": "Recent places for sale",
+    "showMoreSale": "Show more places for sale",
+    "noListingsAvailable": "No Listings Available",
+    "checkBackLater": "Check back later for more listings or try a different search."
+  },
+  "about": "About",
+  "sign_in": "Sign In",
+  "sign_up": "Sign Up",
+  "log_out": "Log Out"
+}
