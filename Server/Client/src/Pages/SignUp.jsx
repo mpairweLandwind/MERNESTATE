@@ -5,7 +5,7 @@ import OAuth from '../components/OAuth';
 import user_icon from "../assets/person.png";
 import user_password from "../assets/password.png";
 import user_email from "../assets/email.png";
-import '../Pages/signUp.scss';
+import './signUp.scss';
 import {
   getDownloadURL,
   getStorage,

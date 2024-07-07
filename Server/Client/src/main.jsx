@@ -6,7 +6,7 @@ import './index.css';
 import { persistor, store } from './redux/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { I18nextProvider } from 'react-i18next';
+import { I18nextProvider } from '../node_modules/react-i18next';
 import i18n from './i18n';
 import { SocketContextProvider } from './context/SocketContext';
 import { ThemeProvider } from "./context/ThemeContext";

@@ -19,7 +19,7 @@ import { getAdminEmailController } from './controllers/user.controller.mjs';
 import { updateMaintenance } from './controllers/maintenanceController.mjs';
 import paypalRoutes from './routes/paypalRoutes.mjs';
 // Load environment variables from.env file
-dotenv.config();
+//dotenv.config();
 connectDB();
 
 const app = express();

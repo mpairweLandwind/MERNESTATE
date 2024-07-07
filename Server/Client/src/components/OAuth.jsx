@@ -3,7 +3,7 @@ import { app } from '../firebase';
 import { useDispatch } from 'react-redux';
 import { signInSuccess } from '../redux/user/userSlice';
 import { useNavigate } from 'react-router-dom';
-import '../components/OAuth.scss';
+import './OAuth.scss';
 
 export default function OAuth() {
   const dispatch = useDispatch();
