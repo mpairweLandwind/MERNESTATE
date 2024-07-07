@@ -1,7 +1,7 @@
 // /backend/config/corsOptions.js
 const corsOptions = {
     origin: function (origin, callback) {
-      const allowedOrigins = ["http://localhost:3000","http://localhost:4000", "https:real-estate-management-system.onrender.com","real-estate-management-system.onrender.com","http://localhost:5173"];
+      const allowedOrigins = ["http://localhost:3000","http://localhost:4000", "https://mernestate-tlmc.onrender.com","http://localhost:5173"];
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {

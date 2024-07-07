@@ -6,9 +6,8 @@
   "type": "module",
 "scripts": {
   "dev": "nodemon index.mjs",
-  "build": " npm install --prefix ./socket && npm install",
-  "start": "node index.mjs & node socket/app.mjs",
-  "start:socket": "npm start --prefix ./socket",
+  "build": "  npm install --prefix ./socket && npm install",
+  "start": "node index.mjs & node socket/app.mjs ",
   "prod": "NODE_ENV=production nodemon index.mjs & nodemon socket/app.mjs"
 },
   "keywords": [],

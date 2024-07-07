@@ -18,8 +18,9 @@ import maintenanceRoute from './routes/maintenance.route.mjs';
 import { getAdminEmailController } from './controllers/user.controller.mjs';  
 import { updateMaintenance } from './controllers/maintenanceController.mjs';
 import paypalRoutes from './routes/paypalRoutes.mjs';
+import corsOptions from './config/corsOptions.mjs';
 // Load environment variables from.env file
-//dotenv.config();
+dotenv.config();
 connectDB();
 
 const app = express();
@@ -35,7 +36,7 @@ app.use((req, res, next) => {
 });
 
 // Middlewares
-app.use(cors()); // Allow all origins or configure specific origins
+app.use(cors(corsOptions)); // Allow all origins or configure specific origins
 app.use(express.json()); // Parses JSON bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Parses URL-encoded bodies (form data)
 app.use(cookieParser());
@@ -60,7 +61,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 // The "catchall" handler: for any request that doesn't match one above, send back the React index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Client', 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 app.use((err, req, res, next) => {
@@ -75,7 +76,7 @@ app.use((err, req, res, next) => {
 
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}!`);
 });
