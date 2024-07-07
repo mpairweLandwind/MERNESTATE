@@ -56,7 +56,7 @@ app.use('/api/email', emailRoutes);
 app.use('/api/paypal', paypalRoutes);
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'Client', 'dist')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // The "catchall" handler: for any request that doesn't match one above, send back the React index.html file.
 app.get('*', (req, res) => {
