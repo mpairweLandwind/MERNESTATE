@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { errorHandler } from '../utils/error.mjs';
 import prisma from '../lib/prisma.mjs';
 import { ObjectId } from 'mongodb';

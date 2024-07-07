@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma.mjs";
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { errorHandler } from '../utils/error.mjs';
 import jwt from 'jsonwebtoken';
 
