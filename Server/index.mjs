@@ -39,6 +39,7 @@ app.use((req, res, next) => {
 // Middlewares
 app.use(cors()); // Allow all origins or configure specific origins
 app.use(express.json()); // Parses JSON bodies
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true })); // Parses URL-encoded bodies (form data)
 app.use(cookieParser());
 

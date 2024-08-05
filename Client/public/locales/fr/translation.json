@@ -1,0 +1,26 @@
+{
+  "search": "Rechercher",
+  "home": "Accueil",
+  "home_content": {
+    "title": "Louez et gérez facilement la propriété de vos rêves avec notre plateforme en ligne transparente",
+    "description": "Trouvez très facilement une variété de propriétés qui vous conviennent. Oubliez toutes les difficultés pour trouver une résidence pour vous.",
+    "getStarted": "Commençons...",
+    "premiumProducts": "Produits Premium",
+    "happyCustomers": "Clients Satisfaits",
+    "awardWinnings": "Récompenses",
+    "noListings": "Aucune annonce disponible",
+    "loading": "Chargement...",
+    "recentOffers": "Offres récentes",
+    "showMoreOffers": "Voir plus d'offres",
+    "recentRent": "Lieux récents à louer",
+    "showMoreRent": "Voir plus de lieux à louer",
+    "recentSale": "Lieux récents à vendre",
+    "showMoreSale": "Voir plus de lieux à vendre",
+    "noListingsAvailable": "Aucune annonce disponible",
+    "checkBackLater": "Revenez plus tard pour plus d'annonces ou essayez une recherche différente."
+  },
+  "about": "À propos",
+  "sign_in": "Se connecter",
+  "sign_up": "S'inscrire",
+  "log_out": "Déconnexion"
+}

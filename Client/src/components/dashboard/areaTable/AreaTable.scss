@@ -1,0 +1,140 @@
+.content-area-table {
+  background: var(--secondary-color);
+  border-radius: 10px;
+  box-shadow: var(--light-shadow1);
+  padding: 20px;
+    overflow-x: auto;
+
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
+
+  .data-table-title {
+    font-size: 22px;
+    color: var(--xl-text-color);
+    margin-bottom: 20px;
+      font-weight: bold;
+  }
+
+  .data-table-diagram {
+    border-radius: 8px;
+      border: 1px solid var(--tbl-border-color);
+      overflow-x: auto;
+
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: var(--scroll-track-bg-color);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+        background-color: #b3b3b3;
+    }
+
+    table {
+      min-width: 1000px;
+      width: 100%;
+      border-collapse: collapse;
+      color: var(--text-color-inverted);
+
+      th,
+        td {
+          padding: 16px;
+        @media (max-width: 768px) {
+          font-size: 14px;
+            padding: 12px;
+        }
+      }
+
+            thead {
+        background-color: var(--thead-bg-color);
+        text-align: left;
+          font-size: 18px;
+
+        th {
+          &:last-child {
+            text-align: center;
+          }
+        }
+      }
+
+            tbody {
+              tr {
+                &:nth-child(even) {
+                  background-color: var(--row-even-bg-color);
+                }
+              }
+            }
+      .dt-cell-action {
+        text-align: center;
+      }
+
+      .dt-status {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        column-gap: 8px;
+
+        .dt-status-dot {
+          width: 10px;
+            height: 10px;
+            border-radius: 50%;
+
+          &.dot-pending {
+            background-color: var(--orange-color);
+          }
+
+          &.dot-canceled {
+            background-color: var(--red-color);
+          }
+
+          &.dot-delivered {
+            background-color: var(--green-color);
+          }
+        }
+
+        .dt-status-text {
+          text-transform: capitalize;
+        }
+      }
+    }
+  }
+
+  .action-dropdown-btn {
+    color: var(--text-color-inverted);
+    position: relative;
+    cursor: pointer;
+  }
+
+  .action-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 50%;
+    transform: translateX(50%);
+    min-width: 100px;
+    background-color: var(--secondary-color);
+    padding: 10px;
+      border-radius: 10px;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 8px;
+      z-index: 10;
+      text-align: left;
+    border: 1px solid var(--border-color-inverted);
+
+    .dropdown-menu-item {
+        margin: 8px 0;
+      }
+
+        .dropdown-menu-link {
+          color: var(--text-color-inverted);
+          font-weight: 600;
+          transition: var(--default-transition);
+
+      &:hover {
+        opacity: 0.8;
+        }
+    }
+  }
+}
