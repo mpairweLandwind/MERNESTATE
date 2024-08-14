@@ -29,7 +29,7 @@ export const signin = async (req, res, next) => {
     const validPassword = await bcrypt.compare(password, validUser.password);
     if (!validPassword) return next(errorHandler(401, 'Wrong credentials!'));
 
-    const token = jwt.sign({ id: validUser.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: validUser.id }, process.env.JWT_SECRET, { expiresIn: '3h' });
     const { password: pass, ...rest } = validUser;
 
     // Send the token and user data in the response body

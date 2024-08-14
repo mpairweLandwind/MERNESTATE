@@ -28,6 +28,11 @@ export default defineConfig({
   },
 
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@fortawesome/fontawesome-svg-core': '@fortawesome/fontawesome-svg-core',
+    },
+  },
   css: {
     preprocessorOptions: {
       scss: {

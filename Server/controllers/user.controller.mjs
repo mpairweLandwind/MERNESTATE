@@ -141,6 +141,7 @@ export const savePost = async (req, res) => {
   const tokenUserId = req.userRef;
 
   try {
+    // Check if the post is already saved by the user
     const savedPost = await prisma.savedPost.findUnique({
       where: {
         userRef_postId: {
@@ -151,26 +152,24 @@ export const savePost = async (req, res) => {
     });
 
     if (savedPost) {
-      await prisma.savedPost.delete({
-        where: {
-          id: savedPost.id,
-        },
-      });
-      res.status(200).json({ message: "Post removed from saved list" });
+      // If the post is already saved, notify the user
+      return res.status(400).json({ message: "This post is already saved by you" });
     } else {
+      // If it does not exist, add it to the saved posts
       await prisma.savedPost.create({
         data: {
           userRef: tokenUserId,
           postId,
         },
       });
-      res.status(200).json({ message: "Post saved" });
+      return res.status(200).json({ message: "Post saved successfully" });
     }
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Failed to save the post!" });
+    console.error(err);
+    return res.status(500).json({ message: "Failed to save the post!" });
   }
 };
+
 
 
 export const profilePosts = async (req, res) => {

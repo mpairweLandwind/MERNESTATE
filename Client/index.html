@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Real Estate System</title>
+    <title>GestImpact</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
@@ -13,13 +13,23 @@
       href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
       rel="stylesheet" />
   </head>
-  <script src="/socket.io/socket.io.js"></script>
-<script>
-  const socket = io();
-</script>
+
   <body style="background-color: #f0f1f3">
 
     <div id="root"></div>
+
+    <!-- Load Socket.io from CDN -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
+    <!-- Your custom script -->
+    <script type="module">
+      import { io } from 'https://cdn.socket.io/4.0.0/socket.io.esm.min.js';
+
+      const socket = io();
+
+      // Your socket-related code here
+    </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

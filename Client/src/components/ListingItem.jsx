@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { MdLocationOn } from 'react-icons/md';
 import PropTypes from 'prop-types';
 import './listingitem.scss';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faBookmark } from '@fortawesome/free-solid-svg-icons';
+library.add( faHeart, faBookmark);
 
 export default function ListingItem({ listing }) {
   // Add a check to ensure listing is defined

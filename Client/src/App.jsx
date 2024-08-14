@@ -2,7 +2,13 @@ import { useState, useEffect } from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 //import { useTranslation } from 'react-i18next'; // make sure to import useTranslation
-import Layout from './Layout';
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
+import { ToastContainer } from "react-toastify";
+import Layout from "./components/Layout/Layout";
+import "./App.css";
+
+//import Layout from './Layout';
 import Home from './Pages/Home';
 import SignIn from './Pages/SignIn';
 import SignUp from './Pages/SignUp';
@@ -31,19 +37,12 @@ const App = () => {
   const token = useSelector(getToken);
   const currentUserRole = currentUser?.role;
 
-  // useEffect(() => {
-  //   const handleLanguageChange = () => {
-  //     // Update the key to force re-render the RouterProvider
-  //     setRouterKey(Date.now());
-  //   };
-
-  //   i18n.on('languageChanged', handleLanguageChange);
-
-  //   return () => {
-  //     // Cleanup the listener
-  //     i18n.off('languageChanged', handleLanguageChange);
-  //   };
-  // }, [i18n]);
+ <UserDetailContext.Provider value={{ userDetails, setUserDetails }}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+ 
 
   const getRoutes = () => [
     {
@@ -93,6 +92,13 @@ const App = () => {
       ]
     }
   ];
+  </Routes>
+          </Suspense>
+        </BrowserRouter>
+        <ToastContainer />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </UserDetailContext.Provider>
 
   const router = createBrowserRouter(getRoutes());
   useEffect(() => {
