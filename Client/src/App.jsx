@@ -1,14 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-//import { useTranslation } from 'react-i18next'; // make sure to import useTranslation
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
-import { ToastContainer } from "react-toastify";
-import Layout from "./components/Layout/Layout";
-import "./App.css";
-
-//import Layout from './Layout';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
+import { ToastContainer } from 'react-toastify';
+import Layout from './components/Layout/Layout';
+import './App.css';
 import Home from './Pages/Home';
 import SignIn from './Pages/SignIn';
 import SignUp from './Pages/SignUp';
@@ -28,32 +25,42 @@ import Listing from './Pages/Listing';
 import CreateMaintenance from './Pages/CreateMaintenance';
 import Maintenance from './Pages/Maintenance';
 import UpdateMaintenance from './Pages/UpdateMaintenance';
+import UserDetailContext from './context/UserDetailContext';
+import Property from "./Pages/Property/Property";
+import Bookings from "./Pages/Bookings/Bookings";
+import Favourites from "./Pages/Favourites/Favourites";
+import Properties from "./Pages/Properties/Properties";
+import { MantineProvider } from '@mantine/core';
 
+const queryClient = new QueryClient(); // Initialize QueryClient outside the component
 
 const App = () => {
- // const { i18n } = useTranslation();
   const [routerKey, setRouterKey] = useState(Date.now());
   const currentUser = useSelector(getCurrentUser);
   const token = useSelector(getToken);
   const currentUserRole = currentUser?.role;
 
- <UserDetailContext.Provider value={{ userDetails, setUserDetails }}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Suspense fallback={<div>Loading...</div>}>
-            <Routes>
- 
+  const [userDetails, setUserDetails] = useState(null); // context state
 
-  const getRoutes = () => [
+  const getRoutes = (currentUserRole) => [
     {
       path: '/',
       element: <Layout />,
       children: [
         { path: '/', element: <Home /> },
-        { path: 'sign-in', element: token ? <Navigate to="/" replace /> : <SignIn /> },
+        { path: 'sign-in', element: token ? <Navigate to="/" replace /> : <SignIn /> }, // Use token directly
         { path: 'sign-up', element: <SignUp /> },
-        { past: 'about', element: <About /> },
+        { path: 'about', element: <About /> },
         { path: 'search', element: <Search /> },
+        {
+          path: 'properties',
+          children: [
+            { path: '', element: <Properties /> },
+            { path: ':propertyId', element: <Property /> }
+          ]
+        },
+        { path: 'bookings', element: <Bookings /> },
+        { path: 'favourites', element: <Favourites /> },
         {
           path: 'admin-dashboard/*',
           element: currentUserRole === 'admin' ? <Admin /> : <Navigate to="/" replace />
@@ -67,7 +74,7 @@ const App = () => {
         },
         {
           path: 'maintenance/:maintenanceId',
-          element: <PrivateRoute allowedRoles={['admin','landlord']} />,
+          element: <PrivateRoute allowedRoles={['admin', 'landlord']} />,
           children: [
             { path: '', element: <Maintenance /> }
           ]
@@ -81,35 +88,38 @@ const App = () => {
           path: 'landlord',
           element: <PrivateRoute allowedRoles={['landlord']} />,
           children: [
-            { path: 'dashboard', element: <Profile />, loader: profileLoader  },
+            { path: 'dashboard', element: <Profile />, loader: profileLoader },
             { path: 'profile', element: <ProfileManagement /> },
             { path: 'update-maintenance/:maintenanceId', element: <UpdateMaintenance /> },
-            { path: 'createMaintenance', element: <CreateMaintenance/> },
+            { path: 'create-maintenance', element: <CreateMaintenance /> },
             { path: 'create-listing', element: <CreateListing /> },
             { path: 'update-listing/:listingId', element: <UpdateListing /> }
           ]
         }
       ]
     }
-  ];
-  </Routes>
-          </Suspense>
-        </BrowserRouter>
-        <ToastContainer />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </UserDetailContext.Provider>
-
-  const router = createBrowserRouter(getRoutes());
+  ];  
+  
   useEffect(() => {
-    setRouterKey(Date.now()); // Update the key to force re-render
+    setRouterKey(Date.now()); // Update the key to force re-render when the user role changes
   }, [currentUserRole]);
 
+  const router = createBrowserRouter(getRoutes(currentUserRole));
 
   return (
-    <RouterProvider key={routerKey} router={router}>
-      <RoleBasedRedirect />
-    </RouterProvider>
+    <MantineProvider withGlobalStyles withNormalizeCSS> {/* Wrap your app with MantineProvider */}
+      <UserDetailContext.Provider value={{ userDetails, setUserDetails }}>
+        <QueryClientProvider client={queryClient}>
+          <Suspense fallback={<div>Loading...</div>}>
+            <RouterProvider key={routerKey} router={router}>
+              <RoleBasedRedirect />
+            </RouterProvider>
+          </Suspense>
+          <ToastContainer />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </UserDetailContext.Provider>
+    </MantineProvider>
   );
 };
 

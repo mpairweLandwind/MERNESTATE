@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { I18nextProvider } from '../node_modules/react-i18next';
 import i18n from './i18n';
+import { Auth0Provider } from "@auth0/auth0-react";
 import { SocketContextProvider } from './context/SocketContext';
 import { ThemeProvider } from "./context/ThemeContext";
 import { SidebarProvider } from "./context/SidebarContext";
@@ -18,6 +19,15 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
+      <Auth0Provider
+     domain="dev-uf1avveguuw4t2pa.us.auth0.com"
+     clientId="S4AtWyvrOcqQ7mdqzI5TPjM1yjNUJxqx"
+     authorizationParams={{
+      redirect_uri: "http://localhost:5173"
+     }}
+     audience="http://localhost:3000"
+     scope="openid profile email"
+    >
     <Provider store={store}>
       <PersistGate loading={<Loader />} persistor={persistor}>
         <SocketContextProvider>
@@ -33,5 +43,6 @@ root.render(
         </SocketContextProvider>
       </PersistGate>
     </Provider>
+    </Auth0Provider>
   </React.StrictMode>
 );

@@ -1,31 +1,40 @@
-import React from 'react'
-import {Avatar, Menu} from '@mantine/core'
-import { useNavigate } from 'react-router-dom'
-const ProfileMenu = ({user, logout}) => {
-    const navigate = useNavigate()
+import PropTypes from 'prop-types';
+import { Avatar, Menu } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+
+const ProfileMenu = ({ user, logout }) => {
+  const navigate = useNavigate();
   return (
     <Menu>
-        <Menu.Target>
-            <Avatar src={user?.picture} alt='user image' radius={"xl"}/>
-        </Menu.Target>
-        <Menu.Dropdown>
-            <Menu.Item onClick={()=> navigate("./favourites", {replace: true})}>
-                Favourites
-            </Menu.Item>
+      <Menu.Target>
+        <Avatar src={user?.picture} alt='user image' radius={"xl"} />
+      </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Item onClick={() => navigate("./favourites", { replace: true })}>
+          Favourites
+        </Menu.Item>
 
-            <Menu.Item onClick={()=> navigate("./bookings", {replace: true})}>
-                Bookings
-            </Menu.Item>
+        <Menu.Item onClick={() => navigate("./bookings", { replace: true })}>
+          Bookings
+        </Menu.Item>
 
-            <Menu.Item onClick={()=>{
-                localStorage.clear();
-                logout()
-            }}>
-                Logout
-            </Menu.Item>
-        </Menu.Dropdown>
+        <Menu.Item onClick={() => {
+          localStorage.clear();
+          logout();
+        }}>
+          Logout
+        </Menu.Item>
+      </Menu.Dropdown>
     </Menu>
-  )
-}
+  );
+};
 
-export default ProfileMenu
+// Define prop types for validation
+ProfileMenu.propTypes = {
+  user: PropTypes.shape({
+    picture: PropTypes.string,
+  }),
+  logout: PropTypes.func.isRequired,
+};
+
+export default ProfileMenu;

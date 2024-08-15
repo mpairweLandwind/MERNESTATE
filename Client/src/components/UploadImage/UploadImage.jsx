@@ -1,7 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from "react";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import "./UploadImage.css";
 import { Button, Group } from "@mantine/core";
+
 const UploadImage = ({
   propertyDetails,
   setPropertyDetails,
@@ -11,17 +13,19 @@ const UploadImage = ({
   const [imageURL, setImageURL] = useState(propertyDetails.image);
   const cloudinaryRef = useRef();
   const widgetRef = useRef();
+
   const handleNext = () => {
     setPropertyDetails((prev) => ({ ...prev, image: imageURL }));
     nextStep();
   };
+
   useEffect(() => {
     cloudinaryRef.current = window.cloudinary;
     widgetRef.current = cloudinaryRef.current.createUploadWidget(
       {
-        cloudName: "dcdhklrjc",
-        uploadPreset: "vx0dyjgc",
-        maxFiles: 1,
+        cloudName: "duyrx4d7g",
+        uploadPreset: "rz4wltd3",
+        maxFiles: 6,
       },
       (err, result) => {
         if (result.event === "success") {
@@ -30,6 +34,7 @@ const UploadImage = ({
       }
     );
   }, []);
+
   return (
     <div className="flexColCenter uploadWrapper">
       {!imageURL ? (
@@ -59,6 +64,15 @@ const UploadImage = ({
       </Group>
     </div>
   );
+};
+
+UploadImage.propTypes = {
+  propertyDetails: PropTypes.shape({
+    image: PropTypes.string,
+  }).isRequired,
+  setPropertyDetails: PropTypes.func.isRequired,
+  nextStep: PropTypes.func.isRequired,
+  prevStep: PropTypes.func.isRequired,
 };
 
 export default UploadImage;

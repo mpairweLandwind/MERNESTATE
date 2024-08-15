@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { useForm } from "@mantine/form";
 import { validateString } from "../../utils/common";
 import { Button, Group, Select, TextInput } from "@mantine/core";
@@ -21,23 +21,22 @@ const AddLocation = ({ propertyDetails, setPropertyDetails, nextStep }) => {
     },
   });
 
-
   const { country, city, address } = form.values;
 
-
-  const handleSubmit = ()=> {
-    const {hasErrors} = form.validate();
-    if(!hasErrors) {
-        setPropertyDetails((prev)=> ({...prev, city, address, country}))
-        nextStep()
+  const handleSubmit = () => {
+    const { hasErrors } = form.validate();
+    if (!hasErrors) {
+      setPropertyDetails((prev) => ({ ...prev, city, address, country }));
+      nextStep();
     }
-  }
+  };
+
   return (
     <form
-    onSubmit={(e)=>{
+      onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit()
-    }}
+        handleSubmit();
+      }}
     >
       <div
         className="flexCenter"
@@ -89,6 +88,16 @@ const AddLocation = ({ propertyDetails, setPropertyDetails, nextStep }) => {
       </Group>
     </form>
   );
+};
+
+AddLocation.propTypes = {
+  propertyDetails: PropTypes.shape({
+    country: PropTypes.string,
+    city: PropTypes.string,
+    address: PropTypes.string,
+  }).isRequired,
+  setPropertyDetails: PropTypes.func.isRequired,
+  nextStep: PropTypes.func.isRequired,
 };
 
 export default AddLocation;

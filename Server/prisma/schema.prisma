@@ -7,55 +7,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Listing {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  type          ListingType
-  property      PropertyType 
-  status        PropertyStatus  
-  description   String
-  city          String        @default("Bujumbura") 
-  address       String
-  regularPrice  Float
-  discountPrice Float
-  bathrooms     Int
-  bedrooms      Int
-  furnished     Boolean
-  parking       Boolean
-  offer         Boolean
-  latitude      Float?
-  longitude     Float?  
-  imageUrls     String[]
-  userRef       String        @db.ObjectId
-  user          User          @relation(fields: [userRef], references: [id])
-  createdAt     DateTime      @default(now())
-  postDetail    PostDetail?
-  savedPosts    SavedPost[]
-  approvalStatus ApprovalStatus @default(DISAPPROVED)
-  transactions  Transaction[]  // Reference to transactions
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  type           ListingType
+  property       PropertyType 
+  status         PropertyStatus  
+  description    String
+  country        String          @default("Burundi") 
+  city           String          @default("Bujumbura") 
+  address        String
+  regularPrice   Float
+  discountPrice  Float
+  facilities     Json
+  imageUrls      String[]
+  userRef        String          @db.ObjectId
+  userEmail      String
+  user           User            @relation("Owner", fields: [userRef, userEmail], references: [id, email])
+  createdAt      DateTime        @default(now())
+  postDetail     PostDetail?
+  savedPosts     SavedPost[]
+  approvalStatus ApprovalStatus  @default(DISAPPROVED)
+  transactions   Transaction[]
 
+  @@unique([userRef, userEmail]) // Ensure combination is unique
   @@map("listings")
 }
 
-model User {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  username   String      @unique
-  email      String      @unique
-  role       UserRole    @default(user)  
-  password   String
-  avatar     String      @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
-  createdAt  DateTime    @default(now())
-  listings   Listing[]
-  maintenance Maintenance[]
-  savedPosts SavedPost[]
-  chats      Chat[]      @relation(fields: [chatIDs], references: [id])   
-  chatIDs    String[]    @db.ObjectId
-  status     UserStatus  @default(active)
-  transactions Transaction[]  // Reference to transactions
 
+
+model User {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  username      String          @unique
+  email         String          @unique
+  role          UserRole        @default(user)
+  password      String
+  avatar        String          @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+  createdAt     DateTime        @default(now())
+  listings      Listing[]       @relation("Owner")
+  maintenance   Maintenance[]
+  savedPosts    SavedPost[]
+  chats         Chat[]          @relation(fields: [chatIDs], references: [id])
+  chatIDs       String[]        @db.ObjectId
+  status        UserStatus      @default(active)
+  transactions  Transaction[]   // Reference to transactions
+
+  @@unique([id, email])         // Composite unique constraint
   @@map("users")
 }
+
 
 model Maintenance {
   id                   String          @id @default(auto()) @map("_id") @db.ObjectId

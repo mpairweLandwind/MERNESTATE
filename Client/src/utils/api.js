@@ -30,7 +30,7 @@ export const getAllProperties = async () => {
 
 export const getProperty = async (id) => {
   try {
-    const response = await api.get(`/residency/${id}`, {
+    const response = await api.get(`/listing/${id}`, {
       timeout: 10 * 1000,
     });
 

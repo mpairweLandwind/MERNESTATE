@@ -1,8 +1,7 @@
-
 import { HiLocationMarker } from "react-icons/hi";
 import PropTypes from 'prop-types';
 
-const SearchBar = ({ filter, setFilter }) => {
+const SearchBar = ({ filter = '', setFilter }) => {
   return (
     <div className="flexCenter search-bar">
       <HiLocationMarker color="var(--blue)" size={25} />
@@ -17,10 +16,9 @@ const SearchBar = ({ filter, setFilter }) => {
   );
 };
 
-
 SearchBar.propTypes = {
-  filter: PropTypes.string.isRequired,
-  setFilter: PropTypes.func.isRequired,
+  filter: PropTypes.string,
+  setFilter: PropTypes.func,
 };
 
 export default SearchBar;

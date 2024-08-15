@@ -86,7 +86,7 @@ app.use((err, req, res, next) => {
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "https://mernestate-tlmc.onrender.com", "http://localhost:3000", "http://localhost:4000"],
+    origin: ["http://localhost:5173","https://cdn.socket.io/4.0.0/socket.io.min.js", "https://mernestate-tlmc.onrender.com", "http://localhost:3000"],
   },
 });
 
