@@ -4,7 +4,7 @@ import { client, generateAccessToken } from '../paypal.mjs';
 import prisma from '../lib/prisma.mjs';
 
 export const createOrder = async (req, res) => {
-    const { amount, userId, propertyId, propertyType } = req.body;
+    const { orderID, amount, userId, propertyId, propertyType } = req.body;
 
     try {
         const accessToken = await generateAccessToken();
@@ -26,6 +26,7 @@ export const createOrder = async (req, res) => {
         // Save transaction to database
         const transaction = await prisma.transaction.create({
             data: {
+                orderID,
                 userId,
                 propertyId,
                 amount: parseFloat(amount),

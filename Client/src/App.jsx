@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 import Layout from './components/Layout/Layout';
 import './App.css';
 import Home from './Pages/Home';
@@ -31,6 +32,7 @@ import Bookings from "./Pages/Bookings/Bookings";
 import Favourites from "./Pages/Favourites/Favourites";
 import Properties from "./Pages/Properties/Properties";
 import { MantineProvider } from '@mantine/core';
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const queryClient = new QueryClient(); // Initialize QueryClient outside the component
 
@@ -40,7 +42,17 @@ const App = () => {
   const token = useSelector(getToken);
   const currentUserRole = currentUser?.role;
 
-  const [userDetails, setUserDetails] = useState(null); // context state
+  const [userDetails, setUserDetails] = useState({
+    favourites: [],
+    bookings: [],
+    token: null,
+  }); // context state
+
+  const initialOptions = {
+    clientId: "AW2JLs8fwZMo6SsQCc78C9LFayq6uEog3ag_6S4G6Xa36-AcrGx2zNS3h2baQSekqh3Gj3eGKmMDbYHg",
+    currency: "USD",
+    intent: "capture",
+};
 
   const getRoutes = (currentUserRole) => [
     {
@@ -107,12 +119,14 @@ const App = () => {
   const router = createBrowserRouter(getRoutes(currentUserRole));
 
   return (
+    <PayPalScriptProvider options={initialOptions}>
     <MantineProvider withGlobalStyles withNormalizeCSS> {/* Wrap your app with MantineProvider */}
       <UserDetailContext.Provider value={{ userDetails, setUserDetails }}>
         <QueryClientProvider client={queryClient}>
           <Suspense fallback={<div>Loading...</div>}>
             <RouterProvider key={routerKey} router={router}>
               <RoleBasedRedirect />
+              <PayPalButtons />
             </RouterProvider>
           </Suspense>
           <ToastContainer />
@@ -120,6 +134,7 @@ const App = () => {
         </QueryClientProvider>
       </UserDetailContext.Provider>
     </MantineProvider>
+    </PayPalScriptProvider>
   );
 };
 

@@ -71,13 +71,13 @@ const BasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails 
         <NumberInput
           withAsterisk
           label="Regular Price"
-          placeholder="1000"
+          placeholder="50"
           min={0}
           {...form.getInputProps("regularPrice")}
         />
         <NumberInput
           label="Discount Price"
-          placeholder="900"
+          placeholder="50"
           min={0}
           {...form.getInputProps("discountPrice")}
         />

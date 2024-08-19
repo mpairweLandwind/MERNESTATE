@@ -3,19 +3,16 @@ import dayjs from "dayjs";
 import { toast } from "react-toastify";
 
 
-const baseURL =
-  process.env.NODE_ENV === 'production'
-    ? "https://mernestate.vercel.app/api"
-    : "http://localhost:3000/api";
+
 
 export const api = axios.create({
-  baseURL,
-});
-
+      baseURL: "http://localhost:3000/api",
+    });
+    
 export const getAllProperties = async () => {
   try {
-    const response = await api.get("/listing/get", {
-      timeout: 10 * 1000,
+    const response = await api.get("/listing/listings", {
+      timeout: 10 * 10000,
     });
 
     if (response.status === 400 || response.status === 500) {
@@ -167,14 +164,31 @@ export const toFav = async (id, email, token) => {
 };
 
 export const createResidency = async (data, token) => {
-  console.log(data);
-  await api.post(
-    `/listing/create`,
-    { data },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  try {
+    console.log(data);
+    const response = await api.post(
+      `/listing/create`,
+      {data}, // Ensure the data is sent as the request body, not inside an object
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data; // Optionally return the response data
+  } catch (error) {
+    console.error('Error creating residency:', error);
+    if (error.response) {
+      // Server responded with a status other than 2xx
+      console.error('Server Error:', error.response.data);
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('Network Error:', error.request);
+    } else {
+      // Something else happened
+      console.error('Error:', error.message);
     }
-  );
+    throw error; // Re-throw the error to be handled by the calling function
+  }
 };
+

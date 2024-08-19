@@ -1,22 +1,19 @@
-import  { useContext, useState } from "react";
-import { useMutation, useQuery } from "react-query";
-import { useLocation } from "react-router-dom";
-import { getProperty, removeBooking } from "../../utils/api";
-import { PuffLoader } from "react-spinners";
-//import { AiFillHeart } from "react-icons/ai";
-import "./Property.css";
 
+import { useContext } from "react";
+import { useQuery } from "react-query";
+import { useLocation } from "react-router-dom";
+import { getProperty } from "../../utils/api";
+import { PuffLoader } from "react-spinners";
+import "./Property.css";
 import { FaShower } from "react-icons/fa";
 import { AiTwotoneCar } from "react-icons/ai";
 import { MdLocationPin, MdMeetingRoom } from "react-icons/md";
 import Map from "../../components/Map/Map";
 import useAuthCheck from "../../hooks/useAuthCheck";
-import { useAuth0 } from "@auth0/auth0-react";
-import BookingModal from "../../components/BookingModal/BookingModal";
 import UserDetailContext from "../../context/UserDetailContext.js";
-import { Button } from "@mantine/core";
-import { toast } from "react-toastify";
 import Heart from "../../components/Heart/Heart";
+import PaypalButton from "../../components/paypalButton";
+
 const Property = () => {
   const { pathname } = useLocation();
   const id = pathname.split("/").slice(-1)[0];
@@ -24,26 +21,11 @@ const Property = () => {
     getProperty(id)
   );
 
-  const [modalOpened, setModalOpened] = useState(false);
   const { validateLogin } = useAuthCheck();
-  const { user } = useAuth0();
 
   const {
-    userDetails: { token, bookings },
-    setUserDetails,
+    userDetails: { email },
   } = useContext(UserDetailContext);
-
-  const { mutate: cancelBooking, isLoading: cancelling } = useMutation({
-    mutationFn: () => removeBooking(id, user?.email, token),
-    onSuccess: () => {
-      setUserDetails((prev) => ({
-        ...prev,
-        bookings: prev.bookings.filter((booking) => booking?.id !== id),
-      }));
-
-      toast.success("Booking cancelled", { position: "bottom-right" });
-    },
-  });
 
   if (isLoading) {
     return (
@@ -81,9 +63,9 @@ const Property = () => {
           <div className="flexColStart left">
             {/* head */}
             <div className="flexStart head">
-              <span className="primaryText">{data?.title}</span>
+              <span className="primaryText">{data?.name}</span>
               <span className="orangeText" style={{ fontSize: "1.5rem" }}>
-                $ {data?.price}
+                $ {data?.regularPrice}
               </span>
             </div>
 
@@ -109,13 +91,11 @@ const Property = () => {
             </div>
 
             {/* description */}
-
             <span className="secondaryText" style={{ textAlign: "justify" }}>
               {data?.description}
             </span>
 
             {/* address */}
-
             <div className="flexStart" style={{ gap: "1rem" }}>
               <MdLocationPin size={25} />
               <span className="secondaryText">
@@ -125,40 +105,15 @@ const Property = () => {
               </span>
             </div>
 
-            {/* booking button */}
-            {bookings?.map((booking) => booking.id).includes(id) ? (
-              <>
-                <Button
-                  variant="outline"
-                  w={"100%"}
-                  color="red"
-                  onClick={() => cancelBooking()}
-                  disabled={cancelling}
-                >
-                  <span>Cancel booking</span>
-                </Button>
-                <span>
-                  Your visit already booked for date{" "}
-                  {bookings?.filter((booking) => booking?.id === id)[0].date}
-                </span>
-              </>
-            ) : (
-              <button
-                className="button"
-                onClick={() => {
-                  validateLogin() && setModalOpened(true);
-                }}
-              >
-                Book your visit
-              </button>
+            {/* PayPal button */}
+            {validateLogin() && (
+              <PaypalButton
+                amount={data?.regularPrice}
+                userId={email} // using email as userId
+                propertyId={id}
+                propertyType={data?.type}
+              />
             )}
-
-            <BookingModal
-              opened={modalOpened}
-              setOpened={setModalOpened}
-              propertyId={id}
-              email={user?.email}
-            />
           </div>
 
           {/* right side */}

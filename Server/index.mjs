@@ -4,7 +4,7 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import userRouter from './routes/user.route.mjs';
+import {userRouter }from './routes/user.route.mjs';
 import authRouter from './routes/auth.route.mjs';
 import chatRoute from './routes/chat.route.mjs';
 import messageRoute from './routes/message.route.mjs';
@@ -19,6 +19,7 @@ import paypalRoutes from './routes/paypalRoutes.mjs';
 import corsOptions from './config/corsOptions.mjs';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
+import * as paypal from './paypal-api.mjs';
 
 // Load environment variables from .env file
 // dotenv.config();
@@ -56,6 +57,30 @@ app.use('/api/chats', chatRoute);
 app.use('/api/messages', messageRoute);
 app.use('/api/email', emailRoutes);
 app.use('/api/paypal', paypalRoutes);
+
+app.post("/api/orders", async (req, res) => {
+  try {
+    // use the cart information passed from the front-end to calculate the order amount detals
+    const { product } = req.body;
+    const { jsonResponse, httpStatusCode } = await createOrder(cart);
+    res.status(httpStatusCode).json(jsonResponse);
+  } catch (error) {
+    console.error("Failed to create order:", error);
+    res.status(500).json({ error: "Failed to create order." });
+  }
+});
+
+app.post("/api/orders/:orderID/capture", async (req, res) => {
+  try {
+    const { orderID } = req.params;
+    const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
+    res.status(httpStatusCode).json(jsonResponse);
+  } catch (error) {
+    console.error("Failed to create order:", error);
+    res.status(500).json({ error: "Failed to capture order." });
+  }
+});
+
 
 
 // Serve static files from the React app
@@ -134,6 +159,6 @@ io.on('connection', (socket) => {
 
 // Start the server
 const PORT = process.env.PORT;
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT,  () => {
   console.log(`Server is running on port ${PORT}!`);
 });

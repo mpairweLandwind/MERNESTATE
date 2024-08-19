@@ -62,7 +62,11 @@ const Facilities = ({
       setPropertyDetails({
         name: "",
         description: "",
-        price: 0,
+        regularPrice: 0,
+        discountPrice: 0,
+        type: "",
+        property: "",
+        status: "",        
         country: "",
         city: "",
         address: "",

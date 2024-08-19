@@ -13,9 +13,13 @@ const AddPropertyModal = ({ opened, setOpened }) => {
   const { user } = useAuth0();
 
   const [propertyDetails, setPropertyDetails] = useState({
-    title: "",
+    name: "",
     description: "",
-    price: 0,
+    regularPrice: 0,
+    discountPrice: 0,
+    type: "",
+    property: "",
+    status: "",    
     country: "",
     city: "",
     address: "",
@@ -24,6 +28,9 @@ const AddPropertyModal = ({ opened, setOpened }) => {
       bedrooms: 0,
       parkings: 0,
       bathrooms: 0,
+      furnished: false,
+      parking: false,
+      offer: false,
     },
     userEmail: user?.email,
   });

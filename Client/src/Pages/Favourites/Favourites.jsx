@@ -48,7 +48,7 @@ const Favourites = () => {
 
               .filter(
                 (property) =>
-                  property.title.toLowerCase().includes(filter.toLowerCase()) ||
+                  property.name.toLowerCase().includes(filter.toLowerCase()) ||
                   property.city.toLowerCase().includes(filter.toLowerCase()) ||
                   property.country.toLowerCase().includes(filter.toLowerCase())
               )

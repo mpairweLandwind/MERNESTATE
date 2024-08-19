@@ -24,21 +24,25 @@ const Layout = () => {
 
   useEffect(() => {
     const getTokenAndRegsiter = async () => {
-
-      const res = await getAccessTokenWithPopup({
-        authorizationParams: {
-          audience: "http://localhost:3000",
-          scope: "openid profile email",
-        },
-      });
-      localStorage.setItem("access_token", res);
-      setUserDetails((prev) => ({ ...prev, token: res }));
-      mutate(res)
+      try {
+        const res = await getAccessTokenWithPopup({
+          authorizationParams: {
+            audience: "http://localhost:3000", // Adjust if needed
+            scope: "openid profile email",
+          },
+        });
+        console.log("Access Token:", res);
+        localStorage.setItem("access_token", res);
+        setUserDetails((prev) => ({ ...prev, token: res }));
+        mutate(res);
+      } catch (error) {
+        console.error("Error during token retrieval:", error);
+      }
     };
-
-
+  
     isAuthenticated && getTokenAndRegsiter();
   }, [getAccessTokenWithPopup, isAuthenticated, mutate, setUserDetails]);
+  
 
   return (
     <>

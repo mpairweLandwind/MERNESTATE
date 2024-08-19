@@ -20,17 +20,16 @@ model Listing {
   regularPrice   Float
   discountPrice  Float
   facilities     Json
-  imageUrls      String[]
-  userRef        String          @db.ObjectId
-  userEmail      String
-  user           User            @relation("Owner", fields: [userRef, userEmail], references: [id, email])
+  image          String  
+  userEmail      String  
+  user           User            @relation("Owner", fields: [userEmail], references: [ email])
   createdAt      DateTime        @default(now())
   postDetail     PostDetail?
   savedPosts     SavedPost[]
   approvalStatus ApprovalStatus  @default(DISAPPROVED)
   transactions   Transaction[]
 
-  @@unique([userRef, userEmail]) // Ensure combination is unique
+  @@unique([userEmail,address]) // Ensure combination is unique
   @@map("listings")
 }
 
@@ -38,22 +37,22 @@ model Listing {
 
 model User {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  username      String          @unique
+  name      String?              
   email         String          @unique
   role          UserRole        @default(user)
-  password      String
-  avatar        String          @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
-  createdAt     DateTime        @default(now())
+  password      String?
+  image        String?     
   listings      Listing[]       @relation("Owner")
+  bookedVisits     Json[]
+  favResidenciesID String[]    @db.ObjectId
   maintenance   Maintenance[]
   savedPosts    SavedPost[]
   chats         Chat[]          @relation(fields: [chatIDs], references: [id])
-  chatIDs       String[]        @db.ObjectId
-  status        UserStatus      @default(active)
+  chatIDs       String[]        @db.ObjectId  
   transactions  Transaction[]   // Reference to transactions
-
-  @@unique([id, email])         // Composite unique constraint
-  @@map("users")
+  createdAt     DateTime        @default(now())
+      
+  
 }
 
 
@@ -91,8 +90,9 @@ model Transaction {
   userId      String      @db.ObjectId
   propertyId  String      @db.ObjectId
   amount      Float
-  status      String
-  createdAt   DateTime    @default(now())
+  paypalOrderId String
+  status  String  @default("Pending")
+  createdAt  DateTime @default(now() )
   user        User        @relation(fields: [userId], references: [id])
   listing     Listing?    @relation(fields: [propertyId], references: [id])
   maintenance Maintenance? @relation(fields: [propertyId], references: [id])
