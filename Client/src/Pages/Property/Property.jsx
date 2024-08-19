@@ -1,4 +1,3 @@
-
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useLocation } from "react-router-dom";
@@ -10,7 +9,7 @@ import { AiTwotoneCar } from "react-icons/ai";
 import { MdLocationPin, MdMeetingRoom } from "react-icons/md";
 import Map from "../../components/Map/Map";
 import useAuthCheck from "../../hooks/useAuthCheck";
-import UserDetailContext from "../../context/UserDetailContext.js";
+import UserDetailContext from "../../context/UserDetailContext";
 import Heart from "../../components/Heart/Heart";
 import PaypalButton from "../../components/paypalButton";
 
@@ -22,10 +21,9 @@ const Property = () => {
   );
 
   const { validateLogin } = useAuthCheck();
+  const { userDetails } = useContext(UserDetailContext);
 
-  const {
-    userDetails: { email },
-  } = useContext(UserDetailContext);
+  console.log("User email from context:", userDetails.email);
 
   if (isLoading) {
     return (
@@ -71,45 +69,35 @@ const Property = () => {
 
             {/* facilities */}
             <div className="flexStart facilities">
-              {/* bathrooms */}
               <div className="flexStart facility">
                 <FaShower size={20} color="#1F3E72" />
                 <span>{data?.facilities?.bathrooms} Bathrooms</span>
               </div>
-
-              {/* parkings */}
               <div className="flexStart facility">
                 <AiTwotoneCar size={20} color="#1F3E72" />
                 <span>{data?.facilities.parkings} Parking</span>
               </div>
-
-              {/* rooms */}
               <div className="flexStart facility">
                 <MdMeetingRoom size={20} color="#1F3E72" />
                 <span>{data?.facilities.bedrooms} Room/s</span>
               </div>
             </div>
 
-            {/* description */}
             <span className="secondaryText" style={{ textAlign: "justify" }}>
               {data?.description}
             </span>
 
-            {/* address */}
             <div className="flexStart" style={{ gap: "1rem" }}>
               <MdLocationPin size={25} />
               <span className="secondaryText">
-                {data?.address}{" "}
-                {data?.city}{" "}
-                {data?.country}
+                {data?.address} {data?.city} {data?.country}
               </span>
             </div>
 
-            {/* PayPal button */}
             {validateLogin() && (
               <PaypalButton
                 amount={data?.regularPrice}
-                userId={email} // using email as userId
+                userId={userDetails.email} // using email from userDetails
                 propertyId={id}
                 propertyType={data?.type}
               />
@@ -118,11 +106,7 @@ const Property = () => {
 
           {/* right side */}
           <div className="map">
-            <Map
-              address={data?.address}
-              city={data?.city}
-              country={data?.country}
-            />
+            <Map address={data?.address} city={data?.city} country={data?.country} />
           </div>
         </div>
       </div>

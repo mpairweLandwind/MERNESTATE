@@ -49,7 +49,6 @@ model User {
   savedPosts    SavedPost[]
   chats         Chat[]          @relation(fields: [chatIDs], references: [id])
   chatIDs       String[]        @db.ObjectId  
-  transactions  Transaction[]   // Reference to transactions
   createdAt     DateTime        @default(now())
       
   
@@ -86,17 +85,17 @@ model Maintenance {
 }
 
 model Transaction {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String      @db.ObjectId
-  propertyId  String      @db.ObjectId
-  amount      Float
-  paypalOrderId String
-  status  String  @default("Pending")
-  createdAt  DateTime @default(now() )
-  user        User        @relation(fields: [userId], references: [id])
-  listing     Listing?    @relation(fields: [propertyId], references: [id])
-  maintenance Maintenance? @relation(fields: [propertyId], references: [id])
-  
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   
+  propertyId     String   @db.ObjectId
+  propertyType   String
+  amount         Float
+  orderId        String   // This should match the field being used in your controller
+  status         String   @default("completed")
+  transactionDate DateTime @default(now())
+  listing        Listing? @relation(fields: [propertyId], references: [id])
+  maintenance    Maintenance? @relation(fields: [propertyId], references: [id])
+
   @@map("transactions")
 }
 

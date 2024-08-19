@@ -5,52 +5,33 @@ import usePayPalScript from '../hooks/usePayPalScript';
 
 const PaypalButton = ({ amount, userId, propertyId, propertyType }) => {
   const scriptLoaded = usePayPalScript();
+  const serverUrl = "http://localhost:3000";
 
   useEffect(() => {
-    if (scriptLoaded) {
-      const handlePayment = () => {
-        try {
-          window.paypal.Buttons({
-            createOrder: (data, actions) => {
-              return actions.order.create({
-                purchase_units: [{
-                  amount: {
-                    value: amount,
-                  },
-                }],
-              });
-            },
-            onApprove: (data, actions) => {
-              return actions.order.capture().then(details => {
-                console.log('Transaction completed by', details.payer.name.given_name);
-                // Call your backend to save the transaction
-                axios.post('/api/transaction/save', {
-                  userId,
-                  propertyId,
-                  propertyType,
-                  amount,
-                  orderId: data.orderID,
-                }).then(response => {
-                  console.log('Transaction saved', response);
-                }).catch(error => {
-                  console.error('Error saving transaction', error);
-                });
-              });
-            },
-            onError: (err) => {
-              console.error('PayPal Button error', err);
-            },
-            onCancel: (data) => {
-              console.log('PayPal payment cancelled', data);
-            },
-          }).render('#paypal-button-container');
-        } catch (error) {
-          console.error('Error rendering PayPal Buttons', error);
-        }
-      };
-
-      handlePayment();
+    if (!scriptLoaded || !userId || !propertyId || !propertyType || !amount) {
+      console.error('Missing required fields or PayPal script not loaded:', { userId, propertyId, propertyType, amount });
+      return;
     }
+
+    const handlePayment = () => {
+      window.paypal.Buttons({
+        createOrder: (data, actions) => actions.order.create({
+          purchase_units: [{ amount: { value: amount } }],
+        }),
+        onApprove: (data, actions) => actions.order.capture().then(details => {
+          console.log('Transaction successful | completed by', details.payer.name.given_name);
+          axios.post(`${serverUrl}/api/paypal/create-order`, {
+            userId, propertyId, propertyType, amount, orderId: data.orderID,
+          })
+          .then(response => console.log('Transaction saved', response.data))
+          .catch(error => console.error('Error saving transaction', error));
+        }),
+        onError: err => console.error('PayPal Button error', err),
+        onCancel: data => console.log('PayPal payment cancelled', data),
+      }).render('#paypal-button-container');
+    };
+
+    handlePayment();
   }, [scriptLoaded, amount, userId, propertyId, propertyType]);
 
   return <div id="paypal-button-container"></div>;

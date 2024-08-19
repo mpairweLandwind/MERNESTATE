@@ -32,12 +32,12 @@ import Bookings from "./Pages/Bookings/Bookings";
 import Favourites from "./Pages/Favourites/Favourites";
 import Properties from "./Pages/Properties/Properties";
 import { MantineProvider } from '@mantine/core';
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+// import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const queryClient = new QueryClient(); // Initialize QueryClient outside the component
 
 const App = () => {
-  const [routerKey, setRouterKey] = useState(Date.now());
+  //const [routerKey, setRouterKey] = useState(Date.now());
   const currentUser = useSelector(getCurrentUser);
   const token = useSelector(getToken);
   const currentUserRole = currentUser?.role;
@@ -48,11 +48,11 @@ const App = () => {
     token: null,
   }); // context state
 
-  const initialOptions = {
-    clientId: "AW2JLs8fwZMo6SsQCc78C9LFayq6uEog3ag_6S4G6Xa36-AcrGx2zNS3h2baQSekqh3Gj3eGKmMDbYHg",
-    currency: "USD",
-    intent: "capture",
-};
+//   const initialOptions = {
+//     clientId: "AW2JLs8fwZMo6SsQCc78C9LFayq6uEog3ag_6S4G6Xa36-AcrGx2zNS3h2baQSekqh3Gj3eGKmMDbYHg",
+//     currency: "USD",
+//     intent: "capture",
+// };
 
   const getRoutes = (currentUserRole) => [
     {
@@ -113,20 +113,19 @@ const App = () => {
   ];  
   
   useEffect(() => {
-    setRouterKey(Date.now()); // Update the key to force re-render when the user role changes
+    //setRouterKey(Date.now()); // Update the key to force re-render when the user role changes
   }, [currentUserRole]);
 
   const router = createBrowserRouter(getRoutes(currentUserRole));
 
   return (
-    <PayPalScriptProvider options={initialOptions}>
+    // <PayPalScriptProvider options={initialOptions}>
     <MantineProvider withGlobalStyles withNormalizeCSS> {/* Wrap your app with MantineProvider */}
       <UserDetailContext.Provider value={{ userDetails, setUserDetails }}>
         <QueryClientProvider client={queryClient}>
           <Suspense fallback={<div>Loading...</div>}>
-            <RouterProvider key={routerKey} router={router}>
-              <RoleBasedRedirect />
-              <PayPalButtons />
+            <RouterProvider  router={router}>
+              <RoleBasedRedirect />             
             </RouterProvider>
           </Suspense>
           <ToastContainer />
@@ -134,7 +133,7 @@ const App = () => {
         </QueryClientProvider>
       </UserDetailContext.Provider>
     </MantineProvider>
-    </PayPalScriptProvider>
+    // </PayPalScriptProvider>
   );
 };
 
