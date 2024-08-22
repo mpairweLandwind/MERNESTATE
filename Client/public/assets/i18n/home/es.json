@@ -1,0 +1,49 @@
+{
+	"home": {
+	  "hero": {
+		"discover": "Descubrir",
+		"most_suitable": "Más Adecuado",
+		"property": "Propiedad",
+		"find_variety": "Encuentra una variedad de propiedades que se adapten a ti muy fácilmente",
+		"forget_difficulties": "Olvídate de todas las dificultades para encontrar una residencia para ti",
+		"premium_product": "Producto Premium",
+		"happy_customer": "Cliente Feliz",
+		"awards_winning": "Premios Ganados",
+		"houses_alt": "casas"
+	  },
+	  "companies": {
+		"title": "Nuestros Socios",
+		"description": "Trabajamos con las mejores empresas de la industria."
+	  },
+	  "residencies": {
+		"error": "Error al obtener los datos",
+		"best_choices": "Mejores Opciones",
+		"popular_residencies": "Residencias Populares"
+	  },
+	  "value": {
+		"our_value": "Nuestro Valor",
+		"value_we_give": "Valor que te Damos",
+		"helping_services": "Siempre estamos listos para ayudar brindando los mejores servicios para ti.",
+		"good_place_better_life": "Creemos que un buen lugar para vivir puede mejorar tu vida."
+	  },
+	  "contact": {
+		"loading_landlord": "Cargando detalles del propietario...",
+		"fetch_error": "No se pudieron cargar los detalles del propietario. Por favor, inténtelo de nuevo más tarde.",
+		"contact_landlord": "Contactar",
+		"enter_message": "Escribe tu mensaje aquí...",
+		"tooltip_send_email": "Haz clic para enviar un correo al propietario",
+		"send_message": "Enviar Mensaje",
+		"email_subject": "En relación a {{listing}}",
+		"sending_email_log": "Enviando correo con los siguientes datos:",
+		"email_failed": "No se pudo enviar el correo",
+		"email_success": "Correo enviado con éxito"
+	  },
+	  "get_started": {
+		"get_started_title": "Comienza con GestImpact",
+		"subscribe_text": "Suscríbete y encuentra cotizaciones de precios súper atractivas con nosotros.",
+		"find_residence_soon": "Encuentra tu residencia pronto.",
+		"get_started_button": "Comenzar"
+	  }
+	}
+  }
+  

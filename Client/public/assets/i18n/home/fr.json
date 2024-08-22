@@ -1,0 +1,49 @@
+{
+	"home": {
+	  "hero": {
+		"discover": "Découvrir",
+		"most_suitable": "Le Plus Adapté",
+		"property": "Propriété",
+		"find_variety": "Trouvez une variété de propriétés qui vous conviennent très facilement",
+		"forget_difficulties": "Oubliez toutes les difficultés pour trouver une résidence pour vous",
+		"premium_product": "Produit Premium",
+		"happy_customer": "Client Satisfait",
+		"awards_winning": "Prix Gagnés",
+		"houses_alt": "maisons"
+	  },
+	  "companies": {
+		"title": "Nos Partenaires",
+		"description": "Nous travaillons avec les meilleures entreprises de l'industrie."
+	  },
+	  "residencies": {
+		"error": "Erreur lors de la récupération des données",
+		"best_choices": "Meilleurs Choix",
+		"popular_residencies": "Résidences Populaires"
+	  },
+	  "value": {
+		"our_value": "Nos Valeurs",
+		"value_we_give": "Valeur que Nous Vous Apportons",
+		"helping_services": "Nous sommes toujours prêts à aider en fournissant les meilleurs services pour vous.",
+		"good_place_better_life": "Nous croyons qu'un bon endroit pour vivre peut améliorer votre vie."
+	  },
+	  "contact": {
+		"loading_landlord": "Chargement des détails du propriétaire...",
+		"fetch_error": "Impossible de charger les détails du propriétaire. Veuillez réessayer plus tard.",
+		"contact_landlord": "Contacter",
+		"enter_message": "Entrez votre message ici...",
+		"tooltip_send_email": "Cliquez pour envoyer un email au propriétaire",
+		"send_message": "Envoyer le Message",
+		"email_subject": "Concernant {{listing}}",
+		"sending_email_log": "Envoi d'un email avec les données suivantes :",
+		"email_failed": "Échec de l'envoi de l'email",
+		"email_success": "Email envoyé avec succès"
+	  },
+	  "get_started": {
+		"get_started_title": "Commencez avec GestImpact",
+		"subscribe_text": "Abonnez-vous et trouvez des devis de prix très attractifs chez nous.",
+		"find_residence_soon": "Trouvez votre résidence bientôt.",
+		"get_started_button": "Commencer"
+	  }
+	}
+  }
+  

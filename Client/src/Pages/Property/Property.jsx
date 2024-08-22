@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import { useLocation } from "react-router-dom";
 import { getProperty } from "../../utils/api";
 import { PuffLoader } from "react-spinners";
+import { Button } from "@mantine/core"; // Import Mantine Button
 import "./Property.css";
 import { FaShower } from "react-icons/fa";
 import { AiTwotoneCar } from "react-icons/ai";
@@ -54,7 +55,7 @@ const Property = () => {
         </div>
 
         {/* image */}
-        <img src={data?.image} alt="home image" />
+        <img src={data?.image[0]} alt="home image" />
 
         <div className="flexCenter property-details">
           {/* left */}
@@ -94,13 +95,26 @@ const Property = () => {
               </span>
             </div>
 
-            {validateLogin() && (
+            {validateLogin() ? (
               <PaypalButton
                 amount={data?.regularPrice}
                 userId={userDetails.email} // using email from userDetails
                 propertyId={id}
                 propertyType={data?.type}
               />
+            ) : (
+              <Button
+                variant="filled"
+                color="blue"
+                style={{
+                  width: '60%',
+                  padding: '0.5rem', // Adjust padding for height
+                  fontSize: '1rem', // Adjust font size
+                }}
+                onClick={() => console.log('Please log in to proceed')}
+              >
+               PAY
+              </Button>
             )}
           </div>
 

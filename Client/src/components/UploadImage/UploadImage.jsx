@@ -10,12 +10,12 @@ const UploadImage = ({
   nextStep,
   prevStep,
 }) => {
-  const [imageURL, setImageURL] = useState(propertyDetails.image);
+  const [imageURLs, setImageURLs] = useState(propertyDetails.images || []);
   const cloudinaryRef = useRef();
   const widgetRef = useRef();
 
   const handleNext = () => {
-    setPropertyDetails((prev) => ({ ...prev, image: imageURL }));
+    setPropertyDetails((prev) => ({ ...prev, images: imageURLs }));
     nextStep();
   };
 
@@ -25,11 +25,12 @@ const UploadImage = ({
       {
         cloudName: "duyrx4d7g",
         uploadPreset: "rz4wltd3",
-        maxFiles: 6,
+        maxFiles: 6, // Maximum number of files user can upload
+        multiple: true, // Enable multiple file upload
       },
       (err, result) => {
         if (result.event === "success") {
-          setImageURL(result.info.secure_url);
+          setImageURLs((prev) => [...prev, result.info.secure_url]);
         }
       }
     );
@@ -37,7 +38,7 @@ const UploadImage = ({
 
   return (
     <div className="flexColCenter uploadWrapper">
-      {!imageURL ? (
+      {imageURLs.length === 0 ? (
         <div
           className="flexColCenter uploadZone"
           onClick={() => widgetRef.current?.open()}
@@ -46,11 +47,13 @@ const UploadImage = ({
           <span>Upload Image</span>
         </div>
       ) : (
-        <div
-          className="uploadedImage"
-          onClick={() => widgetRef.current?.open()}
-        >
-          <img src={imageURL} alt="" />
+        <div className="uploadedImages">
+          {imageURLs.map((url, index) => (
+            <img key={index} src={url} alt={`Uploaded ${index + 1}`} />
+          ))}
+          <Button variant="default" onClick={() => widgetRef.current?.open()}>
+            Upload More Images
+          </Button>
         </div>
       )}
 
@@ -58,7 +61,7 @@ const UploadImage = ({
         <Button variant="default" onClick={prevStep}>
           Back
         </Button>
-        <Button onClick={handleNext} disabled={!imageURL}>
+        <Button onClick={handleNext} disabled={imageURLs.length === 0}>
           Next
         </Button>
       </Group>
@@ -68,7 +71,7 @@ const UploadImage = ({
 
 UploadImage.propTypes = {
   propertyDetails: PropTypes.shape({
-    image: PropTypes.string,
+    images: PropTypes.arrayOf(PropTypes.string), // Update the prop type to expect an array of strings
   }).isRequired,
   setPropertyDetails: PropTypes.func.isRequired,
   nextStep: PropTypes.func.isRequired,

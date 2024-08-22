@@ -1,4 +1,5 @@
 
+import PropTypes from "prop-types";
 import {
   Accordion,
   AccordionItem,
@@ -8,11 +9,12 @@ import {
   AccordionItemState,
 } from "react-accessible-accordion";
 import "react-accessible-accordion/dist/fancy-example.css";
-import { MdOutlineArrowDropDown } from "react-icons/md";  // Removed unused MdOutlineArrowDropDownCircle
+import { MdOutlineArrowDropDown } from "react-icons/md";
 import data from "../../utils/accordion.jsx";
 import "./Value.css";
 
-const Value = () => {
+
+const Value = ({ t }) => {
   return (
     <section id="value" className="v-wrapper">
       <div className="paddings innerWidth flexCenter v-container">
@@ -25,12 +27,12 @@ const Value = () => {
 
         {/* right */}
         <div className="flexColStart v-right">
-          <span className="orangeText">Our Value</span>
-          <span className="primaryText">Value We Give to You</span>
+          <span className="orangeText">{t("our_value")}</span>
+          <span className="primaryText">{t("value_we_give")}</span>
           <span className="secondaryText">
-            We always ready to help by providing the best services for you.
+            {t("helping_services")}
             <br />
-            We believe a good place to live can make your life better.
+            {t("good_place_better_life")}
           </span>
 
           <Accordion
@@ -39,14 +41,9 @@ const Value = () => {
             preExpanded={[0]}
           >
             {data.map((item, i) => (
-              <AccordionItem
-                className="accordionItem"
-                uuid={i}
-                key={i}
-              >
+              <AccordionItem className="accordionItem" uuid={i} key={i}>
                 <AccordionItemHeading>
                   <AccordionItemButton className="flexCenter accordionButton">
-                    {/* Just for getting state of item */}
                     <AccordionItemState>
                       {({ expanded }) => (
                         <div
@@ -74,6 +71,10 @@ const Value = () => {
       </div>
     </section>
   );
+};
+
+Value.propTypes = {
+  t: PropTypes.func.isRequired,
 };
 
 export default Value;

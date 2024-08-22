@@ -1,23 +1,29 @@
 import "./GetStarted.css";
+import PropTypes from "prop-types";
 
-const GetStarted = () => {
+const GetStarted = ({t}) => {
+ 
+
   return (
     <div id="get-started" className="g-wrapper">
       <div className="paddings innerWidth g-container">
         <div className="flexColCenter inner-container">
-          <span className="primaryText">Get started with GestImpact</span>
+          <span className="primaryText">{t('home.get_started.get_started_title')}</span>
           <span className="secondaryText">
-            Subscribe and find super attractive price quotes from us.
-            <br />
-            Find your residence soon.
+            {t('home.get_started.subscribe_text')}<br />
+            {t('home.get_started.find_residence_soon')}
           </span>
           <a href="mailto:alienyuyen@gmail.com" className="button">
-            Get Started
+            {t('home.get_started.get_started_button')}
           </a>
         </div>
       </div>
     </div>
   );
 };
+GetStarted.propTypes = {
+  t: PropTypes.func.isRequired,
+};
+
 
 export default GetStarted;

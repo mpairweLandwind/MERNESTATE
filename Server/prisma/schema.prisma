@@ -20,7 +20,7 @@ model Listing {
   regularPrice   Float
   discountPrice  Float
   facilities     Json
-  image          String  
+  image          String[]  
   userEmail      String  
   user           User            @relation("Owner", fields: [userEmail], references: [ email])
   createdAt      DateTime        @default(now())

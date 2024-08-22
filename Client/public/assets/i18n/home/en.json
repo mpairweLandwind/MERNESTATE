@@ -1,0 +1,49 @@
+{
+	"home": {
+	  "hero": {
+		"discover": "Discover",
+		"most_suitable": "Most Suitable",
+		"property": "Property",
+		"find_variety": "Find a variety of properties that suit you very easily",
+		"forget_difficulties": "Forget all difficulties in finding a residence for you",
+		"premium_product": "Premium Product",
+		"happy_customer": "Happy Customer",
+		"awards_winning": "Awards Winning",
+		"houses_alt": "houses"
+	  },
+	  "companies": {
+		"title": "Our Partners",
+		"description": "We work with the best companies in the industry."
+	  },
+	  "residencies": {
+		"error": "Error while fetching data",
+		"best_choices": "Best Choices",
+		"popular_residencies": "Popular Residencies"
+	  },
+	  "value": {
+		"our_value": "Our Value",
+		"value_we_give": "Value We Give to You",
+		"helping_services": "We always ready to help by providing the best services for you.",
+		"good_place_better_life": "We believe a good place to live can make your life better."
+	  },
+	  "contact": {
+		"loading_landlord": "Loading landlord details...",
+		"fetch_error": "Could not load landlord details. Please try again later.",
+		"contact_landlord": "Contact",
+		"enter_message": "Enter your message here...",
+		"tooltip_send_email": "Click to send email to landlord",
+		"send_message": "Send Message",
+		"email_subject": "Regarding {{listing}}",
+		"sending_email_log": "Sending email with the following data:",
+		"email_failed": "Failed to send email",
+		"email_success": "Email sent successfully"
+	  },
+	  "get_started": {
+		"get_started_title": "Get started with GestImpact",
+		"subscribe_text": "Subscribe and find super attractive price quotes from us.",
+		"find_residence_soon": "Find your residence soon.",
+		"get_started_button": "Get Started"
+	  }
+	}
+  }
+  

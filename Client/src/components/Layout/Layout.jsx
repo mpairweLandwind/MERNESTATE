@@ -1,4 +1,4 @@
-import  { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react"; // Added useState
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import { Outlet } from "react-router-dom";
@@ -10,10 +10,10 @@ import useFavourites from "../../hooks/useFavourites";
 import useBookings from "../../hooks/useBookings";
 
 const Layout = () => {
+  useFavourites();
+  useBookings();
 
-  useFavourites()
-  useBookings()
-
+  const [isLoading, setIsLoading] = useState(true); // Now useState is defined
   const { isAuthenticated, user, getAccessTokenWithPopup } = useAuth0();
   const { setUserDetails } = useContext(UserDetailContext);
 
@@ -23,7 +23,7 @@ const Layout = () => {
   });
 
   useEffect(() => {
-    const getTokenAndRegsiter = async () => {
+    const getTokenAndRegister = async () => {
       try {
         const res = await getAccessTokenWithPopup({
           authorizationParams: {
@@ -35,14 +35,23 @@ const Layout = () => {
         localStorage.setItem("access_token", res);
         setUserDetails((prev) => ({ ...prev, token: res }));
         mutate(res);
+        setIsLoading(false); // Set loading to false when done
       } catch (error) {
         console.error("Error during token retrieval:", error);
+        setIsLoading(false); // Set loading to false in case of error
       }
     };
-  
-    isAuthenticated && getTokenAndRegsiter();
+
+    if (isAuthenticated) {
+      getTokenAndRegister();
+    } else {
+      setIsLoading(false); // Set loading to false if not authenticated
+    }
   }, [getAccessTokenWithPopup, isAuthenticated, mutate, setUserDetails]);
-  
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Show loading while token is being set
+  }
 
   return (
     <>

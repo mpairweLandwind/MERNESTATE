@@ -3,27 +3,26 @@ import { errorHandler } from '../utils/error.mjs';
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 
+
 export const createListing = async (req, res) => {
   try {
-    // Extract data from the request body
-    const {
-      name,
-      description,
-      regularPrice,
-      discountPrice,
-      type,
-      property,
-      status,
-      country,
-      city,
-      address,
-      image,
-      facilities,
-      userEmail,
+    const { 
+      name, 
+      description, 
+      regularPrice, 
+      discountPrice, 
+      type, 
+      property, 
+      status, 
+      country, 
+      city, 
+      address, 
+      facilities, 
+      userEmail, 
+      images 
     } = req.body.data;
-    console.log(req.body.data);
 
-    // Attempt to create a new listing
+    // Creating the listing
     const listing = await prisma.listing.create({
       data: {
         name,
@@ -36,34 +35,23 @@ export const createListing = async (req, res) => {
         country,
         city,
         address,
-        image,
         facilities,
         user: {
-          connect: { email: userEmail },
+          connect: {
+            email: userEmail,
+          },
         },
+        image: images || [], // Ensure images is an array, or default to an empty array if null
       },
       select: {
         id: true,
       },
     });
 
-    // Log the created listing's ID
-    console.log("Listing created successfully with ID:", listing.id);
-
-    // Send success response
-    res.status(201).json({
-      message: 'Listing created successfully',
-      listingId: listing.id,
-    });
+    res.send({ message: "Residency created successfully", listing });
   } catch (error) {
-    // Log the error for debugging
-    console.error("Error creating listing:", error);
-
-    // Send error response with detailed message
-    res.status(500).json({
-      error: 'Failed to create listing',
-      details: error.message,
-    });
+    console.error('Error creating listing:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 

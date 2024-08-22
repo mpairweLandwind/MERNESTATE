@@ -13,7 +13,7 @@ const PropertyCard = ({ card }) => {
       onClick={() => navigate(`../properties/${card.id}`)}
     >
       <Heart id={card?.id} />
-      <img src={card.image} alt="home" />
+      <img src={card.image[0]} alt="home" />
       <span className="secondaryText r-price">
         <span style={{ color: "orange" }}>$</span>
         <span>{card.regularPrice}</span>
@@ -28,7 +28,7 @@ const PropertyCard = ({ card }) => {
 PropertyCard.propTypes = {
   card: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    image: PropTypes.PropTypes.string.isRequired,
+    image: PropTypes.arrayOf(PropTypes.string).isRequired,
     regularPrice: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired

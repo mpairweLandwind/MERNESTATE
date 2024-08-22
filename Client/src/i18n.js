@@ -9,12 +9,18 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: 'en',
-    debug: true,
+    // disabled in production
+    debug: false,
+    // can have multiple namespaces, in case you want to divide a huge
+		// translation into smaller pieces and load them on demand
+		ns: ["common", "home", "profile"],
+    
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+      // translation file path
+			loadPath: "/assets/i18n/{{ns}}/{{lng}}.json",
     },
   });
 

@@ -18,7 +18,7 @@ const BasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails 
       name: (value) => validateString(value),
       description: (value) => validateString(value),
       regularPrice: (value) =>
-        value < 1000 ? "Must be greater than 999 dollars" : null,
+        value < 1 ? "Must be greater than 1 dollars" : null,
       discountPrice: (value) =>
         value >= form.values.regularPrice
           ? "Discounted price must be less than the regular price"
