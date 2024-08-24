@@ -1,25 +1,23 @@
+// data.js (or accordion.js)
 import { HiShieldCheck } from "react-icons/hi";
 import { MdCancel, MdAnalytics } from "react-icons/md";
 
-const data = [
+const getData = (t) => [
   {
     icon: <HiShieldCheck />,
-    heading: "Best interest rates on the market",
-    detail:
-      "Take advantage of the best interest rates available on the market, ensuring optimal returns for your investments.",
+    heading: t("home.value.best_interest_rates"),
+    detail: t("home.value.best_interest_rates_detail"),
   },
   {
     icon: <MdCancel />,
-    heading: "Prevent unstable prices",
-    detail:
-      "Protect yourself against market volatility by avoiding unpredictable price fluctuations through robust strategies.",
+    heading: t("home.value.prevent_unstable_prices"),
+    detail: t("home.value.prevent_unstable_prices_detail"),
   },
   {
     icon: <MdAnalytics />,
-    heading: "Best price on the market",
-    detail:
-      "Get the most competitive prices on the market, offering you the best value for your purchases.",
+    heading: t("home.value.best_price"),
+    detail: t("home.value.best_price_detail"),
   },
 ];
 
-export default data;
+export default getData;

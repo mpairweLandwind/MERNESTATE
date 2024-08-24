@@ -32,7 +32,7 @@ const Residencies = ({ t }) => {
     <div id="residencies" className="r-wrapper">
       <div className="paddings innerWidth r-container">
         <div className="flexColStart r-head">
-          <span className="orangeText">{t('best_choices')}</span>
+          <span className="orangeText">{t('home.residencies.best_choices')}</span>
           <span className="primaryText">{t('home.residencies.popular_residencies')}</span>
         </div>
         <Swiper {...sliderSettings}>

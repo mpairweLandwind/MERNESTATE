@@ -1,0 +1,16 @@
+{
+    "footer": {
+      "logo_alt": "Company Logo",
+      "vision_line1": "Our vision is to make all people",
+      "vision_line2": "the best place to live for them and provide quality management services for Property at affordable prices.",
+      "information_title": "Information",
+      "address": "145 Bujumbura, FL 5467, Burundi",
+      "menu": {
+        "property": "Property",
+        "services": "Services",
+        "product": "Product",
+        "about_us": "About Us"
+      }
+    }
+  }
+  

@@ -2,55 +2,63 @@ import prisma from '../lib/prisma.mjs';
 
 
 export const createMaintenance = async (req, res) => {
-    console.log('Request Body:', req.body);
-  
-    const { maintenanceData, maintenanceHistory } = req.body;
+  try {
+    const { 
+      name, 
+      description, 
+      type, 
+      property, 
+      status, 
+      size, 
+      maintenanceCharge, 
+      estimatedValue, 
+      yearBuilt, 
+      lastRenovationDate, 
+      materialsUsed, 
+      condition, 
+      maintenanceSchedule, 
+      maintenanceHistory, 
+      userEmail, 
+      images 
+    } = req.body.data;
 
-    // Convert dates to ISO-8601 format
-    maintenanceData.lastRenovationDate = new Date(maintenanceData.lastRenovationDate).toISOString();
-    if (maintenanceHistory) {
-        maintenanceHistory.date = new Date(maintenanceHistory.date).toISOString();
-    }
-  
-    // Log incoming request data for debugging
-    console.log('Received maintenanceData:', maintenanceData);
-    console.log('Received maintenanceHistory:', maintenanceHistory);
-    console.log('User:', req.user);
-  
-    // Check if required fields are present
-    if (!maintenanceData || !maintenanceData.name || !maintenanceData.type) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
-  
-    try {
-      const userId = req.user.id; // Extract user ID from the verified token
-  
-      const maintenance = await prisma.maintenance.create({
-        data: {
-          ...maintenanceData,
-          lastRenovationDate: new Date(maintenanceData.lastRenovationDate),
-          userRef: userId, // Reference the user ID from the request object
-          maintenanceHistory: maintenanceHistory
-            ? { create: maintenanceHistory }
-            : undefined,
+    // Creating the listing
+    const listing = await prisma.listing.create({
+      data: {
+        name,
+        description,
+        type,
+        property,
+        status,
+        size,
+        maintenanceCharge,
+        estimatedValue,
+        yearBuilt,
+        lastRenovationDate,
+        materialsUsed,
+        condition,
+        maintenanceSchedule,
+        maintenanceHistory,
+        user: {
+          connect: {
+            email: userEmail,
+          },
         },
-        select: {
-          id: true,
-          name: true,
-          // Add other fields as necessary
-        },
-      });
-  
-      res.status(201).json({
-        success: true,
-        message: 'Maintenance created successfully',
-        _id: maintenance.id,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Failed to create maintenance', error: error.message });
-    }
-  };
+        image: images || [], // Ensure images is an array, or default to an empty array if null
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    res.send({ message: "Maintenance record created successfully", listing });
+  } catch (error) {
+    console.error('Error creating listing:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
 
 export const getMaintenance = async (req, res) => {
 

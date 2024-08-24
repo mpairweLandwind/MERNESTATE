@@ -3,9 +3,10 @@ import  { useState } from "react";
 import AddLocation from "../AddLocation/AddLocation";
 import { useAuth0 } from "@auth0/auth0-react";
 import UploadImage from "../UploadImage/UploadImage";
-import BasicDetails from "../BasicDetails/BasicDetails";
-import Facilities from "../Facilities/Facilities";
+import MBasicDetails from "../BasicDetails/MBasicDetails";
+import MaintenanceHistory from "../Facilities/MaintenanceHistory";
 import PropTypes from 'prop-types';
+
 
 
 const AddMaintenanceModal = ({ opened, setOpened }) => {
@@ -30,13 +31,10 @@ const AddMaintenanceModal = ({ opened, setOpened }) => {
     city: "",
     address: "",
     image: null,
-    facilities: {
-      bedrooms: 0,
-      parkings: 0,
-      bathrooms: 0,
-      furnished: false,
-      parking: false,
-      offer: false,
+    MaintenanceHistory:{
+      description: "",
+      date:"",
+      cost:0,           
     },
     userEmail: user?.email,
   });
@@ -79,7 +77,7 @@ const AddMaintenanceModal = ({ opened, setOpened }) => {
             />
           </Stepper.Step>
           <Stepper.Step label="Basics" description="Details">
-            <BasicDetails
+            <MBasicDetails
               prevStep={prevStep}
               nextStep={nextStep}
               propertyDetails={propertyDetails}
@@ -88,7 +86,7 @@ const AddMaintenanceModal = ({ opened, setOpened }) => {
           </Stepper.Step>
 
           <Stepper.Step>
-            <Facilities
+            <MaintenanceHistory 
               prevStep={prevStep}
               propertyDetails={propertyDetails}
               setPropertyDetails={setPropertyDetails}

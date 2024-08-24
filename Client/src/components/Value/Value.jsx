@@ -1,4 +1,3 @@
-
 import PropTypes from "prop-types";
 import {
   Accordion,
@@ -10,11 +9,12 @@ import {
 } from "react-accessible-accordion";
 import "react-accessible-accordion/dist/fancy-example.css";
 import { MdOutlineArrowDropDown } from "react-icons/md";
-import data from "../../utils/accordion.jsx";
+import getData from "../../utils/accordion.jsx";
 import "./Value.css";
 
-
 const Value = ({ t }) => {
+  const data = getData(t);
+
   return (
     <section id="value" className="v-wrapper">
       <div className="paddings innerWidth flexCenter v-container">
@@ -27,12 +27,12 @@ const Value = ({ t }) => {
 
         {/* right */}
         <div className="flexColStart v-right">
-          <span className="orangeText">{t("our_value")}</span>
-          <span className="primaryText">{t("value_we_give")}</span>
+          <span className="orangeText">{t("home.value.our_value")}</span>
+          <span className="primaryText">{t("home.value.value_we_give")}</span>
           <span className="secondaryText">
-            {t("helping_services")}
+            {t("home.value.helping_services")}
             <br />
-            {t("good_place_better_life")}
+            {t("home.value.good_place_better_life")}
           </span>
 
           <Accordion

@@ -13,8 +13,8 @@ i18n
     debug: false,
     // can have multiple namespaces, in case you want to divide a huge
 		// translation into smaller pieces and load them on demand
-		ns: ["common", "home", "profile"],
-    
+		ns: ["common", "home", "profile","footer"],
+
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },

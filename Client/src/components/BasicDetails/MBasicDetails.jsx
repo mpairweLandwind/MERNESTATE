@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { TextInput, Box, Textarea, Group, Button, NumberInput, Select, Grid, Col } from "@mantine/core";
+import { DateInput } from "@mantine/dates"; // Import DateInput from Mantine
 import { useForm } from "@mantine/form";
 import { validateString } from "../../utils/common";
 
@@ -10,22 +11,22 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
       description: propertyDetails.description || "",
       type: propertyDetails.type || "",
       property: propertyDetails.property || "",
-      status: propertyDetails.status || "",
+      state: propertyDetails.state || "",
       size: propertyDetails.size || 0,
       maintenanceCharge: propertyDetails.maintenanceCharge || 0,
       estimatedValue: propertyDetails.estimatedValue || 0,
       yearBuilt: propertyDetails.yearBuilt || "",
-      lastRenovationDate: propertyDetails.lastRenovationDate || "",
+      lastRenovationDate: propertyDetails.lastRenovationDate ? new Date(propertyDetails.lastRenovationDate) : null,
       materialsUsed: propertyDetails.materialsUsed || "",
       condition: propertyDetails.condition || "",
-      maintenanceSchedule: propertyDetails.maintenanceSchedule || "",     
+      maintenanceSchedule: propertyDetails.maintenanceSchedule || "",
     },
     validate: {
       name: (value) => validateString(value),
       description: (value) => validateString(value),
       type: (value) => validateString(value),
       property: (value) => validateString(value),
-      status: (value) => validateString(value),
+      state: (value) => validateString(value),
     },
   });
 
@@ -34,7 +35,7 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
     description,
     type,
     property,
-    status,
+    state,
     size,
     maintenanceCharge,
     estimatedValue,
@@ -42,7 +43,7 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
     lastRenovationDate,
     materialsUsed,
     condition,
-    maintenanceSchedule,   
+    maintenanceSchedule,
   } = form.values;
 
   const handleSubmit = () => {
@@ -54,7 +55,7 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
         description,
         type,
         property,
-        status,
+        state,
         size,
         maintenanceCharge,
         estimatedValue,
@@ -62,7 +63,7 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
         lastRenovationDate,
         materialsUsed,
         condition,
-        maintenanceSchedule,      
+        maintenanceSchedule,
       }));
       nextStep();
     }
@@ -90,7 +91,7 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
               withAsterisk
               label="Type"
               placeholder="Select listing type"
-              data={['sale', 'buy', 'rent']}
+              data={['Routine', 'Preventive', 'Corrective', 'Predictive', 'Emergency', 'Cosmetic', 'Seasonal', 'Deferred']}
               {...form.getInputProps("type")}
             />
           </Col>
@@ -99,20 +100,17 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
               withAsterisk
               label="Property Type"
               placeholder="Select property type"
-              data={['land', 'apartment', 'condo', 'house']}
+              data={['RESIDENTIAL', 'COMMERCIAL', 'INDUSTRIAL', 'LAND']}
               {...form.getInputProps("property")}
             />
           </Col>
           <Col span={6}>
             <Select
               withAsterisk
-              label="Status"
-              placeholder="Select property status"
-              data={[
-                'available', 'occupied', 'under_contract', 'for_sale', 'under_renovation',
-                'pending_approval', 'sold', 'terminated', 'pending_availability', 'inactive'
-              ]}
-              {...form.getInputProps("status")}
+              label="State"
+              placeholder="Select property state"
+              data={['UNOCCUPIED', 'RENTED', 'UNDER_MAINTENANCE', 'UNDER_SALE']}
+              {...form.getInputProps("state")}
             />
           </Col>
           <Col span={12}>
@@ -152,9 +150,9 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
             />
           </Col>
           <Col span={6}>
-            <TextInput
+            <DateInput
               label="Last Renovation Date"
-              placeholder="Enter last renovation date"
+              placeholder="Select last renovation date"
               {...form.getInputProps("lastRenovationDate")}
             />
           </Col>
@@ -179,12 +177,20 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
             />
           </Col>
           <Col span={6}>
-            <TextInput
+            <Select
               label="Maintenance Schedule"
-              placeholder="Specify maintenance schedule"
+              placeholder="Select maintenance schedule"
+              data={[
+                { value: 'DAILY', label: 'Daily' },
+                { value: 'WEEKLY', label: 'Weekly' },
+                { value: 'MONTHLY', label: 'Monthly' },
+                { value: 'QUARTERLY', label: 'Quarterly' },
+                { value: 'HALF-YEARLY', label: 'Half-Yearly' },
+                { value: 'YEARLY', label: 'Yearly/Annually' },
+              ]}
               {...form.getInputProps("maintenanceSchedule")}
             />
-          </Col>        
+          </Col>
         </Grid>
         <Group position="center" mt="xl">
           <Button variant="default" onClick={prevStep}>
@@ -205,16 +211,15 @@ MBasicDetails.propTypes = {
     description: PropTypes.string,
     type: PropTypes.string,
     property: PropTypes.string,
-    status: PropTypes.string,
+    state: PropTypes.string,
     size: PropTypes.number,
     maintenanceCharge: PropTypes.number,
     estimatedValue: PropTypes.number,
     yearBuilt: PropTypes.string,
-    lastRenovationDate: PropTypes.string,
+    lastRenovationDate: PropTypes.instanceOf(Date), // Updated to handle Date instance
     materialsUsed: PropTypes.string,
     condition: PropTypes.string,
     maintenanceSchedule: PropTypes.string,
-   
   }).isRequired,
   setPropertyDetails: PropTypes.func.isRequired,
 };

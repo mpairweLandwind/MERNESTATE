@@ -45,13 +45,11 @@ model User {
   listings      Listing[]       @relation("Owner")
   bookedVisits     Json[]
   favResidenciesID String[]    @db.ObjectId
-  maintenance   Maintenance[]
   savedPosts    SavedPost[]
   chats         Chat[]          @relation(fields: [chatIDs], references: [id])
   chatIDs       String[]        @db.ObjectId  
-  createdAt     DateTime        @default(now())
-      
-  
+  createdAt     DateTime        @default(now())    
+  Maintenance Maintenance[] @relation("Owner")
 }
 
 
@@ -62,26 +60,24 @@ model Maintenance {
   property             PropertyKind
   status               PropertyState
   description          String
+  country              String          @default("Burundi") 
   city                 String          
   address              String
   size                 Float?
-  maintenanceCharge    Float
-  furnished            Boolean
-  parking              Boolean
-  latitude             Float?
-  longitude            Float?
-  imageUrls            String[]
+  maintenanceCharge    Float  
+  image                String[]
   yearBuilt            Float?            // Year the property was built
   lastRenovationDate   DateTime?       // Last renovation date
-  maintenanceHistory   MaintenanceHistory[] // List of past maintenance activities
+  maintenanceHistory   Json? // List of past maintenance activities
   materialsUsed        String          // Details about the materials used in construction
   estimatedValue       Float?          // Estimated value of the property
   condition            PropertyCondition // Current condition of the property
   maintenanceSchedule  String          // Schedule for regular maintenance
-  userRef              String          @db.ObjectId
-  user                 User            @relation(fields: [userRef], references: [id])
+  userEmail      String  
+  user           User            @relation("Owner", fields: [userEmail], references: [ email])
   createdAt            DateTime        @default(now())
   transactions         Transaction[]  // Reference to transactions
+   
 }
 
 model Transaction {
@@ -151,14 +147,6 @@ enum UserStatus {
 
 
 
-model MaintenanceHistory {
-  id                   String          @id @default(auto()) @map("_id") @db.ObjectId
-  maintenanceId        String          @db.ObjectId
-  maintenance          Maintenance     @relation(fields: [maintenanceId], references: [id])
-  description          String
-  date                 DateTime        @default(now())
-  cost                 Float
-}
 
 enum PropertyCondition {
   NEW
