@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Box, Button, Group, NumberInput, TextInput } from "@mantine/core";
+import { Box, Button, Group, NumberInput, TextInput ,Title} from "@mantine/core";
 import { DateInput } from "@mantine/dates"; // Import DateInput
 import { useForm } from "@mantine/form";
 import { useContext, useEffect, useState } from "react";
@@ -92,7 +92,7 @@ const MaintenanceHistory = ({
         type: "",
         property: "",
         state: "",
-        size: "",
+        size: 0,
         maintenanceCharge: "",
         estimatedValue: "",
         yearBuilt: "",
@@ -119,6 +119,9 @@ const MaintenanceHistory = ({
 
   return (
     <Box maw="30%" mx="auto" my="sm">
+       <Title order={2} align="center" mb="lg">
+        Maintenance History
+      </Title>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -127,7 +130,7 @@ const MaintenanceHistory = ({
       >
         <TextInput
           withAsterisk
-          label="Description"
+          label=" Maintenance Description"
           placeholder="Maintenance description"
           {...form.getInputProps("description")}
         />

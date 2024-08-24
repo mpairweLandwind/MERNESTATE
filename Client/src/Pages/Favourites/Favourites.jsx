@@ -5,6 +5,8 @@ import { PuffLoader } from "react-spinners";
 import PropertyCard from "../../components/PropertyCard/PropertyCard";
 import "../Properties/Properties.css";
 import UserDetailContext from "../../context/UserDetailContext";
+//import UserDetailContext from './context/UserDetailContext';
+
 
 const Favourites = () => {
   const { data, isError, isLoading } = useProperties();

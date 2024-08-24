@@ -58,7 +58,7 @@ model Maintenance {
   name                 String 
   type                 Maintenancekind
   property             PropertyKind
-  status               PropertyState
+  state               PropertyState
   description          String
   country              String          @default("Burundi") 
   city                 String          
@@ -177,6 +177,7 @@ enum PropertyState {
   RENTED
   UNDER_MAINTENANCE
   UNDER_SALE
+  
 }
 
 

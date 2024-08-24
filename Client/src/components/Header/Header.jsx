@@ -15,7 +15,8 @@ import i18next from "i18next";
 
 const Header = () => {
   const [menuOpened, setMenuOpened] = useState(false);
-  const [modalOpened, setModalOpened] = useState(false);
+  const [propertyModalOpened, setPropertyModalOpened] = useState(false);
+  const [maintenanceModalOpened, setMaintenanceModalOpened] = useState(false);
   const headerColor = useHeaderColor();
   const { loginWithRedirect, isAuthenticated, user, logout } = useAuth0();
   const { validateLogin } = useAuthCheck();
@@ -36,7 +37,13 @@ const Header = () => {
 
   const handleAddPropertyClick = () => {
     if (validateLogin()) {
-      setModalOpened(true);
+      setPropertyModalOpened(true);
+    }
+  };
+
+  const handleAddMaintenanceClick = () => {
+    if (validateLogin()) {
+      setMaintenanceModalOpened(true);
     }
   };
 
@@ -55,12 +62,12 @@ const Header = () => {
             <a href="mailto:alienyuyen@gmail.com">{t("Contact")} </a>
 
             {/* Add Maintenance */}
-            <div onClick={handleAddPropertyClick}>{t("Maintenance")}</div>
-            <AddMaintenanceModal opened={modalOpened} setOpened={setModalOpened} />
+            <div onClick={handleAddMaintenanceClick}>{t("Maintenance")}</div>
+            <AddMaintenanceModal opened={maintenanceModalOpened} setOpened={setMaintenanceModalOpened} />
 
             {/* Add Property */}
             <div onClick={handleAddPropertyClick}>{t("Add Property")}</div>
-            <AddPropertyModal opened={modalOpened} setOpened={setModalOpened} />
+            <AddPropertyModal opened={propertyModalOpened} setOpened={setPropertyModalOpened} />
 
             {/* Language Translation */}
             <select

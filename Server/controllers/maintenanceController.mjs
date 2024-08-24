@@ -8,7 +8,10 @@ export const createMaintenance = async (req, res) => {
       description, 
       type, 
       property, 
-      status, 
+      state, 
+      country, 
+      city, 
+      address,
       size, 
       maintenanceCharge, 
       estimatedValue, 
@@ -23,13 +26,16 @@ export const createMaintenance = async (req, res) => {
     } = req.body.data;
 
     // Creating the listing
-    const listing = await prisma.listing.create({
+    const maintenance = await prisma.maintenance.create({
       data: {
         name,
         description,
         type,
         property,
-        status,
+        state,
+        country, 
+        city, 
+        address,
         size,
         maintenanceCharge,
         estimatedValue,
@@ -51,7 +57,7 @@ export const createMaintenance = async (req, res) => {
       },
     });
 
-    res.send({ message: "Maintenance record created successfully", listing });
+    res.send({ message: "Maintenance record created successfully", maintenance });
   } catch (error) {
     console.error('Error creating listing:', error);
     res.status(500).json({ error: 'Internal Server Error' });

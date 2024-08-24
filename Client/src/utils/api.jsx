@@ -153,7 +153,7 @@ export const getAllBookings = async (email, token) => {
 
 export const toFav = async (id, email, token) => {
   await api.post(
-    `/user/save/${id}`,
+    `/user/toFav/${id}`,
     { email },
     {
       headers: {
@@ -163,15 +163,15 @@ export const toFav = async (id, email, token) => {
   );
 };
 
+
 export const createResidency = async (data, token) => {
   try {
     console.log("Data to be sent:", data);
     console.log("Token used:", token);
 
-    // Ensure the data is sent correctly as the request body
     const response = await api.post(
-      `/listing/create`,
-     {data}, 
+      `/residency/create`, // Ensure the route is unique
+      { data },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -179,38 +179,23 @@ export const createResidency = async (data, token) => {
       }
     );
 
-    // Return the response data
     return response.data;
 
   } catch (error) {
-    // Error handling
     console.error('Error creating residency:', error);
-
-    if (error.response) {
-      // Server responded with a status other than 2xx
-      console.error('Server Error:', error.response.data);
-    } else if (error.request) {
-      // Request was made but no response received
-      console.error('Network Error:', error.request);
-    } else {
-      // Something else happened
-      console.error('Error:', error.message);
-    }
-
-    // Re-throw the error to be handled by the calling function
     throw error;
   }
 };
+
 
 export const createMaintenance = async (data, token) => {
   try {
     console.log("Data to be sent:", data);
     console.log("Token used:", token);
 
-    // Ensure the data is sent correctly as the request body
     const response = await api.post(
-      `/maintenance/create`,
-     {data}, 
+      `/maintenance/create`, // Ensure the route is unique
+      { data },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -218,26 +203,10 @@ export const createMaintenance = async (data, token) => {
       }
     );
 
-    // Return the response data
     return response.data;
 
   } catch (error) {
-    // Error handling
-    console.error('Error creating residency:', error);
-
-    if (error.response) {
-      // Server responded with a status other than 2xx
-      console.error('Server Error:', error.response.data);
-    } else if (error.request) {
-      // Request was made but no response received
-      console.error('Network Error:', error.request);
-    } else {
-      // Something else happened
-      console.error('Error:', error.message);
-    }
-
-    // Re-throw the error to be handled by the calling function
+    console.error('Error creating maintenance:', error);
     throw error;
   }
 };
-

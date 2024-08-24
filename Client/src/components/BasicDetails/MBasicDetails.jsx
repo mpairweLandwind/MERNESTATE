@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { TextInput, Box, Textarea, Group, Button, NumberInput, Select, Grid, Col } from "@mantine/core";
+import { TextInput, Box, Textarea, Group, Button, NumberInput, Select, Grid, Col , Title} from "@mantine/core";
 import { DateInput } from "@mantine/dates"; // Import DateInput from Mantine
 import { useForm } from "@mantine/form";
 import { validateString } from "../../utils/common";
@@ -16,7 +16,7 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
       maintenanceCharge: propertyDetails.maintenanceCharge || 0,
       estimatedValue: propertyDetails.estimatedValue || 0,
       yearBuilt: propertyDetails.yearBuilt || "",
-      lastRenovationDate: propertyDetails.lastRenovationDate ? new Date(propertyDetails.lastRenovationDate) : null,
+      lastRenovationDate: new Date(),          
       materialsUsed: propertyDetails.materialsUsed || "",
       condition: propertyDetails.condition || "",
       maintenanceSchedule: propertyDetails.maintenanceSchedule || "",
@@ -71,6 +71,10 @@ const MBasicDetails = ({ prevStep, nextStep, propertyDetails, setPropertyDetails
 
   return (
     <Box maw="70%" mx="auto" my="md">
+
+   <Title order={2} align="center" mb="lg">
+        Basic Maintenance Details
+      </Title>
       <form
         onSubmit={(e) => {
           e.preventDefault();
